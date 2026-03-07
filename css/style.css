@@ -301,8 +301,27 @@ img {
   top: 1rem;
   left: 1rem;
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 700;
+  letter-spacing: 0.02em;
   z-index: 4;
+}
+
+.project-visual .u-status-badge {
+  color: var(--white);
+  background: rgba(2, 6, 23, 0.72);
+  border-color: rgba(148, 163, 184, 0.45);
+  box-shadow: 0 8px 24px rgba(2, 6, 23, 0.45);
+  text-shadow: 0 1px 2px rgba(2, 6, 23, 0.8);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.project-visual .u-status-badge.tag.emerald {
+  border-color: rgba(52, 211, 153, 0.55);
+}
+
+.project-visual .u-status-badge.tag.amber {
+  border-color: rgba(251, 191, 36, 0.55);
 }
 
 .u-step-title {
