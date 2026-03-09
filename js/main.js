@@ -38,12 +38,39 @@ document.addEventListener('DOMContentLoaded', () => {
   // Contact form
   const form = document.querySelector('#contact-form');
   if (form) {
+    const whatsappNumber = '5511965502102';
+    const subjectLabels = {
+      website: 'Desenvolvimento de Website',
+      webapp: 'Aplicacao Web',
+      api: 'API / Backend',
+      maintenance: 'Manutencao',
+      consultation: 'Consultoria',
+      other: 'Outro'
+    };
+
     form.addEventListener('submit', (e) => {
       e.preventDefault();
       const formData = new FormData(form);
-      const data = Object.fromEntries(formData);
-      console.log('Form submitted:', data);
-      alert('Mensagem enviada com sucesso! Entraremos em contato em breve.');
+
+      const name = (formData.get('name') || '').toString().trim();
+      const email = (formData.get('email') || '').toString().trim();
+      const subjectValue = (formData.get('subject') || '').toString().trim();
+      const message = (formData.get('message') || '').toString().trim();
+      const subject = subjectLabels[subjectValue] || 'Nao informado';
+
+      const whatsappText = [
+        'Ola, DevBatista! Gostaria de solicitar um orcamento.',
+        '',
+        `Nome: ${name}`,
+        `Email: ${email}`,
+        `Assunto: ${subject}`,
+        `Mensagem: ${message}`
+      ].join('\n');
+
+      const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappText)}`;
+      window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+
+      alert('Redirecionando para o WhatsApp em uma nova aba.');
       form.reset();
     });
   }
