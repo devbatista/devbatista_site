@@ -81,6 +81,22 @@ document.addEventListener('DOMContentLoaded', () => {
     rootMargin: '0px 0px -50px 0px'
   };
 
+  // FAQ accordion behavior (only one item open at a time)
+  const faqItems = document.querySelectorAll('.faq-list .faq-item');
+  if (faqItems.length > 0) {
+    faqItems.forEach((item) => {
+      item.addEventListener('toggle', () => {
+        if (!item.open) return;
+
+        faqItems.forEach((otherItem) => {
+          if (otherItem !== item) {
+            otherItem.open = false;
+          }
+        });
+      });
+    });
+  }
+
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {

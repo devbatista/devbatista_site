@@ -1875,6 +1875,71 @@ img {
   transition: color 0.3s;
 }
 
+/* ========================================
+   FAQ
+   ======================================== */
+.faq-list {
+  display: grid;
+  gap: 1rem;
+  max-width: 64rem;
+  margin: 0 auto;
+}
+
+.faq-item {
+  border: 1px solid var(--border-color);
+  border-radius: 0.875rem;
+  padding: 0;
+  overflow: hidden;
+}
+
+.faq-item summary {
+  list-style: none;
+  cursor: pointer;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  color: var(--white);
+  padding: 1.15rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  transition: background-color 0.25s ease;
+}
+
+.faq-item summary::after {
+  content: "";
+  width: 0.55rem;
+  height: 0.55rem;
+  border-right: 2px solid var(--slate-300);
+  border-bottom: 2px solid var(--slate-300);
+  transform: rotate(45deg);
+  transition: transform 0.25s ease;
+  flex-shrink: 0;
+}
+
+.faq-item[open] summary::after {
+  transform: rotate(225deg);
+}
+
+.faq-item summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq-item summary:hover {
+  background: rgba(30, 41, 59, 0.35);
+}
+
+.faq-item p {
+  margin: 0;
+  padding: 0 1.25rem 1.2rem;
+  color: var(--slate-300);
+  line-height: 1.7;
+}
+
+.faq-item a {
+  color: var(--cyan-400);
+}
+
 @media (min-width: 1024px) {
   .project-card.large {
     grid-column: span 2;
