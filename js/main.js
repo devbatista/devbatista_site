@@ -40,12 +40,25 @@ document.addEventListener('DOMContentLoaded', () => {
   if (form) {
     const whatsappNumber = '5511991308008';
     const subjectLabels = {
-      website: 'Desenvolvimento de Website',
-      webapp: 'Aplicacao Web',
+      website: 'Site institucional ou landing page',
+      webapp: 'Sistema ou aplicacao web',
+      ai: 'Agente IA ou automacao',
       api: 'API / Backend',
-      maintenance: 'Manutencao',
-      consultation: 'Consultoria',
+      maintenance: 'Melhoria ou manutencao',
+      consultation: 'Consultoria tecnica',
       other: 'Outro'
+    };
+    const timelineLabels = {
+      urgent: 'O quanto antes',
+      '30days': 'Ate 30 dias',
+      '60days': '1 a 2 meses',
+      flexible: 'Flexivel'
+    };
+    const budgetLabels = {
+      starter: 'Ainda estou validando',
+      defined: 'Ja tenho uma verba definida',
+      proposal: 'Quero receber uma proposta',
+      unsure: 'Preciso de orientacao'
     };
 
     form.addEventListener('submit', (e) => {
@@ -55,16 +68,22 @@ document.addEventListener('DOMContentLoaded', () => {
       const name = (formData.get('name') || '').toString().trim();
       const email = (formData.get('email') || '').toString().trim();
       const subjectValue = (formData.get('subject') || '').toString().trim();
+      const timelineValue = (formData.get('timeline') || '').toString().trim();
+      const budgetValue = (formData.get('budget') || '').toString().trim();
       const message = (formData.get('message') || '').toString().trim();
       const subject = subjectLabels[subjectValue] || 'Nao informado';
+      const timeline = timelineLabels[timelineValue] || 'Nao informado';
+      const budget = budgetLabels[budgetValue] || 'Nao informado';
 
       const whatsappText = [
-        'Ola, DevBatista! Gostaria de solicitar um orcamento.',
+        'Ola, DevBatista! Gostaria de iniciar um briefing de projeto.',
         '',
         `Nome: ${name}`,
         `Email: ${email}`,
-        `Assunto: ${subject}`,
-        `Mensagem: ${message}`
+        `Tipo de projeto: ${subject}`,
+        `Prazo desejado: ${timeline}`,
+        `Faixa de investimento: ${budget}`,
+        `Contexto: ${message}`
       ].join('\n');
 
       const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappText)}`;
