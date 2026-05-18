@@ -170,10 +170,25 @@
     <section class="section u-pt-16">
       <div class="section-overlay solid"></div>
       <div class="container relative">
-        <div class="grid-2 u-grid-2-gap-5-only">
+        <div class="projects-toolbar">
+          <div>
+            <p class="section-label">Galeria</p>
+            <h2 class="section-title">Explore por tipo de solução</h2>
+          </div>
+          <div class="project-filters" aria-label="Filtrar projetos">
+            <button class="project-filter active" type="button" data-filter="all">Todos</button>
+            <button class="project-filter" type="button" data-filter="institucional">Institucional</button>
+            <button class="project-filter" type="button" data-filter="sistema">Sistemas</button>
+            <button class="project-filter" type="button" data-filter="automacao">Automação</button>
+            <button class="project-filter" type="button" data-filter="backend">Backend</button>
+          </div>
+          <span class="projects-count" id="projects-count">6 projetos encontrados</span>
+        </div>
+
+        <div class="grid-2 u-grid-2-gap-5-only projects-grid">
 
           <!-- Project 1 (large) -->
-          <div class="project-card large">
+          <div class="project-card large" data-project-category="sistema">
             <div class="project-card-inner">
               <div class="project-visual u-min-h-240">
                 <div class="grid-bg"></div>
@@ -208,7 +223,7 @@
           </div>
 
           <!-- Project 2 -->
-          <div class="project-card">
+          <div class="project-card" data-project-category="institucional">
             <div class="project-visual">
               <div class="grid-bg"></div>
               <div class="project-image-slot">
@@ -238,7 +253,7 @@
           </div>
 
           <!-- Project 3 -->
-          <div class="project-card">
+          <div class="project-card" data-project-category="institucional">
             <div class="project-visual">
               <div class="grid-bg"></div>
               <div class="project-image-slot">
@@ -267,7 +282,7 @@
           </div>
 
           <!-- Project 4 -->
-          <div class="project-card">
+          <div class="project-card" data-project-category="institucional">
             <div class="project-visual">
               <div class="grid-bg"></div>
               <div class="project-image-slot">
@@ -296,7 +311,7 @@
           </div>
 
           <!-- Project 5 -->
-          <div class="project-card">
+          <div class="project-card" data-project-category="automacao">
             <div class="project-visual">
               <div class="grid-bg"></div>
               <div class="project-image-slot">
@@ -325,7 +340,7 @@
           </div>
 
           <!-- Project 6 (large) -->
-          <div class="project-card large">
+          <div class="project-card large" data-project-category="backend">
             <div class="project-card-inner">
               <div class="project-visual u-min-h-240">
                 <div class="grid-bg"></div>

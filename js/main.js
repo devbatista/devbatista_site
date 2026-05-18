@@ -164,6 +164,40 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Project gallery filters
+  const projectFilters = document.querySelectorAll('.project-filter');
+  const projectCards = document.querySelectorAll('.project-card[data-project-category]');
+  const projectsCount = document.querySelector('#projects-count');
+
+  if (projectFilters.length > 0 && projectCards.length > 0) {
+    const updateProjectsCount = (count) => {
+      if (!projectsCount) return;
+      const label = count === 1 ? 'projeto encontrado' : 'projetos encontrados';
+      projectsCount.textContent = `${count} ${label}`;
+    };
+
+    projectFilters.forEach((filterButton) => {
+      filterButton.addEventListener('click', () => {
+        const selectedFilter = filterButton.dataset.filter || 'all';
+        let visibleCount = 0;
+
+        projectFilters.forEach((item) => {
+          item.classList.toggle('active', item === filterButton);
+        });
+
+        projectCards.forEach((card) => {
+          const shouldShow = selectedFilter === 'all' || card.dataset.projectCategory === selectedFilter;
+          card.classList.toggle('is-hidden', !shouldShow);
+          if (shouldShow) visibleCount += 1;
+        });
+
+        updateProjectsCount(visibleCount);
+      });
+    });
+
+    updateProjectsCount(projectCards.length);
+  }
+
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {

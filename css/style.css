@@ -2243,6 +2243,59 @@ img {
 /* ========================================
    Project Cards
    ======================================== */
+.projects-toolbar {
+  display: grid;
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.project-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.625rem;
+}
+
+.project-filter {
+  min-height: 2.5rem;
+  padding: 0.65rem 1rem;
+  border: 1px solid rgba(51, 65, 85, 0.84);
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.62);
+  color: var(--slate-300);
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: border-color 0.25s ease, background 0.25s ease, color 0.25s ease, transform 0.25s ease;
+}
+
+.project-filter:hover {
+  border-color: rgba(34, 211, 238, 0.36);
+  color: var(--white);
+}
+
+.project-filter.active {
+  border-color: rgba(34, 211, 238, 0.62);
+  background: rgba(34, 211, 238, 0.12);
+  color: var(--cyan-400);
+}
+
+.projects-count {
+  display: inline-flex;
+  width: fit-content;
+  padding: 0.45rem 0.75rem;
+  border: 1px solid rgba(51, 65, 85, 0.78);
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.58);
+  color: var(--slate-400);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.projects-grid {
+  align-items: stretch;
+}
+
 .project-card {
   background: rgba(15, 23, 42, 0.5);
   backdrop-filter: blur(12px);
@@ -2250,6 +2303,10 @@ img {
   border-radius: 1rem;
   overflow: hidden;
   transition: all 0.5s;
+}
+
+.project-card.is-hidden {
+  display: none;
 }
 
 .project-card:hover {
@@ -2263,6 +2320,7 @@ img {
 .project-visual {
   position: relative;
   min-height: 200px;
+  overflow: hidden;
   background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.8));
   display: flex;
   align-items: center;
@@ -2280,7 +2338,7 @@ img {
   position: absolute;
   inset: 0;
   background: linear-gradient(180deg, rgba(15, 23, 42, 0.2) 0%, rgba(15, 23, 42, 0.65) 100%);
-  opacity: 0.95;
+  opacity: 0.82;
   transition: opacity 0.35s ease;
 }
 
@@ -2289,18 +2347,19 @@ img {
   height: 100%;
   object-fit: cover;
   display: block;
-  filter: brightness(0.8);
+  filter: brightness(0.88);
   transform: scale(1);
+  transform-origin: center;
   transition: filter 0.35s ease, transform 0.5s ease;
 }
 
 .project-card:hover .project-image-slot::after {
-  opacity: 0.45;
+  opacity: 0.72;
 }
 
 .project-card:hover .project-image-slot img {
-  filter: brightness(1);
-  transform: scale(1.04);
+  filter: brightness(0.94);
+  transform: scale(1.025);
 }
 
 .project-visual .grid-bg {
@@ -2365,6 +2424,17 @@ img {
   color: var(--white);
   margin-bottom: 0.75rem;
   transition: color 0.3s;
+}
+
+@media (min-width: 1024px) {
+  .projects-toolbar {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+  }
+
+  .projects-count {
+    grid-column: 1 / -1;
+  }
 }
 
 /* ========================================
