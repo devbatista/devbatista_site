@@ -41,24 +41,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const whatsappNumber = '5511991308008';
     const subjectLabels = {
       website: 'Site institucional ou landing page',
-      webapp: 'Sistema ou aplicacao web',
-      ai: 'Agente IA ou automacao',
+      webapp: 'Sistema ou aplicação web',
+      ai: 'Agente IA ou automação',
       api: 'API / Backend',
-      maintenance: 'Melhoria ou manutencao',
-      consultation: 'Consultoria tecnica',
+      maintenance: 'Melhoria ou manutenção',
+      consultation: 'Consultoria técnica',
       other: 'Outro'
     };
     const timelineLabels = {
       urgent: 'O quanto antes',
-      '30days': 'Ate 30 dias',
+      '30days': 'Até 30 dias',
       '60days': '1 a 2 meses',
-      flexible: 'Flexivel'
+      flexible: 'Flexível'
     };
     const budgetLabels = {
       starter: 'Ainda estou validando',
-      defined: 'Ja tenho uma verba definida',
+      defined: 'Já tenho uma verba definida',
       proposal: 'Quero receber uma proposta',
-      unsure: 'Preciso de orientacao'
+      unsure: 'Preciso de orientação'
     };
 
     form.addEventListener('submit', (e) => {
@@ -71,12 +71,12 @@ document.addEventListener('DOMContentLoaded', () => {
       const timelineValue = (formData.get('timeline') || '').toString().trim();
       const budgetValue = (formData.get('budget') || '').toString().trim();
       const message = (formData.get('message') || '').toString().trim();
-      const subject = subjectLabels[subjectValue] || 'Nao informado';
-      const timeline = timelineLabels[timelineValue] || 'Nao informado';
-      const budget = budgetLabels[budgetValue] || 'Nao informado';
+      const subject = subjectLabels[subjectValue] || 'Não informado';
+      const timeline = timelineLabels[timelineValue] || 'Não informado';
+      const budget = budgetLabels[budgetValue] || 'Não informado';
 
       const whatsappText = [
-        'Ola, DevBatista! Gostaria de iniciar um briefing de projeto.',
+        'Olá, DevBatista! Gostaria de iniciar um briefing de projeto.',
         '',
         `Nome: ${name}`,
         `Email: ${email}`,
