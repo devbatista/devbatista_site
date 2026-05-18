@@ -123,63 +123,72 @@
   </nav>
 
   <main>
-    <!-- Header -->
-    <section class="hero-header section">
+    <section class="hero-header section about-hero">
       <div class="section-overlay light"></div>
       <div class="container relative">
-        <div class="grid-12 u-grid-align-end-gap-10">
-          <div class="col-span-7">
+        <div class="about-hero-grid">
+          <div>
             <p class="section-label fade-up">Quem somos</p>
             <h1 class="fade-up-1 u-h1-hero u-ls-tight">
-              Tecnologia que <span class="text-gradient">move negócios</span>
+              Tecnologia pensada para <span class="text-gradient">resolver operação</span>
             </h1>
-          </div>
-          <div class="col-span-5 fade-up-2">
-            <p class="u-text-slate-400-md">
-              A DevBatista é uma empresa especializada em soluções digitais, comprometida com a inovação e excelência tecnológica.
+            <p class="fade-up-2 u-subtext-hero">
+              A DevBatista cria sites, sistemas, automações e integrações com foco em clareza, performance e evolução contínua.
             </p>
           </div>
+
+          <aside class="about-hero-card card backdrop-blur fade-up-2" aria-label="Resumo da DevBatista">
+            <span class="about-card-kicker">Desde 2019</span>
+            <h2>Do briefing ao produto em produção.</h2>
+            <p>Unimos visão de negócio, engenharia e execução prática para transformar necessidades reais em soluções digitais sustentáveis.</p>
+            <div class="about-hero-stats">
+              <div>
+                <strong>5+</strong>
+                <span>anos de experiência</span>
+              </div>
+              <div>
+                <strong>Full stack</strong>
+                <span>web, APIs e automação</span>
+              </div>
+            </div>
+          </aside>
         </div>
       </div>
     </section>
 
     <div class="glow-line"></div>
 
-    <!-- Story + Tech Stack -->
     <section class="section">
       <div class="section-overlay solid"></div>
       <div class="container relative">
-        <div class="grid-12 u-grid-align-start">
-          <div class="col-span-7">
-            <h2 class="u-h2-lg">Nossa História</h2>
-            <div class="u-text-block-lg">
-              <p>A DevBatista nasceu da paixão por tecnologia e do desejo de transformar ideias em soluções digitais que fazem a diferença no mundo dos negócios. Fundada em 2019, nossa empresa tem se dedicado a oferecer serviços de desenvolvimento web de alta qualidade.</p>
-              <p>Com uma equipe especializada e experiente, atendemos empresas de diversos segmentos, desde startups inovadoras até corporações estabelecidas, sempre com foco na entrega de valor e resultados excepcionais.</p>
-              <p>Nossa missão é democratizar o acesso à tecnologia de ponta, oferecendo soluções personalizadas que impulsionam o crescimento e a competitividade de nossos clientes no mercado digital.</p>
+        <div class="about-story-layout">
+          <div class="about-story-copy">
+            <p class="section-label">Nossa história</p>
+            <h2>Construímos tecnologia com contexto, não apenas com código.</h2>
+            <div class="about-story-text">
+              <p>A DevBatista nasceu da paixão por tecnologia e do desejo de transformar ideias em soluções digitais que fazem diferença no dia a dia das empresas.</p>
+              <p>Desde 2019, o trabalho combina desenvolvimento web, arquitetura, integrações e automação para entregar projetos que ajudam o cliente a vender melhor, organizar processos e reduzir tarefas repetitivas.</p>
+              <p>A missão é democratizar o acesso à tecnologia de ponta com soluções personalizadas, úteis e preparadas para evoluir junto com cada negócio.</p>
             </div>
           </div>
-          <div class="col-span-5">
-            <div class="card backdrop-blur u-pad-7">
-              <h3 class="u-h3-xl">Stack Tecnológica</h3>
-              <div class="u-grid-2-gap-3">
-                <div class="tag cyan u-tech-pill">Ruby on Rails</div>
-                <div class="tag cyan u-tech-pill">PostgreSQL</div>
-                <div class="tag cyan u-tech-pill">MySQL</div>
-                <div class="tag cyan u-tech-pill">Docker</div>
-                <div class="tag cyan u-tech-pill">AWS</div>
-                <div class="tag cyan u-tech-pill">Sidekiq</div>
-                <div class="tag cyan u-tech-pill">Redis</div>
-                <div class="tag cyan u-tech-pill">JavaScript</div>
-                <div class="tag cyan u-tech-pill">HTML/CSS</div>
-                <div class="tag cyan u-tech-pill">Tailwind CSS</div>
-                <div class="tag cyan u-tech-pill">Bootstrap</div>
-                <div class="tag cyan u-tech-pill">JWT</div>
-                <div class="tag cyan u-tech-pill">API REST</div>
-                <div class="tag cyan u-tech-pill">PHP</div>
-                <div class="tag cyan u-tech-pill">Laravel</div>
-                <div class="tag cyan u-tech-pill">Go</div>
-                <div class="tag cyan u-tech-pill">Flutter</div>
-                <div class="tag cyan u-tech-pill">n8n</div>
+
+          <div class="about-method-card card backdrop-blur">
+            <p class="section-label">Como pensamos</p>
+            <div class="about-method-list">
+              <div>
+                <span>01</span>
+                <h3>Entender antes de construir</h3>
+                <p>Mapeamos objetivo, público, operação e restrições para evitar soluções bonitas que não resolvem o problema certo.</p>
+              </div>
+              <div>
+                <span>02</span>
+                <h3>Projetar para evolução</h3>
+                <p>Escolhemos arquitetura, stack e integrações pensando em manutenção, escala e próximos passos.</p>
+              </div>
+              <div>
+                <span>03</span>
+                <h3>Entregar com clareza</h3>
+                <p>Trabalhamos com escopo transparente, comunicação direta e foco no que gera valor para o negócio.</p>
               </div>
             </div>
           </div>
@@ -187,162 +196,95 @@
       </div>
     </section>
 
-    <!-- Values -->
     <section class="section">
       <div class="section-overlay subtle"></div>
       <div class="container relative">
-        <p class="section-label">Nossos pilares</p>
-        <h2 class="section-title u-mb-14">Valores que nos guiam</h2>
-        <div class="grid-4">
-          <div class="card offset-up u-pad-7">
-            <div class="icon-box cyan u-mb-5"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/></svg></div>
-            <h3 class="u-h3-sm-strong">Qualidade</h3>
-            <p class="u-text-slate-400-sm-lh">Código limpo, documentado e seguindo as melhores práticas do mercado.</p>
+        <div class="about-section-heading">
+          <p class="section-label">Princípios</p>
+          <h2 class="section-title">O que guia cada entrega</h2>
+        </div>
+
+        <div class="about-principles-grid">
+          <div class="about-principle-card card">
+            <div class="icon-box cyan"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/></svg></div>
+            <span>01</span>
+            <h3>Qualidade técnica</h3>
+            <p>Código limpo, estrutura consistente e decisões que facilitam manutenção e crescimento.</p>
           </div>
-          <div class="card offset-down u-pad-7">
-            <div class="icon-box blue u-mb-5"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg></div>
-            <h3 class="u-h3-sm-strong">Inovação</h3>
-            <p class="u-text-slate-400-sm-lh">Sempre em busca das mais modernas tecnologias e soluções criativas.</p>
+
+          <div class="about-principle-card card">
+            <div class="icon-box blue"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg></div>
+            <span>02</span>
+            <h3>Inovação útil</h3>
+            <p>Novas tecnologias entram quando simplificam, automatizam ou melhoram o resultado do projeto.</p>
           </div>
-          <div class="card offset-up u-pad-7">
-            <div class="icon-box teal u-mb-5"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
-            <h3 class="u-h3-sm-strong">Resultados</h3>
-            <p class="u-text-slate-400-sm-lh">Foco na entrega de valor real e no sucesso dos projetos de nossos clientes.</p>
+
+          <div class="about-principle-card card">
+            <div class="icon-box teal"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
+            <span>03</span>
+            <h3>Resultado prático</h3>
+            <p>Priorizamos entregas que ajudam o cliente a operar melhor, captar mais oportunidades ou economizar tempo.</p>
           </div>
-          <div class="card offset-down u-pad-7">
-            <div class="icon-box cyan u-mb-5"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
-            <h3 class="u-h3-sm-strong">Parceria</h3>
-            <p class="u-text-slate-400-sm-lh">Relacionamento próximo e transparente com nossos clientes e equipe.</p>
+
+          <div class="about-principle-card card">
+            <div class="icon-box emerald"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+            <span>04</span>
+            <h3>Parceria direta</h3>
+            <p>Comunicação próxima, escopo claro e acompanhamento para que o projeto não fique solto depois da entrega.</p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Mission / Vision / Commitment -->
-    <section class="section">
-      <div class="section-overlay subtle"></div>
-      <div class="container relative">
-        <div class="grid-3">
-          <div class="card-solid backdrop-blur-lg u-mvv-card-cyan">
-            <div class="u-text-cyan-mb-5"><svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg></div>
-            <h3 class="u-h3-md-strong">Missão</h3>
-            <p class="u-text-slate-400-flex">Transformar ideias em soluções digitais inovadoras, oferecendo tecnologia de ponta para impulsionar o crescimento e sucesso de nossos clientes.</p>
-          </div>
-          <div class="card-solid backdrop-blur-lg u-mvv-card-blue">
-            <div class="u-text-blue-mb-5"><svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
-            <h3 class="u-h3-md-strong">Visão</h3>
-            <p class="u-text-slate-400-flex">Ser reconhecida como referência em desenvolvimento web, sendo a primeira escolha de empresas que buscam excelência tecnológica.</p>
-          </div>
-          <div class="card-solid backdrop-blur-lg u-mvv-card-teal">
-            <div class="u-text-teal-mb-5"><svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526"/><circle cx="12" cy="8" r="6"/></svg></div>
-            <h3 class="u-h3-md-strong">Compromisso</h3>
-            <p class="u-text-slate-400-flex">Entregar projetos de alta qualidade, dentro do prazo e orçamento, sempre superando as expectativas de nossos clientes.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Expertise -->
     <section class="section sobre-expertise">
       <div class="section-overlay solid"></div>
       <div class="container sobre-expertise-container">
         <div class="card-solid backdrop-blur-lg sobre-expertise-card">
           <div class="sobre-expertise-grid">
-            <!-- Coluna esquerda -->
             <div class="sobre-expertise-intro">
-              <h2 class="sobre-expertise-title">Nossa Expertise</h2>
+              <p class="section-label">Expertise</p>
+              <h2 class="sobre-expertise-title">Stack e áreas de atuação para projetos modernos.</h2>
               <p class="sobre-expertise-text">
-                Áreas de atuação e diferenciais que nos tornam a escolha certa para o seu projeto.
+                A base técnica cobre produto, integração, automação e sustentação para criar soluções que funcionam no mundo real.
               </p>
               <a href="servicos.html" class="sobre-expertise-link">
-                Ver servicos completos
+                Ver serviços completos
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="m9 18 6-6-6-6"/>
                 </svg>
               </a>
             </div>
-    
-            <!-- Colunas da direita -->
+
             <div class="sobre-expertise-columns">
-              <!-- Áreas de atuação -->
               <div class="sobre-expertise-column">
                 <h3 class="sobre-expertise-subtitle section-label">Áreas de atuação</h3>
                 <ul class="sobre-expertise-list">
-                  <li class="sobre-expertise-item">
-                    <span class="sobre-expertise-bullet"></span>
-                    <span>Desenvolvimento Web Full Stack</span>
-                  </li>
-                  <li class="sobre-expertise-item">
-                    <span class="sobre-expertise-bullet"></span>
-                    <span>Aplicações Mobile (iOS/Android)</span>
-                  </li>
-                  <li class="sobre-expertise-item">
-                    <span class="sobre-expertise-bullet"></span>
-                    <span>Sistemas Corporativos (ERP/CRM)</span>
-                  </li>
-                  <li class="sobre-expertise-item">
-                    <span class="sobre-expertise-bullet"></span>
-                    <span>E-commerce e Marketplaces</span>
-                  </li>
-                  <li class="sobre-expertise-item">
-                    <span class="sobre-expertise-bullet"></span>
-                    <span>APIs e Microsservicos</span>
-                  </li>
-                  <li class="sobre-expertise-item">
-                    <span class="sobre-expertise-bullet"></span>
-                    <span>Consultoria em Arquitetura</span>
-                  </li>
+                  <li class="sobre-expertise-item"><span class="sobre-expertise-bullet"></span><span>Desenvolvimento Web Full Stack</span></li>
+                  <li class="sobre-expertise-item"><span class="sobre-expertise-bullet"></span><span>Aplicações Mobile (iOS/Android)</span></li>
+                  <li class="sobre-expertise-item"><span class="sobre-expertise-bullet"></span><span>Sistemas Corporativos (ERP/CRM)</span></li>
+                  <li class="sobre-expertise-item"><span class="sobre-expertise-bullet"></span><span>E-commerce e Marketplaces</span></li>
+                  <li class="sobre-expertise-item"><span class="sobre-expertise-bullet"></span><span>APIs e Microsserviços</span></li>
+                  <li class="sobre-expertise-item"><span class="sobre-expertise-bullet"></span><span>Automação com IA e n8n</span></li>
                 </ul>
               </div>
-    
-              <!-- Diferenciais -->
+
               <div class="sobre-expertise-column">
-                <h3 class="sobre-expertise-subtitle sobre-expertise-subtitle-diff">
-                  Diferenciais
-                </h3>
-                <ul class="sobre-expertise-list">
-                  <li class="sobre-expertise-item">
-                    <span class="sobre-expertise-icon">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>
-                      </svg>
-                    </span>
-                    <span>Código seguro e escalável</span>
-                  </li>
-                  <li class="sobre-expertise-item">
-                    <span class="sobre-expertise-icon">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/>
-                      </svg>
-                    </span>
-                    <span>Entrega agil e eficiente</span>
-                  </li>
-                  <li class="sobre-expertise-item">
-                    <span class="sobre-expertise-icon">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-                        <circle cx="9" cy="7" r="4"/>
-                        <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
-                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                      </svg>
-                    </span>
-                    <span>Suporte tecnico especializado</span>
-                  </li>
-                  <li class="sobre-expertise-item">
-                    <span class="sobre-expertise-icon">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526"/>
-                        <circle cx="12" cy="8" r="6"/>
-                      </svg>
-                    </span>
-                    <span>Garantia de qualidade</span>
-                  </li>
-                </ul>
+                <h3 class="sobre-expertise-subtitle sobre-expertise-subtitle-diff">Stack principal</h3>
+                <div class="about-stack-tags">
+                  <span>Ruby on Rails</span>
+                  <span>PostgreSQL</span>
+                  <span>Docker</span>
+                  <span>AWS</span>
+                  <span>Sidekiq</span>
+                  <span>Redis</span>
+                  <span>JavaScript</span>
+                  <span>Tailwind CSS</span>
+                  <span>Laravel</span>
+                  <span>Flutter</span>
+                  <span>Go</span>
+                  <span>API REST</span>
+                </div>
               </div>
             </div>
           </div>

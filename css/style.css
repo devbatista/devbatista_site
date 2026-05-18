@@ -1126,8 +1126,146 @@ img {
 }
 
 /* =========================
-   Sobre - Nossa Expertise
+   Sobre
    ========================= */
+.about-hero-grid {
+  display: grid;
+  gap: 2rem;
+  align-items: end;
+}
+
+.about-hero-card {
+  padding: 1.5rem;
+  max-width: 27rem;
+}
+
+.about-card-kicker {
+  display: inline-flex;
+  margin-bottom: 0.75rem;
+  color: var(--cyan-400);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+}
+
+.about-hero-card h2,
+.about-story-copy h2 {
+  color: var(--white);
+  font-size: 1.5rem;
+  line-height: 1.25;
+  margin-bottom: 0.85rem;
+}
+
+.about-hero-card p,
+.about-story-text p {
+  color: var(--slate-300);
+  line-height: 1.7;
+}
+
+.about-hero-stats {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+.about-hero-stats div {
+  padding: 1rem;
+  border: 1px solid rgba(51, 65, 85, 0.8);
+  border-radius: 0.75rem;
+  background: rgba(15, 23, 42, 0.5);
+}
+
+.about-hero-stats strong {
+  display: block;
+  color: var(--white);
+  font-size: 1.2rem;
+  line-height: 1.2;
+  margin-bottom: 0.35rem;
+}
+
+.about-hero-stats span {
+  color: var(--slate-400);
+  font-size: 0.8125rem;
+}
+
+.about-story-layout {
+  display: grid;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.about-story-copy {
+  max-width: 44rem;
+}
+
+.about-story-copy h2 {
+  font-size: clamp(1.875rem, 3vw, 2.75rem);
+}
+
+.about-story-text {
+  display: grid;
+  gap: 1rem;
+}
+
+.about-method-card {
+  padding: 1.5rem;
+}
+
+.about-method-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.about-method-list div {
+  padding: 1rem;
+  border: 1px solid rgba(51, 65, 85, 0.78);
+  border-radius: 0.75rem;
+  background: rgba(15, 23, 42, 0.46);
+}
+
+.about-method-list span,
+.about-principle-card > span {
+  display: inline-flex;
+  color: var(--cyan-300);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.5rem;
+}
+
+.about-method-list h3,
+.about-principle-card h3 {
+  color: var(--white);
+  font-size: 1rem;
+  line-height: 1.35;
+  margin-bottom: 0.45rem;
+}
+
+.about-method-list p,
+.about-principle-card p {
+  color: var(--slate-400);
+  font-size: 0.875rem;
+  line-height: 1.7;
+}
+
+.about-section-heading {
+  max-width: 44rem;
+  margin-bottom: 2rem;
+}
+
+.about-principles-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.about-principle-card {
+  padding: 1.5rem;
+}
+
+.about-principle-card .icon-box {
+  margin-bottom: 1.25rem;
+}
 
 .sobre-expertise-container {
   position: relative;
@@ -1248,6 +1386,52 @@ img {
   color: var(--blue-400);
   display: inline-flex;
   flex-shrink: 0;
+}
+
+.about-stack-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.625rem;
+}
+
+.about-stack-tags span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.25rem;
+  padding: 0.5rem 0.8rem;
+  border: 1px solid rgba(22, 78, 99, 0.36);
+  border-radius: 999px;
+  background: rgba(34, 211, 238, 0.08);
+  color: var(--cyan-300);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+@media (min-width: 640px) {
+  .about-hero-stats,
+  .about-principles-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .about-hero-grid {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .about-story-layout {
+    grid-template-columns: minmax(0, 1fr) 26rem;
+  }
+
+  .about-method-card {
+    position: sticky;
+    top: 6.5rem;
+    padding: 1.75rem;
+  }
+
+  .about-principles-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
 }
 
 /* ========================================
