@@ -97,6 +97,49 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Home scrollytelling process
+  const scrollySteps = document.querySelectorAll('.scrolly-step');
+  const scrollyTitle = document.querySelector('#scrolly-title');
+  const scrollyStatus = document.querySelector('#scrolly-status');
+  const scrollyMetric = document.querySelector('#scrolly-metric');
+  const scrollyStepLabel = document.querySelector('#scrolly-step-label');
+  const scrollyProgressText = document.querySelector('#scrolly-progress-text');
+  const scrollyProgressBar = document.querySelector('#scrolly-progress-bar');
+  const scrollyFlowItems = document.querySelectorAll('.scrolly-flow span');
+
+  if (scrollySteps.length > 0 && scrollyTitle && scrollyStatus && scrollyMetric && scrollyStepLabel && scrollyProgressText && scrollyProgressBar) {
+    const setActiveScrollyStep = (step) => {
+      const stepIndex = Array.from(scrollySteps).indexOf(step);
+      const progress = step.dataset.progress || '20';
+
+      scrollySteps.forEach((item) => item.classList.toggle('active', item === step));
+      scrollyTitle.textContent = step.dataset.title || '';
+      scrollyStatus.textContent = step.dataset.status || '';
+      scrollyMetric.textContent = step.dataset.metric || '';
+      scrollyStepLabel.textContent = `Etapa ${step.dataset.step || ''}`;
+      scrollyProgressText.textContent = `${progress}%`;
+      scrollyProgressBar.style.width = `${progress}%`;
+
+      scrollyFlowItems.forEach((item, index) => {
+        item.classList.toggle('active', index <= stepIndex);
+      });
+    };
+
+    const scrollyObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          setActiveScrollyStep(entry.target);
+        }
+      });
+    }, {
+      threshold: 0.55,
+      rootMargin: '-15% 0px -25% 0px'
+    });
+
+    scrollySteps.forEach((step) => scrollyObserver.observe(step));
+    setActiveScrollyStep(scrollySteps[0]);
+  }
+
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
