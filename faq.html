@@ -67,6 +67,14 @@
         },
         {
           "@type": "Question",
+          "name": "Meu projeto precisa começar do zero?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Nem sempre. Se você já tem site, sistema, marca ou processo definido, o trabalho pode partir do que existe e evoluir com melhorias pontuais ou uma nova versão."
+          }
+        },
+        {
+          "@type": "Question",
           "name": "Qual o prazo médio para entregar um projeto?",
           "acceptedAnswer": {
             "@type": "Answer",
@@ -83,10 +91,18 @@
         },
         {
           "@type": "Question",
-          "name": "Vocês oferecem suporte após a entrega?",
+          "name": "Vocês fazem integração com WhatsApp e APIs?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Sim. Há suporte pós-entrega para ajustes, melhorias e acompanhamento técnico conforme a necessidade do projeto."
+            "text": "Sim. A DevBatista pode integrar formulários, atendimento e automações com WhatsApp, CRMs e APIs externas conforme a necessidade do negócio."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "É possível conectar formulário, CRM e automações?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Sim. O projeto pode enviar dados para planilhas, CRMs, ferramentas de email, sistemas internos ou fluxos automatizados, de acordo com o processo da empresa."
           }
         },
         {
@@ -103,6 +119,22 @@
           "acceptedAnswer": {
             "@type": "Answer",
             "text": "Sim. O agente pode ser treinado com contexto da sua empresa, catálogo, regras comerciais e tom de comunicação para atender de forma personalizada."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Vocês oferecem suporte após a entrega?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Sim. Existe suporte pós-entrega para ajustes, melhorias e evolução da solução, de acordo com o plano definido para o projeto."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Quais formas de contato são mais rápidas?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "WhatsApp e formulário de contato. Também é possível enviar email para rafael@devbatista.com."
           }
         }
       ]
@@ -144,10 +176,19 @@
     <section class="hero-header section">
       <div class="section-overlay light"></div>
       <div class="container relative">
-        <div class="u-max-w-48">
-          <p class="section-label fade-up">FAQ</p>
-          <h1 class="fade-up-1 u-h1-hero">Perguntas <span class="text-gradient">frequentes</span></h1>
-          <p class="fade-up-2 u-subtext-hero">Reunimos aqui as dúvidas mais comuns para facilitar sua decisão e acelerar o início do seu projeto.</p>
+        <div class="faq-hero-grid">
+          <div class="u-max-w-48">
+            <p class="section-label fade-up">Central de decisão</p>
+            <h1 class="fade-up-1 u-h1-hero">Tire suas dúvidas antes de <span class="text-gradient">começar</span></h1>
+            <p class="fade-up-2 u-subtext-hero">Veja respostas diretas sobre escopo, prazos, orçamento, integrações, IA e suporte para decidir o próximo passo com mais segurança.</p>
+          </div>
+
+          <aside class="faq-hero-card card backdrop-blur fade-up-2" aria-label="Contato rápido">
+            <span class="faq-hero-card-kicker">Resposta rápida</span>
+            <h2>Prefere explicar sua ideia?</h2>
+            <p>Envie uma mensagem com o objetivo do projeto e receba uma orientação inicial sobre caminho, prazo e investimento.</p>
+            <a href="https://wa.me/5511991308008?text=Olá,%20quero%20tirar%20uma%20dúvida%20sobre%20um%20projeto." class="btn-primary" target="_blank" rel="noopener noreferrer">Chamar no WhatsApp</a>
+          </aside>
         </div>
       </div>
     </section>
@@ -157,46 +198,141 @@
     <section class="section">
       <div class="section-overlay solid"></div>
       <div class="container relative">
-        <div class="faq-list">
-          <details class="faq-item card backdrop-blur" open>
-            <summary>Quais serviços a DevBatista oferece?</summary>
-            <p>Desenvolvimento de sites institucionais, landing pages, aplicações web, e-commerce, automação com IA e APIs sob medida.</p>
-          </details>
+        <div class="faq-layout">
+          <aside class="faq-sidebar card backdrop-blur" aria-label="Categorias de perguntas frequentes">
+            <p class="faq-sidebar-label">Categorias</p>
+            <nav class="faq-category-nav">
+              <a href="#faq-projetos">Projetos</a>
+              <a href="#faq-orcamento">Prazos e orçamento</a>
+              <a href="#faq-integracoes">Integrações</a>
+              <a href="#faq-ia">IA e automação</a>
+              <a href="#faq-suporte">Suporte</a>
+            </nav>
+          </aside>
 
-          <details class="faq-item card backdrop-blur">
-            <summary>Qual o prazo médio para entregar um projeto?</summary>
-            <p>O prazo depende da complexidade do projeto. Landing pages podem levar poucos dias, enquanto sistemas completos podem levar algumas semanas.</p>
-          </details>
+          <div class="faq-content">
+            <section class="faq-group" id="faq-projetos" aria-labelledby="faq-projetos-title">
+              <div class="faq-group-header">
+                <span>01</span>
+                <div>
+                  <p class="section-label">Projetos</p>
+                  <h2 id="faq-projetos-title">O que pode ser criado</h2>
+                </div>
+              </div>
 
-          <details class="faq-item card backdrop-blur">
-            <summary>Como funciona o orçamento?</summary>
-            <p>Após entender seu objetivo e requisitos, enviamos uma proposta com escopo, prazo e investimento. Tudo de forma transparente.</p>
-          </details>
+              <div class="faq-list">
+                <details class="faq-item card backdrop-blur" open>
+                  <summary><span>Quais serviços a DevBatista oferece?</span></summary>
+                  <p>Desenvolvimento de sites institucionais, landing pages, aplicações web, e-commerce, automação com IA e APIs sob medida.</p>
+                </details>
 
-          <details class="faq-item card backdrop-blur">
-            <summary>Vocês fazem integração com WhatsApp e APIs?</summary>
-            <p>Sim. Podemos integrar formulários, atendimento e automações com WhatsApp, CRMs e APIs externas conforme a necessidade do negócio.</p>
-          </details>
+                <details class="faq-item card backdrop-blur">
+                  <summary><span>Meu projeto precisa começar do zero?</span></summary>
+                  <p>Nem sempre. Se você já tem site, sistema, marca ou processo definido, o trabalho pode partir do que existe e evoluir com melhorias pontuais ou uma nova versão.</p>
+                </details>
+              </div>
+            </section>
 
-          <details class="faq-item card backdrop-blur">
-            <summary>Vocês oferecem suporte após a entrega?</summary>
-            <p>Sim. Existe suporte pós-entrega para ajustes, melhorias e evolução da solução, de acordo com o plano definido para o projeto.</p>
-          </details>
+            <section class="faq-group" id="faq-orcamento" aria-labelledby="faq-orcamento-title">
+              <div class="faq-group-header">
+                <span>02</span>
+                <div>
+                  <p class="section-label">Prazos e orçamento</p>
+                  <h2 id="faq-orcamento-title">Como a proposta é definida</h2>
+                </div>
+              </div>
 
-          <details class="faq-item card backdrop-blur">
-            <summary>Como funciona um agente de atendimento IA?</summary>
-            <p>Um agente de atendimento IA entende as mensagens do cliente, responde dúvidas frequentes, coleta informações importantes e pode encaminhar para atendimento humano quando necessário.</p>
-          </details>
+              <div class="faq-list">
+                <details class="faq-item card backdrop-blur">
+                  <summary><span>Qual o prazo médio para entregar um projeto?</span></summary>
+                  <p>O prazo depende da complexidade do projeto. Landing pages podem levar poucos dias, enquanto sistemas completos podem levar algumas semanas.</p>
+                </details>
 
-          <details class="faq-item card backdrop-blur">
-            <summary>É possível personalizar o agente IA para meu negócio?</summary>
-            <p>Sim. O agente pode ser configurado com o contexto da sua empresa, produtos, regras e tom de comunicação, entregando respostas alinhadas ao seu processo comercial.</p>
-          </details>
+                <details class="faq-item card backdrop-blur">
+                  <summary><span>Como funciona o orçamento?</span></summary>
+                  <p>Após entender seu objetivo e requisitos, enviamos uma proposta com escopo, prazo e investimento. Tudo de forma transparente.</p>
+                </details>
+              </div>
+            </section>
 
-          <details class="faq-item card backdrop-blur">
-            <summary>Quais formas de contato são mais rápidas?</summary>
-            <p>WhatsApp e formulário de contato. Você também pode enviar email para <a href="mailto:rafael@devbatista.com">rafael@devbatista.com</a>.</p>
-          </details>
+            <section class="faq-group" id="faq-integracoes" aria-labelledby="faq-integracoes-title">
+              <div class="faq-group-header">
+                <span>03</span>
+                <div>
+                  <p class="section-label">Integrações</p>
+                  <h2 id="faq-integracoes-title">Conexões com seu processo</h2>
+                </div>
+              </div>
+
+              <div class="faq-list">
+                <details class="faq-item card backdrop-blur">
+                  <summary><span>Vocês fazem integração com WhatsApp e APIs?</span></summary>
+                  <p>Sim. Podemos integrar formulários, atendimento e automações com WhatsApp, CRMs e APIs externas conforme a necessidade do negócio.</p>
+                </details>
+
+                <details class="faq-item card backdrop-blur">
+                  <summary><span>É possível conectar formulário, CRM e automações?</span></summary>
+                  <p>Sim. O projeto pode enviar dados para planilhas, CRMs, ferramentas de email, sistemas internos ou fluxos automatizados, de acordo com o processo da empresa.</p>
+                </details>
+              </div>
+            </section>
+
+            <section class="faq-group" id="faq-ia" aria-labelledby="faq-ia-title">
+              <div class="faq-group-header">
+                <span>04</span>
+                <div>
+                  <p class="section-label">IA e automação</p>
+                  <h2 id="faq-ia-title">Atendimento mais eficiente</h2>
+                </div>
+              </div>
+
+              <div class="faq-list">
+                <details class="faq-item card backdrop-blur">
+                  <summary><span>Como funciona um agente de atendimento IA?</span></summary>
+                  <p>Um agente de atendimento IA entende as mensagens do cliente, responde dúvidas frequentes, coleta informações importantes e pode encaminhar para atendimento humano quando necessário.</p>
+                </details>
+
+                <details class="faq-item card backdrop-blur">
+                  <summary><span>É possível personalizar o agente IA para meu negócio?</span></summary>
+                  <p>Sim. O agente pode ser configurado com o contexto da sua empresa, produtos, regras e tom de comunicação, entregando respostas alinhadas ao seu processo comercial.</p>
+                </details>
+              </div>
+            </section>
+
+            <section class="faq-group" id="faq-suporte" aria-labelledby="faq-suporte-title">
+              <div class="faq-group-header">
+                <span>05</span>
+                <div>
+                  <p class="section-label">Suporte</p>
+                  <h2 id="faq-suporte-title">Depois da entrega</h2>
+                </div>
+              </div>
+
+              <div class="faq-list">
+                <details class="faq-item card backdrop-blur">
+                  <summary><span>Vocês oferecem suporte após a entrega?</span></summary>
+                  <p>Sim. Existe suporte pós-entrega para ajustes, melhorias e evolução da solução, de acordo com o plano definido para o projeto.</p>
+                </details>
+
+                <details class="faq-item card backdrop-blur">
+                  <summary><span>Quais formas de contato são mais rápidas?</span></summary>
+                  <p>WhatsApp e formulário de contato. Você também pode enviar email para <a href="mailto:rafael@devbatista.com">rafael@devbatista.com</a>.</p>
+                </details>
+              </div>
+            </section>
+
+            <div class="faq-final-cta card backdrop-blur">
+              <div>
+                <p class="section-label">Ainda tem dúvida?</p>
+                <h2>Conte o que você precisa construir.</h2>
+                <p>Com uma breve descrição do objetivo, já dá para indicar o melhor caminho para iniciar o projeto.</p>
+              </div>
+              <div class="faq-final-actions">
+                <a href="https://wa.me/5511991308008?text=Olá,%20quero%20tirar%20uma%20dúvida%20sobre%20um%20projeto." class="btn-primary" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+                <a href="./contato.html" class="btn-secondary">Formulário</a>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
