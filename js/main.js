@@ -140,6 +140,30 @@ document.addEventListener('DOMContentLoaded', () => {
     setActiveScrollyStep(scrollySteps[0]);
   }
 
+  // Services recommendation selector
+  const serviceChoices = document.querySelectorAll('.service-choice');
+  const serviceRecLabel = document.querySelector('#service-rec-label');
+  const serviceRecTitle = document.querySelector('#service-rec-title');
+  const serviceRecCopy = document.querySelector('#service-rec-copy');
+  const serviceRecLink = document.querySelector('#service-rec-link');
+
+  if (serviceChoices.length > 0 && serviceRecLabel && serviceRecTitle && serviceRecCopy && serviceRecLink) {
+    serviceChoices.forEach((choice) => {
+      choice.addEventListener('click', () => {
+        serviceChoices.forEach((item) => {
+          const isActive = item === choice;
+          item.classList.toggle('active', isActive);
+          item.setAttribute('aria-selected', isActive ? 'true' : 'false');
+        });
+
+        serviceRecLabel.textContent = choice.dataset.label || '';
+        serviceRecTitle.textContent = choice.dataset.title || '';
+        serviceRecCopy.textContent = choice.dataset.copy || '';
+        serviceRecLink.href = `#${choice.dataset.target || 'sites'}`;
+      });
+    });
+  }
+
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {

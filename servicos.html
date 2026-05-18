@@ -139,13 +139,63 @@
 
     <div class="glow-line"></div>
 
+    <!-- Solution Finder -->
+    <section class="section service-finder-section">
+      <div class="section-overlay medium"></div>
+      <div class="container relative">
+        <div class="service-finder">
+          <div class="service-finder-copy">
+            <p class="section-label">Escolha inteligente</p>
+            <h2 class="section-title">Qual solução faz mais sentido agora?</h2>
+            <p class="service-finder-text">
+              Selecione o objetivo principal do seu negócio e veja uma recomendação rápida antes de comparar os serviços completos.
+            </p>
+          </div>
+
+          <div class="service-finder-panel">
+            <div class="service-finder-options" role="tablist" aria-label="Objetivos do projeto">
+              <button class="service-choice active" type="button" role="tab" aria-selected="true" data-title="Site Institucional" data-label="Presença digital" data-copy="Ideal para apresentar sua empresa com credibilidade, melhorar sua presença no Google e gerar contatos qualificados." data-target="sites">
+                <span>Presença digital</span>
+                <strong>Quero apresentar minha empresa</strong>
+              </button>
+              <button class="service-choice" type="button" role="tab" aria-selected="false" data-title="Aplicação Web" data-label="Operação sob medida" data-copy="Melhor caminho quando você precisa organizar processos, usuários, dashboards, relatórios ou uma operação interna." data-target="aplicacoes">
+                <span>Operação sob medida</span>
+                <strong>Preciso de um sistema</strong>
+              </button>
+              <button class="service-choice" type="button" role="tab" aria-selected="false" data-title="Automação com IA" data-label="Produtividade" data-copy="Recomendado para reduzir tarefas repetitivas, criar assistentes, integrar ferramentas e acelerar rotinas da equipe." data-target="automacao">
+                <span>Produtividade</span>
+                <strong>Quero automatizar processos</strong>
+              </button>
+              <button class="service-choice" type="button" role="tab" aria-selected="false" data-title="Landing Page" data-label="Conversão" data-copy="Boa opção para campanhas, lançamentos, captação de leads e validação rápida de uma oferta específica." data-target="landing-pages">
+                <span>Conversão</span>
+                <strong>Quero vender ou captar leads</strong>
+              </button>
+            </div>
+
+            <aside class="service-recommendation" aria-live="polite">
+              <span class="service-recommendation-label" id="service-rec-label">Presença digital</span>
+              <h3 id="service-rec-title">Site Institucional</h3>
+              <p id="service-rec-copy">Ideal para apresentar sua empresa com credibilidade, melhorar sua presença no Google e gerar contatos qualificados.</p>
+              <div class="service-recommendation-footer">
+                <span>Consulte os detalhes do serviço abaixo</span>
+                <a href="#sites" class="btn-primary" id="service-rec-link">
+                  Ver detalhes
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </a>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Services List -->
     <section class="section">
       <div class="section-overlay solid"></div>
       <div class="container u-container-stack">
 
         <!-- Service 1 -->
-        <div class="service-card">
+        <div class="service-card" id="sites">
           <div class="service-card-inner">
             <div class="service-info">
               <div>
@@ -173,7 +223,7 @@
         </div>
 
         <!-- Service 2 -->
-        <div class="service-card">
+        <div class="service-card" id="aplicacoes">
           <div class="service-card-inner">
             <div class="service-info">
               <div>
@@ -201,7 +251,7 @@
         </div>
 
         <!-- Service 3 -->
-        <div class="service-card">
+        <div class="service-card" id="automacao">
           <div class="service-card-inner">
             <div class="service-info">
               <div>
@@ -229,7 +279,7 @@
         </div>
 
         <!-- Service 4 -->
-        <div class="service-card">
+        <div class="service-card" id="ecommerce">
           <div class="service-card-inner">
             <div class="service-info">
               <div>
@@ -257,7 +307,7 @@
         </div>
 
         <!-- Service 5 -->
-        <div class="service-card">
+        <div class="service-card" id="landing-pages">
           <div class="service-card-inner">
             <div class="service-info">
               <div>
