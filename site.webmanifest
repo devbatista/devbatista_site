@@ -1,24 +1,16 @@
 {
-  "name": "DevBatista - Desenvolvimento Web e Sistemas",
+  "name": "DevBatista - Consultoria e Soluções em Tecnologia",
   "short_name": "DevBatista",
-  "description": "DevBatista - Solucoes em desenvolvimento web, sistemas e tecnologia para empresas.",
+  "description": "Consultoria de TI, desenvolvimento de software, automação e inteligência artificial para empresas.",
   "icons": [
-    {
-      "src": "./images/android-chrome-192x192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "./images/android-chrome-512x512.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
+    { "src": "./images/android-chrome-192x192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "./images/android-chrome-512x512.png", "sizes": "512x512", "type": "image/png" }
   ],
-  "theme_color": "#0f172a",
-  "background_color": "#ffffff",
+  "theme_color": "#0b1120",
+  "background_color": "#0b1120",
   "display": "standalone",
   "start_url": "/",
   "scope": "/",
-  "orientation": "portrait",
-  "categories": ["portfolio", "technology", "business"]
+  "lang": "pt-BR",
+  "categories": ["business", "technology", "productivity"]
 }

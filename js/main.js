@@ -1,233 +1,306 @@
 // ========================================
 // DevBatista - Main JavaScript
+// Vanilla JS, sem dependências.
 // ========================================
 
-document.addEventListener('DOMContentLoaded', () => {
-  // Navigation scroll effect
-  const nav = document.querySelector('.nav');
-  if (nav) {
+(function () {
+  'use strict';
+
+  const ICON_MENU = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>';
+  const ICON_CLOSE = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>';
+
+  document.addEventListener('DOMContentLoaded', () => {
+    initNavScroll();
+    initMobileMenu();
+    initContactForm();
+    initFaqAccordion();
+    initScrollyProcess();
+    initServiceFinder();
+    initProjectFilters();
+    initRevealOnScroll();
+  });
+
+  // ========================================
+  // Navegação: estado ao rolar
+  // ========================================
+  function initNavScroll() {
+    const nav = document.querySelector('.nav');
+    if (!nav) return;
+
+    let ticking = false;
+    const update = () => {
+      nav.classList.toggle('scrolled', window.scrollY > 50);
+      ticking = false;
+    };
+
     window.addEventListener('scroll', () => {
-      if (window.scrollY > 50) {
-        nav.classList.add('scrolled');
-      } else {
-        nav.classList.remove('scrolled');
+      if (!ticking) {
+        ticking = true;
+        window.requestAnimationFrame(update);
+      }
+    }, { passive: true });
+
+    update();
+  }
+
+  // ========================================
+  // Menu mobile
+  // ========================================
+  function initMobileMenu() {
+    const button = document.querySelector('.nav-mobile-btn');
+    const menu = document.querySelector('.nav-mobile-menu');
+    if (!button || !menu) return;
+
+    if (!menu.id) menu.id = 'mobile-menu';
+    button.setAttribute('aria-controls', menu.id);
+    button.setAttribute('aria-expanded', 'false');
+
+    const setOpen = (open) => {
+      menu.classList.toggle('open', open);
+      document.body.classList.toggle('nav-open', open);
+      button.setAttribute('aria-expanded', open ? 'true' : 'false');
+      button.setAttribute('aria-label', open ? 'Fechar menu' : 'Abrir menu');
+      button.innerHTML = open ? ICON_CLOSE : ICON_MENU;
+    };
+
+    button.addEventListener('click', () => {
+      setOpen(!menu.classList.contains('open'));
+    });
+
+    menu.querySelectorAll('a').forEach((link) => {
+      link.addEventListener('click', () => setOpen(false));
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && menu.classList.contains('open')) {
+        setOpen(false);
+        button.focus();
+      }
+    });
+
+    // Ao voltar para desktop, garante que o body não fique travado
+    window.addEventListener('resize', () => {
+      if (window.innerWidth >= 1180 && menu.classList.contains('open')) {
+        setOpen(false);
       }
     });
   }
 
-  // Mobile menu toggle
-  const mobileBtn = document.querySelector('.nav-mobile-btn');
-  const mobileMenu = document.querySelector('.nav-mobile-menu');
-  if (mobileBtn && mobileMenu) {
-    mobileBtn.addEventListener('click', () => {
-      const isOpen = mobileMenu.classList.contains('open');
-      mobileMenu.classList.toggle('open');
-      mobileBtn.innerHTML = isOpen
-        ? '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>'
-        : '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>';
-    });
+  // ========================================
+  // Formulário de contato -> WhatsApp
+  // ========================================
+  function initContactForm() {
+    const form = document.querySelector('#contact-form');
+    if (!form) return;
 
-    // Close mobile menu on link click
-    mobileMenu.querySelectorAll('a').forEach(link => {
-      link.addEventListener('click', () => {
-        mobileMenu.classList.remove('open');
-      });
-    });
-  }
-
-  // Contact form
-  const form = document.querySelector('#contact-form');
-  if (form) {
     const whatsappNumber = '5511991308008';
+
     const subjectLabels = {
-      website: 'Site institucional ou landing page',
-      webapp: 'Sistema ou aplicação web',
-      ai: 'Agente IA ou automação',
-      api: 'API / Backend',
-      maintenance: 'Melhoria ou manutenção',
-      consultation: 'Consultoria técnica',
-      other: 'Outro'
+      'tech-partner': 'Tech Partner (parceria contínua)',
+      consultoria: 'Consultoria de tecnologia / CTO as a Service',
+      software: 'Desenvolvimento de software sob medida',
+      automacao: 'Automação de processos e Inteligência Artificial',
+      integracao: 'Integrações e APIs',
+      app: 'Aplicativo mobile',
+      site: 'Site institucional ou landing page',
+      agencia: 'Parceria para agência / software house',
+      manutencao: 'Manutenção e evolução de sistema existente',
+      outro: 'Outro'
     };
+
+    const modelLabels = {
+      recorrente: 'Parceria recorrente',
+      projeto: 'Projeto pontual',
+      indefinido: 'Ainda não definido'
+    };
+
     const timelineLabels = {
-      urgent: 'O quanto antes',
-      '30days': 'Até 30 dias',
-      '60days': '1 a 2 meses',
-      flexible: 'Flexível'
-    };
-    const budgetLabels = {
-      starter: 'Ainda estou validando',
-      defined: 'Já tenho uma verba definida',
-      proposal: 'Quero receber uma proposta',
-      unsure: 'Preciso de orientação'
+      urgente: 'O quanto antes',
+      '30dias': 'Até 30 dias',
+      '90dias': '1 a 3 meses',
+      planejamento: 'Em fase de planejamento'
     };
 
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const formData = new FormData(form);
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
 
-      const name = (formData.get('name') || '').toString().trim();
-      const email = (formData.get('email') || '').toString().trim();
-      const subjectValue = (formData.get('subject') || '').toString().trim();
-      const timelineValue = (formData.get('timeline') || '').toString().trim();
-      const budgetValue = (formData.get('budget') || '').toString().trim();
-      const message = (formData.get('message') || '').toString().trim();
-      const subject = subjectLabels[subjectValue] || 'Não informado';
-      const timeline = timelineLabels[timelineValue] || 'Não informado';
-      const budget = budgetLabels[budgetValue] || 'Não informado';
+      const data = new FormData(form);
+      const get = (key) => (data.get(key) || '').toString().trim();
 
-      const whatsappText = [
-        'Olá, DevBatista! Gostaria de iniciar um briefing de projeto.',
+      const lines = [
+        'Olá, DevBatista! Encontrei o site e gostaria de conversar sobre tecnologia para minha empresa.',
         '',
-        `Nome: ${name}`,
-        `Email: ${email}`,
-        `Tipo de projeto: ${subject}`,
-        `Prazo desejado: ${timeline}`,
-        `Faixa de investimento: ${budget}`,
-        `Contexto: ${message}`
-      ].join('\n');
+        `Nome: ${get('name') || 'Não informado'}`,
+        `Empresa: ${get('company') || 'Não informado'}`,
+        `Email: ${get('email') || 'Não informado'}`,
+        `Necessidade: ${subjectLabels[get('subject')] || 'Não informado'}`,
+        `Modelo de trabalho: ${modelLabels[get('model')] || 'Não informado'}`,
+        `Prazo: ${timelineLabels[get('timeline')] || 'Não informado'}`,
+        '',
+        `Contexto: ${get('message') || 'Não informado'}`
+      ];
 
-      const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappText)}`;
-      window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+      const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(lines.join('\n'))}`;
+      window.open(url, '_blank', 'noopener,noreferrer');
 
-      alert('Redirecionando para o WhatsApp em uma nova aba.');
+      const feedback = form.querySelector('#form-feedback');
+      if (feedback) {
+        feedback.hidden = false;
+        feedback.textContent = 'Abrimos o WhatsApp em uma nova aba com seus dados preenchidos. Se não abrir, verifique o bloqueador de pop-ups.';
+      }
+
       form.reset();
     });
   }
 
-  // Scroll animations (Intersection Observer)
-  const observerOptions = {
-    threshold: 0.1,
-    rootMargin: '0px 0px -50px 0px'
-  };
+  // ========================================
+  // FAQ: um item aberto por vez
+  // ========================================
+  function initFaqAccordion() {
+    const items = document.querySelectorAll('.faq-list .faq-item');
+    if (!items.length) return;
 
-  // FAQ accordion behavior (only one item open at a time)
-  const faqItems = document.querySelectorAll('.faq-list .faq-item');
-  if (faqItems.length > 0) {
-    faqItems.forEach((item) => {
+    items.forEach((item) => {
       item.addEventListener('toggle', () => {
         if (!item.open) return;
-
-        faqItems.forEach((otherItem) => {
-          if (otherItem !== item) {
-            otherItem.open = false;
-          }
+        items.forEach((other) => {
+          if (other !== item) other.open = false;
         });
       });
     });
   }
 
-  // Home scrollytelling process
-  const scrollySteps = document.querySelectorAll('.scrolly-step');
-  const scrollyTitle = document.querySelector('#scrolly-title');
-  const scrollyStatus = document.querySelector('#scrolly-status');
-  const scrollyMetric = document.querySelector('#scrolly-metric');
-  const scrollyStepLabel = document.querySelector('#scrolly-step-label');
-  const scrollyProgressText = document.querySelector('#scrolly-progress-text');
-  const scrollyProgressBar = document.querySelector('#scrolly-progress-bar');
-  const scrollyFlowItems = document.querySelectorAll('.scrolly-flow span');
+  // ========================================
+  // Home: processo em scrollytelling
+  // ========================================
+  function initScrollyProcess() {
+    const steps = document.querySelectorAll('.scrolly-step');
+    const title = document.querySelector('#scrolly-title');
+    const status = document.querySelector('#scrolly-status');
+    const metric = document.querySelector('#scrolly-metric');
+    const stepLabel = document.querySelector('#scrolly-step-label');
+    const progressText = document.querySelector('#scrolly-progress-text');
+    const progressBar = document.querySelector('#scrolly-progress-bar');
+    const flowItems = document.querySelectorAll('.scrolly-flow span');
 
-  if (scrollySteps.length > 0 && scrollyTitle && scrollyStatus && scrollyMetric && scrollyStepLabel && scrollyProgressText && scrollyProgressBar) {
-    const setActiveScrollyStep = (step) => {
-      const stepIndex = Array.from(scrollySteps).indexOf(step);
+    if (!steps.length || !title || !status || !metric || !stepLabel || !progressText || !progressBar) return;
+
+    const setActive = (step) => {
+      const index = Array.prototype.indexOf.call(steps, step);
       const progress = step.dataset.progress || '20';
 
-      scrollySteps.forEach((item) => item.classList.toggle('active', item === step));
-      scrollyTitle.textContent = step.dataset.title || '';
-      scrollyStatus.textContent = step.dataset.status || '';
-      scrollyMetric.textContent = step.dataset.metric || '';
-      scrollyStepLabel.textContent = `Etapa ${step.dataset.step || ''}`;
-      scrollyProgressText.textContent = `${progress}%`;
-      scrollyProgressBar.style.width = `${progress}%`;
+      steps.forEach((item) => item.classList.toggle('active', item === step));
+      title.textContent = step.dataset.title || '';
+      status.textContent = step.dataset.status || '';
+      metric.textContent = step.dataset.metric || '';
+      stepLabel.textContent = `Etapa ${step.dataset.step || ''}`;
+      progressText.textContent = `${progress}%`;
+      progressBar.style.width = `${progress}%`;
 
-      scrollyFlowItems.forEach((item, index) => {
-        item.classList.toggle('active', index <= stepIndex);
-      });
+      flowItems.forEach((item, i) => item.classList.toggle('active', i <= index));
     };
 
-    const scrollyObserver = new IntersectionObserver((entries) => {
+    const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          setActiveScrollyStep(entry.target);
-        }
+        if (entry.isIntersecting) setActive(entry.target);
       });
-    }, {
-      threshold: 0.55,
-      rootMargin: '-15% 0px -25% 0px'
-    });
+    }, { threshold: 0.55, rootMargin: '-15% 0px -25% 0px' });
 
-    scrollySteps.forEach((step) => scrollyObserver.observe(step));
-    setActiveScrollyStep(scrollySteps[0]);
+    steps.forEach((step) => observer.observe(step));
+    setActive(steps[0]);
   }
 
-  // Services recommendation selector
-  const serviceChoices = document.querySelectorAll('.service-choice');
-  const serviceRecLabel = document.querySelector('#service-rec-label');
-  const serviceRecTitle = document.querySelector('#service-rec-title');
-  const serviceRecCopy = document.querySelector('#service-rec-copy');
-  const serviceRecLink = document.querySelector('#service-rec-link');
+  // ========================================
+  // Soluções: seletor de recomendação
+  // ========================================
+  function initServiceFinder() {
+    const choices = document.querySelectorAll('.service-choice');
+    const label = document.querySelector('#service-rec-label');
+    const title = document.querySelector('#service-rec-title');
+    const copy = document.querySelector('#service-rec-copy');
+    const link = document.querySelector('#service-rec-link');
 
-  if (serviceChoices.length > 0 && serviceRecLabel && serviceRecTitle && serviceRecCopy && serviceRecLink) {
-    serviceChoices.forEach((choice) => {
+    if (!choices.length || !label || !title || !copy || !link) return;
+
+    choices.forEach((choice) => {
       choice.addEventListener('click', () => {
-        serviceChoices.forEach((item) => {
+        choices.forEach((item) => {
           const isActive = item === choice;
           item.classList.toggle('active', isActive);
           item.setAttribute('aria-selected', isActive ? 'true' : 'false');
         });
 
-        serviceRecLabel.textContent = choice.dataset.label || '';
-        serviceRecTitle.textContent = choice.dataset.title || '';
-        serviceRecCopy.textContent = choice.dataset.copy || '';
-        serviceRecLink.href = `#${choice.dataset.target || 'sites'}`;
+        label.textContent = choice.dataset.label || '';
+        title.textContent = choice.dataset.title || '';
+        copy.textContent = choice.dataset.copy || '';
+        link.href = choice.dataset.href || `#${choice.dataset.target || ''}`;
       });
     });
   }
 
-  // Project gallery filters
-  const projectFilters = document.querySelectorAll('.project-filter');
-  const projectCards = document.querySelectorAll('.project-card[data-project-category]');
-  const projectsCount = document.querySelector('#projects-count');
+  // ========================================
+  // Projetos: filtros da galeria
+  // ========================================
+  function initProjectFilters() {
+    const filters = document.querySelectorAll('.project-filter');
+    const cards = document.querySelectorAll('.project-card[data-project-category]');
+    const counter = document.querySelector('#projects-count');
 
-  if (projectFilters.length > 0 && projectCards.length > 0) {
-    const updateProjectsCount = (count) => {
-      if (!projectsCount) return;
-      const label = count === 1 ? 'projeto encontrado' : 'projetos encontrados';
-      projectsCount.textContent = `${count} ${label}`;
+    if (!filters.length || !cards.length) return;
+
+    const updateCount = (count) => {
+      if (!counter) return;
+      counter.textContent = `${count} ${count === 1 ? 'projeto encontrado' : 'projetos encontrados'}`;
     };
 
-    projectFilters.forEach((filterButton) => {
-      filterButton.addEventListener('click', () => {
-        const selectedFilter = filterButton.dataset.filter || 'all';
-        let visibleCount = 0;
+    filters.forEach((button) => {
+      button.addEventListener('click', () => {
+        const selected = button.dataset.filter || 'all';
+        let visible = 0;
 
-        projectFilters.forEach((item) => {
-          item.classList.toggle('active', item === filterButton);
+        filters.forEach((item) => {
+          const isActive = item === button;
+          item.classList.toggle('active', isActive);
+          item.setAttribute('aria-pressed', isActive ? 'true' : 'false');
         });
 
-        projectCards.forEach((card) => {
-          const shouldShow = selectedFilter === 'all' || card.dataset.projectCategory === selectedFilter;
-          card.classList.toggle('is-hidden', !shouldShow);
-          if (shouldShow) visibleCount += 1;
+        cards.forEach((card) => {
+          const show = selected === 'all' || card.dataset.projectCategory === selected;
+          card.classList.toggle('is-hidden', !show);
+          if (show) visible += 1;
         });
 
-        updateProjectsCount(visibleCount);
+        updateCount(visible);
       });
     });
 
-    updateProjectsCount(projectCards.length);
+    updateCount(cards.length);
   }
 
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
+  // ========================================
+  // Revelação suave ao rolar
+  // ========================================
+  function initRevealOnScroll() {
+    const elements = document.querySelectorAll('.animate-on-scroll');
+    if (!elements.length) return;
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      elements.forEach((el) => el.classList.add('fade-up'));
+      return;
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.style.opacity = '';
         entry.target.classList.add('fade-up');
         observer.unobserve(entry.target);
-      }
-    });
-  }, observerOptions);
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
 
-  document.querySelectorAll('.animate-on-scroll').forEach(el => {
-    el.style.opacity = '0';
-    observer.observe(el);
-  });
-});
+    elements.forEach((el) => {
+      el.style.opacity = '0';
+      observer.observe(el);
+    });
+  }
+})();
