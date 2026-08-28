@@ -185,11 +185,16 @@
 
     if (!steps.length || !title || !status || !metric || !stepLabel || !progressText || !progressBar) return;
 
-    const setActive = (step) => {
-      const index = Array.prototype.indexOf.call(steps, step);
+    let current = -1;
+
+    const setActive = (index) => {
+      if (index === current) return;
+      current = index;
+
+      const step = steps[index];
       const progress = step.dataset.progress || '20';
 
-      steps.forEach((item) => item.classList.toggle('active', item === step));
+      steps.forEach((item, i) => item.classList.toggle('active', i === index));
       title.textContent = step.dataset.title || '';
       status.textContent = step.dataset.status || '';
       metric.textContent = step.dataset.metric || '';
@@ -200,14 +205,45 @@
       flowItems.forEach((item, i) => item.classList.toggle('active', i <= index));
     };
 
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) setActive(entry.target);
-      });
-    }, { threshold: 0.55, rootMargin: '-15% 0px -25% 0px' });
+    // Linha de leitura fixa na viewport: ativa a etapa que a cruza.
+    // Independe da altura da etapa — um threshold proporcional nunca era
+    // atingido quando a etapa ficava mais alta que a janela.
+    const update = () => {
+      const line = window.innerHeight * 0.45;
+      let best = 0;
+      let bestDistance = Infinity;
 
-    steps.forEach((step) => observer.observe(step));
-    setActive(steps[0]);
+      for (let i = 0; i < steps.length; i += 1) {
+        const rect = steps[i].getBoundingClientRect();
+
+        if (rect.top <= line && rect.bottom >= line) {
+          best = i;
+          break;
+        }
+
+        const distance = rect.top > line ? rect.top - line : line - rect.bottom;
+        if (distance < bestDistance) {
+          bestDistance = distance;
+          best = i;
+        }
+      }
+
+      setActive(best);
+    };
+
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(() => {
+        ticking = false;
+        update();
+      });
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+    update();
   }
 
   // ========================================

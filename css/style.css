@@ -1819,6 +1819,9 @@ body.nav-open { overflow: hidden; }
   position: relative;
   z-index: 1;
   width: 100%;
+  /* sem height:auto os atributos width/height do HTML fixam a altura
+     (853px) e o aspect-ratio é ignorado, inflando o card da etapa */
+  height: auto;
   aspect-ratio: 16 / 9;
   object-fit: cover;
   object-position: top center;
