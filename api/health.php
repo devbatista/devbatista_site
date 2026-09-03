@@ -28,6 +28,24 @@ header('X-Robots-Tag: noindex, nofollow');
 
 require_once __DIR__ . '/leads-config.php';
 
+/** Traduz a falha do HubSpot em algo acionável, sem repetir o corpo cru. */
+function hubspot_hint(array $ping): string
+{
+    switch ($ping['http_code']) {
+        case 0:
+            return 'não foi possível conectar à api.hubapi.com: ' . $ping['message']
+                . ' (a hospedagem pode estar bloqueando conexões de saída)';
+        case 401:
+            return 'token inválido ou revogado';
+        case 403:
+            return 'token válido, mas sem o escopo crm.objects.contacts.read/write no Private App';
+        case 429:
+            return 'limite de requisições do HubSpot atingido';
+        default:
+            return $ping['message'] !== '' ? $ping['message'] : ('HTTP ' . $ping['http_code']);
+    }
+}
+
 /** Some sem deixar rastro: mesma resposta para token ausente, errado ou desligado. */
 function health_not_found(): void
 {
@@ -91,7 +109,8 @@ try {
             'enabled' => (bool) $config['hubspot_enabled'],
             'token_set' => $secretSet('hubspot_token'),
             'portal_id_set' => $secretSet('hubspot_portal_id'),
-            'implemented' => false,
+            'implemented' => true,
+            'creates_note' => (bool) ($config['hubspot_create_note'] ?? true),
         ],
         'email' => [
             'enabled' => (bool) $config['email_enabled'],
@@ -107,6 +126,24 @@ try {
             'implemented' => false,
         ],
     ];
+
+    // ------------------------------------------------------------
+    // Teste de conectividade real, sob demanda: ?check=hubspot
+    // Read-only — não cria contato nem nota.
+    // ------------------------------------------------------------
+    if (($_GET['check'] ?? '') === 'hubspot') {
+        if (!$integrations['hubspot']['enabled']) {
+            $integrations['hubspot']['live_check'] = ['status' => 'skipped', 'reason' => 'integração desligada'];
+        } else {
+            $ping = http_json('GET', 'https://api.hubapi.com/crm/v3/objects/contacts?limit=1', null, [
+                'Authorization: Bearer ' . $config['hubspot_token'],
+            ]);
+
+            $integrations['hubspot']['live_check'] = $ping['ok']
+                ? ['status' => 'ok', 'http_code' => $ping['http_code'], 'detail' => 'token válido e com acesso a contatos']
+                : ['status' => 'failed', 'http_code' => $ping['http_code'], 'detail' => hubspot_hint($ping)];
+        }
+    }
 
     // ------------------------------------------------------------
     // Avisos: o que está configurado mas não vai funcionar.
@@ -135,6 +172,9 @@ try {
         'data' => [
             'checked_at' => gmdate('c'),
             'php_version' => PHP_VERSION,
+            'sapi' => PHP_SAPI,
+            'curl' => function_exists('curl_init'),
+            'background_after_response' => function_exists('fastcgi_finish_request'),
             'config_file' => is_readable(__DIR__ . '/config.php'),
             'rate_limit' => [
                 'enabled' => (bool) $config['rate_limit_enabled'],

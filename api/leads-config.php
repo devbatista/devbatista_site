@@ -31,6 +31,8 @@ function lead_config(): array
         'hubspot_enabled' => false,
         'hubspot_token' => '',
         'hubspot_portal_id' => '',
+        'hubspot_create_note' => true,  // anexa o diagnóstico como nota no contato
+        'hubspot_properties' => [],     // ['diagnostic_score' => 'nome_da_prop_no_portal']
         'email_enabled' => false,
         'email_to' => '',
         'email_from' => '',
@@ -89,3 +91,87 @@ function storage_dir(string $sub = ''): ?string
     return is_writable($path) ? $path : null;
 }
 
+
+// ============================================================
+// Cliente HTTP
+// ============================================================
+
+/** Tempo máximo, em segundos, que uma integração pode consumir. */
+const HTTP_CONNECT_TIMEOUT = 3;
+const HTTP_TOTAL_TIMEOUT = 8;
+
+/**
+ * POST/GET JSON com orçamento de tempo curto.
+ *
+ * Nunca lança e nunca devolve o corpo cru num erro — só o suficiente para
+ * diagnosticar. Usa cURL quando disponível; cai para stream context.
+ *
+ * @return array{ok:bool,http_code:int,body:array,message:string}
+ */
+function http_json(string $method, string $url, ?array $payload = null, array $headers = []): array
+{
+    $method = strtoupper($method);
+    $body = $payload === null ? null : json_encode($payload, JSON_UNESCAPED_UNICODE);
+    $headers = array_merge($headers, ['Accept: application/json']);
+    if ($body !== null) {
+        $headers[] = 'Content-Type: application/json';
+    }
+
+    $raw = null;
+    $status = 0;
+    $transportError = '';
+
+    if (function_exists('curl_init')) {
+        $ch = curl_init($url);
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CUSTOMREQUEST => $method,
+            CURLOPT_HTTPHEADER => $headers,
+            CURLOPT_CONNECTTIMEOUT => HTTP_CONNECT_TIMEOUT,
+            CURLOPT_TIMEOUT => HTTP_TOTAL_TIMEOUT,
+            CURLOPT_SSL_VERIFYPEER => true,
+            CURLOPT_SSL_VERIFYHOST => 2,
+            CURLOPT_FOLLOWLOCATION => false,
+        ]);
+        if ($body !== null) {
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
+        }
+        $raw = curl_exec($ch);
+        $status = (int) curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+        if ($raw === false) {
+            $transportError = curl_error($ch) ?: 'falha de conexão';
+        }
+        curl_close($ch);
+    } else {
+        $context = stream_context_create(['http' => [
+            'method' => $method,
+            'header' => implode("\r\n", $headers),
+            'content' => $body ?? '',
+            'timeout' => HTTP_TOTAL_TIMEOUT,
+            'ignore_errors' => true,
+        ]]);
+        $raw = @file_get_contents($url, false, $context);
+        foreach ($http_response_header ?? [] as $line) {
+            if (preg_match('#^HTTP/\S+\s+(\d{3})#', $line, $m)) {
+                $status = (int) $m[1];
+            }
+        }
+        if ($raw === false) {
+            $transportError = 'falha de conexão (sem cURL)';
+        }
+    }
+
+    if ($transportError !== '') {
+        return ['ok' => false, 'http_code' => 0, 'body' => [], 'message' => $transportError];
+    }
+
+    $decoded = json_decode((string) $raw, true);
+    if (!is_array($decoded)) {
+        $decoded = [];
+    }
+
+    $ok = $status >= 200 && $status < 300;
+    $message = $ok ? '' : (string) ($decoded['message'] ?? ('HTTP ' . $status));
+
+    return ['ok' => $ok, 'http_code' => $status, 'body' => $decoded, 'message' => $message];
+}

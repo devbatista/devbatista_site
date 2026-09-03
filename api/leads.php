@@ -119,6 +119,104 @@ const MAIN_PROBLEMS = [
     'desenvolvimento', 'integracao', 'infraestrutura', 'outro',
 ];
 
+/**
+ * Rótulos legíveis das respostas — usados nas notificações (HubSpot,
+ * e-mail, WhatsApp). Quem lê o lead precisa de "Grande parte da operação",
+ * não de "maioria". Espelham as opções de js/lead-quiz.js.
+ */
+const ANSWER_LABELS = [
+    'employees' => [
+        'label' => 'Porte da empresa',
+        'options' => [
+            'solo' => 'Somente o responsável',
+            '2_5' => '2 a 5 pessoas',
+            '6_10' => '6 a 10 pessoas',
+            '11_25' => '11 a 25 pessoas',
+            '26_mais' => '26 ou mais',
+        ],
+    ],
+    'it_responsible' => [
+        'label' => 'Responsável pela tecnologia',
+        'options' => [
+            'interno' => 'Equipe ou profissional interno',
+            'terceirizado' => 'Prestador terceirizado',
+            'acumula' => 'Alguém da empresa acumula a função',
+            'ninguem' => 'Ninguém responsável',
+        ],
+    ],
+    'process_management' => [
+        'label' => 'Controle dos processos',
+        'options' => [
+            'sistemas' => 'Sistemas integrados',
+            'sistemas_planilhas' => 'Sistemas + planilhas',
+            'planilhas' => 'Principalmente planilhas',
+            'manual' => 'WhatsApp, planilhas e processos manuais',
+        ],
+    ],
+    'manual_tasks' => [
+        'label' => 'Trabalho manual repetitivo',
+        'options' => [
+            'quase_nenhum' => 'Quase nenhum',
+            'algumas' => 'Algumas tarefas',
+            'muitas' => 'Muitas tarefas',
+            'maioria' => 'Grande parte da operação',
+        ],
+    ],
+    'systems_integration' => [
+        'label' => 'Sistemas conversam entre si',
+        'options' => [
+            'sim' => 'Sim',
+            'parcialmente' => 'Parcialmente',
+            'nao' => 'Não',
+            'nao_sabemos' => 'Não sabem como integrar',
+        ],
+    ],
+    'automation_interest' => [
+        'label' => 'Intenção de automatizar',
+        'options' => [
+            'nao_prioridade' => 'Não é prioridade',
+            'avaliando' => 'Estão avaliando',
+            'precisamos' => 'Precisam automatizar',
+            'prioridade' => 'É prioridade agora',
+        ],
+    ],
+    'development_need' => [
+        'label' => 'Necessidade de desenvolvimento',
+        'options' => [
+            'nao' => 'Não',
+            'futuramente' => 'Talvez futuramente',
+            'sim' => 'Sim',
+            'definida' => 'Necessidade já definida',
+        ],
+    ],
+    'technology_impact' => [
+        'label' => 'Tecnologia limita o crescimento',
+        'options' => [
+            'nao' => 'Não',
+            'pouco' => 'Pouco',
+            'as_vezes' => 'Às vezes',
+            'bastante' => 'Sim, bastante',
+        ],
+    ],
+];
+
+const MAIN_PROBLEM_LABELS = [
+    'suporte_ti' => 'Suporte e gestão de TI',
+    'processos' => 'Organização dos processos',
+    'automacao' => 'Automatização de tarefas',
+    'ia' => 'Inteligência Artificial',
+    'desenvolvimento' => 'Desenvolvimento de sistema',
+    'integracao' => 'Integração entre sistemas',
+    'infraestrutura' => 'Infraestrutura / segurança',
+    'outro' => 'Outro',
+];
+
+const DIAGNOSTIC_LEVEL_LABELS = [
+    'simples' => 'Estrutura tecnológica simples',
+    'melhoria' => 'Oportunidades de melhoria',
+    'alto' => 'Alto potencial de otimização',
+];
+
 const TRACKING_FIELDS = [
     'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term',
     'fbclid', 'gclid', 'gbraid', 'wbraid', 'msclkid', 'ttclid', 'twclid', 'li_fat_id',
@@ -134,6 +232,41 @@ function respond(int $status, array $payload): void
     http_response_code($status);
     echo json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     exit;
+}
+
+/**
+ * Entrega a resposta ao visitante e segue processando em segundo plano.
+ *
+ * Sem isso, uma chamada HTTP ao HubSpot fica na frente do spinner do
+ * formulário. O lead já está gravado quando esta função é chamada, então
+ * nada do que rodar depois pode custar a conversão.
+ *
+ * Retorna true se conseguiu liberar a conexão.
+ */
+function respond_and_continue(int $status, array $payload): bool
+{
+    $body = json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+    http_response_code($status);
+    header('Content-Length: ' . strlen((string) $body));
+    header('Connection: close');
+    echo $body;
+
+    // O visitante pode fechar a aba; o processamento continua.
+    ignore_user_abort(true);
+
+    if (function_exists('fastcgi_finish_request')) {
+        fastcgi_finish_request();
+        return true;
+    }
+
+    // Fallback para SAPIs sem FPM: esvazia os buffers e segue.
+    while (ob_get_level() > 0) {
+        ob_end_flush();
+    }
+    flush();
+
+    return false;
 }
 
 function fail(int $status, string $code, string $message, array $fields = []): void
@@ -531,7 +664,16 @@ function logIntegrations(string $leadId, array $results): void
     }
 }
 
-/** TODO: criar/atualizar contato + negócio no HubSpot (Private App token). */
+/**
+ * Cria ou atualiza o contato no HubSpot e anexa o diagnóstico como nota.
+ *
+ * Usa apenas propriedades padrão: uma propriedade customizada inexistente
+ * faz o HubSpot devolver 400 e a requisição inteira falha. O diagnóstico
+ * completo vai na nota, que funciona sem configurar nada no portal.
+ *
+ * Para mandar as respostas em propriedades próprias, preencha
+ * 'hubspot_properties' no config: ['diagnostic_score' => 'nome_da_prop'].
+ */
 function sendToHubSpot(array $lead): array
 {
     $config = lead_config();
@@ -539,16 +681,140 @@ function sendToHubSpot(array $lead): array
         return ['status' => 'disabled'];
     }
 
-    // Ponto de entrada da integração. O mapeamento previsto:
-    //   name          -> firstname / lastname
-    //   company       -> company
-    //   email         -> email
-    //   phone_e164    -> phone
-    //   answers.*     -> propriedades customizadas do diagnóstico
-    //   diagnostic_*  -> propriedades do diagnóstico
-    //   commercial_*  -> propriedades internas de qualificação
-    //   tracking.*    -> utm_* / hs_analytics_source
-    return ['status' => 'not_implemented'];
+    [$firstName, $lastName] = split_name($lead['name']);
+
+    $properties = [
+        'email' => $lead['email'],
+        'firstname' => $firstName,
+        'lastname' => $lastName,
+        'phone' => $lead['phone_e164'],
+        'company' => $lead['company'],
+        'lifecyclestage' => 'lead',
+        'hs_lead_status' => 'NEW',
+    ];
+
+    // Propriedades customizadas só entram se o portal já as tiver,
+    // declaradas explicitamente no config.
+    foreach ((array) ($config['hubspot_properties'] ?? []) as $leadKey => $hubspotProperty) {
+        $value = $lead[$leadKey] ?? ($lead['answers'][$leadKey] ?? null);
+        if ($value !== null && $value !== '') {
+            $properties[(string) $hubspotProperty] = is_scalar($value) ? (string) $value : json_encode($value);
+        }
+    }
+
+    $properties = array_filter($properties, static fn($v): bool => $v !== '' && $v !== null);
+
+    // Upsert por e-mail: reenviar o mesmo lead atualiza em vez de duplicar.
+    $upsert = hubspot_request('POST', '/crm/v3/objects/contacts/batch/upsert', [
+        'inputs' => [[
+            'idProperty' => 'email',
+            'id' => $lead['email'],
+            'properties' => $properties,
+        ]],
+    ]);
+
+    if (!$upsert['ok']) {
+        return [
+            'status' => 'error',
+            'http_code' => $upsert['http_code'],
+            'message' => $upsert['message'],
+        ];
+    }
+
+    $contactId = (string) ($upsert['body']['results'][0]['id'] ?? '');
+    $result = [
+        'status' => 'ok',
+        'contact_id' => $contactId,
+        'http_code' => $upsert['http_code'],
+    ];
+
+    if ($contactId === '' || ($config['hubspot_create_note'] ?? true) === false) {
+        return $result;
+    }
+
+    // A nota carrega o diagnóstico completo sem exigir propriedade customizada.
+    $note = hubspot_request('POST', '/crm/v3/objects/notes', [
+        'properties' => [
+            'hs_timestamp' => round(microtime(true) * 1000),
+            'hs_note_body' => hubspot_note_body($lead),
+        ],
+        'associations' => [[
+            'to' => ['id' => $contactId],
+            // 202 = note_to_contact (associação padrão do HubSpot)
+            'types' => [['associationCategory' => 'HUBSPOT_DEFINED', 'associationTypeId' => 202]],
+        ]],
+    ]);
+
+    $result['note'] = $note['ok'] ? 'ok' : ('falhou: ' . $note['message']);
+    return $result;
+}
+
+/** Divide o nome informado em firstname / lastname. */
+function split_name(string $name): array
+{
+    $parts = preg_split('/\s+/', trim($name)) ?: [];
+    $first = (string) array_shift($parts);
+    return [$first, implode(' ', $parts)];
+}
+
+/** Traduz o valor cru de uma resposta para o rótulo legível. */
+function answer_label(string $question, string $value): string
+{
+    return ANSWER_LABELS[$question]['options'][$value] ?? ($value !== '' ? $value : '—');
+}
+
+/** Corpo da nota: o diagnóstico legível dentro do HubSpot. */
+function hubspot_note_body(array $lead): string
+{
+    $escape = static fn(string $text): string => htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
+
+    $lines = ['<b>Diagnóstico Tecnológico</b>', ''];
+    $lines[] = sprintf(
+        'Resultado: <b>%s</b> (%d pontos)<br>Potencial comercial: <b>%s</b>',
+        $escape(DIAGNOSTIC_LEVEL_LABELS[$lead['diagnostic_level']] ?? $lead['diagnostic_level']),
+        $lead['diagnostic_score'],
+        $escape(ucfirst((string) $lead['commercial_tier']))
+    );
+    $lines[] = '';
+    $lines[] = '<b>Principal desafio:</b> '
+        . $escape(MAIN_PROBLEM_LABELS[$lead['main_problem']] ?? $lead['main_problem']);
+
+    if ($lead['main_problem_other'] !== '') {
+        $lines[] = '<i>' . $escape($lead['main_problem_other']) . '</i>';
+    }
+
+    $lines[] = '';
+    $lines[] = '<b>Respostas</b>';
+    foreach (ANSWER_LABELS as $key => $meta) {
+        $lines[] = $meta['label'] . ': ' . $escape(answer_label($key, (string) ($lead['answers'][$key] ?? '')));
+    }
+
+    $tracking = (array) $lead['tracking'];
+    if ($tracking !== []) {
+        $lines[] = '';
+        $lines[] = '<b>Origem</b>';
+        foreach ($tracking as $key => $value) {
+            $lines[] = $key . ': ' . $escape((string) $value);
+        }
+    }
+
+    return implode('<br>', $lines);
+}
+
+/**
+ * Chamada à API do HubSpot com orçamento de tempo curto.
+ * Nunca lança: devolve sempre o resultado normalizado.
+ */
+function hubspot_request(string $method, string $path, ?array $payload = null): array
+{
+    $config = lead_config();
+
+    return http_json(
+        $method,
+        'https://api.hubapi.com' . $path,
+        $payload,
+        ['Authorization: Bearer ' . $config['hubspot_token']]
+    );
 }
 
 /** TODO: notificação por e-mail (AWS SES ou SMTP). */
@@ -652,14 +918,18 @@ try {
         error_log('[leads] falha ao gravar lead ' . $record['id']);
     }
 
+    // Responde ao visitante antes de falar com serviços externos: o lead já
+    // está salvo, então nada daqui pra frente pode segurar o formulário.
+    $response['lead_id'] = $record['id'];
+    respond_and_continue(201, ['ok' => true, 'data' => $response]);
+
     logIntegrations($record['id'], [
         'hubspot' => runIntegration('sendToHubSpot', $record),
         'email' => runIntegration('sendEmailNotification', $record),
         'whatsapp' => runIntegration('sendWhatsAppNotification', $record),
     ]);
 
-    $response['lead_id'] = $record['id'];
-    respond(201, ['ok' => true, 'data' => $response]);
+    exit;
 } catch (Throwable $exception) {
     error_log('[leads] ' . $exception->getMessage() . ' @ ' . $exception->getFile() . ':' . $exception->getLine());
     fail(500, 'internal_error', 'Não foi possível processar o envio agora. Tente novamente em instantes.');
