@@ -161,6 +161,9 @@ try {
             $warnings[] = sprintf('%s: configurado, mas a função ainda é um stub (nada é enviado).', $name);
         }
     }
+    if (!function_exists('fastcgi_finish_request') && !function_exists('litespeed_finish_request')) {
+        $warnings[] = 'sem fastcgi/litespeed_finish_request: o visitante espera as integrações terminarem antes de ver o resultado.';
+    }
     $docRoot = realpath(__DIR__ . '/..');
     $storagePath = realpath((string) $config['storage_dir']);
     if ($docRoot !== false && $storagePath !== false && strpos($storagePath, $docRoot . DIRECTORY_SEPARATOR) === 0) {
@@ -174,7 +177,9 @@ try {
             'php_version' => PHP_VERSION,
             'sapi' => PHP_SAPI,
             'curl' => function_exists('curl_init'),
-            'background_after_response' => function_exists('fastcgi_finish_request'),
+            'background_after_response' => function_exists('fastcgi_finish_request')
+                ? 'fastcgi_finish_request'
+                : (function_exists('litespeed_finish_request') ? 'litespeed_finish_request' : false),
             'config_file' => is_readable(__DIR__ . '/config.php'),
             'rate_limit' => [
                 'enabled' => (bool) $config['rate_limit_enabled'],

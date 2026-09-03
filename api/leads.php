@@ -255,12 +255,17 @@ function respond_and_continue(int $status, array $payload): bool
     // O visitante pode fechar a aba; o processamento continua.
     ignore_user_abort(true);
 
-    if (function_exists('fastcgi_finish_request')) {
-        fastcgi_finish_request();
-        return true;
+    // PHP-FPM e LiteSpeed (LSAPI) têm funções próprias para encerrar a
+    // resposta e continuar executando. Sem uma delas, um simples flush()
+    // não libera a conexão nesses SAPIs — o visitante esperaria o HubSpot.
+    foreach (['fastcgi_finish_request', 'litespeed_finish_request'] as $finish) {
+        if (function_exists($finish)) {
+            $finish();
+            return true;
+        }
     }
 
-    // Fallback para SAPIs sem FPM: esvazia os buffers e segue.
+    // Último recurso: esvazia os buffers e segue.
     while (ob_get_level() > 0) {
         ob_end_flush();
     }
