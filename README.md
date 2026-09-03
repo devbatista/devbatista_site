@@ -73,6 +73,8 @@ Preços não são exibidos em nenhuma página.
 ├── js/main.js            # Interações (vanilla JS, sem dependências)
 ├── js/lead-quiz.js       # Diagnóstico Tecnológico (modal, scoring, envio)
 ├── api/leads.php         # Endpoint de recebimento dos leads
+├── api/leads-config.php  # Configuração compartilhada (leads + health)
+├── api/health.php        # Diagnóstico do ambiente (protegido por token)
 ├── api/config.example.php# Modelo de configuração (copie para config.php)
 ├── api/storage/          # Leads em JSONL + rate limit (bloqueado por .htaccess)
 └── images/               # Imagens (.webp servidas, .png como originais)
@@ -225,6 +227,29 @@ máximo por campo e nenhum stack trace na resposta.
 Os leads são gravados em `api/storage/leads/AAAA-MM.jsonl` enquanto as
 integrações não estão ligadas — **nenhum lead se perde**. Em produção, prefira
 apontar `storage_dir` para um diretório fora do document root.
+
+### Verificar o ambiente (`/api/health.php`)
+
+Diagnóstico protegido por token: informa se o PHP executa, se o storage é
+**gravável de fato** (testa uma escrita real, não só `is_writable()`), quais
+integrações estão ligadas e quantos leads chegaram no mês.
+
+```bash
+curl -s "https://www.devbatista.com/api/health.php?token=SEU_TOKEN" | jq
+```
+
+Ligue com o secret `HEALTH_TOKEN` no GitHub (ou `health_token` no
+`config.php`). **Sem token configurado o endpoint responde 404** — assim como
+com token errado, para não revelar que ele existe.
+
+Nunca devolve o valor de um segredo, apenas se está preenchido (`token_set`).
+
+O campo `warnings` é o que importa. O mais grave:
+
+> `STORAGE NÃO GRAVÁVEL: os leads estão sendo perdidos silenciosamente.`
+
+Esse caso é invisível de fora — o endpoint de leads continua respondendo `201`
+e o visitante vê o resultado normalmente, mas nada é gravado.
 
 ### Configuração e integrações
 

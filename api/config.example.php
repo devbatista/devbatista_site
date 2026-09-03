@@ -28,6 +28,9 @@ return [
     'rate_limit_max' => 5,
     'rate_limit_window' => 600,
 
+    // Token do /api/health.php. Vazio = endpoint responde 404.
+    'health_token' => '',
+
     // HubSpot — Private App token
     'hubspot_enabled' => false,
     'hubspot_token' => '',
