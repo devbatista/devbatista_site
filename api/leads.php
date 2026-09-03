@@ -551,6 +551,59 @@ function checkRateLimit(string $ip): bool
 // Cada função é independente e nunca derruba a resposta ao visitante.
 // ============================================================
 
+/**
+ * Executa uma integração isolando qualquer falha dela.
+ * O lead já está gravado neste ponto: uma exceção aqui não pode virar
+ * um 500 para o visitante (ele tentaria de novo e geraria lead duplicado).
+ */
+function runIntegration(string $function, array $lead): array
+{
+    $startedAt = microtime(true);
+
+    try {
+        $result = $function($lead);
+        if (!is_array($result) || !isset($result['status'])) {
+            $result = ['status' => 'invalid_response'];
+        }
+    } catch (Throwable $exception) {
+        error_log('[leads] integração ' . $function . ' falhou: ' . $exception->getMessage());
+        $result = ['status' => 'error', 'message' => $exception->getMessage()];
+    }
+
+    $result['duration_ms'] = (int) round((microtime(true) - $startedAt) * 1000);
+    return $result;
+}
+
+/**
+ * Registra o resultado das integrações em arquivo separado, indexado pelo
+ * lead. É por aqui que se verifica se uma integração rodou, foi pulada
+ * por configuração ou falhou.
+ */
+function logIntegrations(string $leadId, array $results): void
+{
+    // Enquanto tudo está desligado, não há o que registrar.
+    $relevant = array_filter($results, static fn(array $r): bool => $r['status'] !== 'disabled');
+    if ($relevant === []) {
+        return;
+    }
+
+    $dir = storage_dir('integrations');
+    if ($dir === null) {
+        error_log('[leads] não foi possível registrar integrações do lead ' . $leadId);
+        return;
+    }
+
+    $line = json_encode([
+        'lead_id' => $leadId,
+        'at' => gmdate('c'),
+        'results' => $results,
+    ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+    if ($line !== false) {
+        @file_put_contents($dir . '/' . gmdate('Y-m') . '.jsonl', $line . PHP_EOL, FILE_APPEND | LOCK_EX);
+    }
+}
+
 /** TODO: criar/atualizar contato + negócio no HubSpot (Private App token). */
 function sendToHubSpot(array $lead): array
 {
@@ -664,19 +717,19 @@ try {
     ];
     unset($record['honeypot']);
 
+    // Grava primeiro: nenhuma integração pode custar um lead.
     $stored = storeLead($record);
-
-    $record['integrations'] = [
-        'hubspot' => sendToHubSpot($record),
-        'email' => sendEmailNotification($record),
-        'whatsapp' => sendWhatsAppNotification($record),
-    ];
-
     if (!$stored) {
         // O visitante não pode ser penalizado por falha de disco, mas
         // precisamos saber que aconteceu.
         error_log('[leads] falha ao gravar lead ' . $record['id']);
     }
+
+    logIntegrations($record['id'], [
+        'hubspot' => runIntegration('sendToHubSpot', $record),
+        'email' => runIntegration('sendEmailNotification', $record),
+        'whatsapp' => runIntegration('sendWhatsAppNotification', $record),
+    ]);
 
     $response['lead_id'] = $record['id'];
     respond(201, ['ok' => true, 'data' => $response]);

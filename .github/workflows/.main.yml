@@ -78,3 +78,4 @@ jobs:
           **/node_modules/**
           api/storage/leads/**
           api/storage/ratelimit/**
+          api/storage/integrations/**

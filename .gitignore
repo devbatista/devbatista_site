@@ -6,3 +6,4 @@
 # Leads gravados e contadores de rate limit
 /api/storage/leads/
 /api/storage/ratelimit/
+/api/storage/integrations/
