@@ -1,0 +1,8 @@
+.DS_Store
+
+# Configuração com segredos do endpoint de leads
+/api/config.php
+
+# Leads gravados e contadores de rate limit
+/api/storage/leads/
+/api/storage/ratelimit/
