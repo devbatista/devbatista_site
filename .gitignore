@@ -7,3 +7,6 @@
 /api/storage/leads/
 /api/storage/ratelimit/
 /api/storage/integrations/
+
+# Token do /api/health.php (cópia local, nunca versionar)
+.health-token.local
