@@ -1,5 +1,5 @@
-on: 
-  push: 
+on:
+  push:
     branches:
       - main
 name: 🚀 Deploy website on push
@@ -10,10 +10,71 @@ jobs:
     steps:
     - name: 🚚 Get latest code
       uses: actions/checkout@v4
-    
+
+    # Gera api/config.php a partir dos secrets do repositório.
+    # O arquivo é ignorado pelo git (.gitignore), então só existe aqui,
+    # em memória do runner, e vai para o servidor pelo sync abaixo.
+    #
+    # Cada integração liga sozinha quando o secret correspondente existe.
+    # Sem nenhum secret configurado, o arquivo sai com tudo desligado —
+    # exatamente o comportamento padrão de api/leads.php.
+    - name: 🔐 Gerar api/config.php a partir dos secrets
+      env:
+        HUBSPOT_TOKEN: ${{ secrets.HUBSPOT_TOKEN }}
+        HUBSPOT_PORTAL_ID: ${{ secrets.HUBSPOT_PORTAL_ID }}
+        LEADS_EMAIL_TO: ${{ secrets.LEADS_EMAIL_TO }}
+        LEADS_EMAIL_FROM: ${{ secrets.LEADS_EMAIL_FROM }}
+        AWS_SES_REGION: ${{ secrets.AWS_SES_REGION }}
+        WHATSAPP_TOKEN: ${{ secrets.WHATSAPP_TOKEN }}
+        WHATSAPP_ENDPOINT: ${{ secrets.WHATSAPP_ENDPOINT }}
+        WHATSAPP_TO: ${{ secrets.WHATSAPP_TO }}
+      run: |
+        php -r '
+          // var_export() cuida do escaping: um segredo com aspas, barras
+          // ou $ não quebra o arquivo nem injeta código.
+          $env = static fn(string $k): string => (string) (getenv($k) ?: "");
+
+          $hubspot = $env("HUBSPOT_TOKEN");
+          $emailTo = $env("LEADS_EMAIL_TO");
+          $waToken = $env("WHATSAPP_TOKEN");
+
+          $config = [
+              "allowed_origins" => ["https://www.devbatista.com", "https://devbatista.com"],
+
+              "hubspot_enabled"   => $hubspot !== "",
+              "hubspot_token"     => $hubspot,
+              "hubspot_portal_id" => $env("HUBSPOT_PORTAL_ID"),
+
+              "email_enabled" => $emailTo !== "",
+              "email_to"      => $emailTo,
+              "email_from"    => $env("LEADS_EMAIL_FROM"),
+              "ses_region"    => $env("AWS_SES_REGION"),
+
+              "whatsapp_enabled"  => $waToken !== "",
+              "whatsapp_token"    => $waToken,
+              "whatsapp_endpoint" => $env("WHATSAPP_ENDPOINT"),
+              "whatsapp_to"       => $env("WHATSAPP_TO"),
+          ];
+
+          file_put_contents(
+              "api/config.php",
+              "<?php\n\n// Gerado pelo deploy a partir dos secrets. Não edite à mão.\nreturn " . var_export($config, true) . ";\n"
+          );
+        '
+        # Valida a sintaxe sem imprimir o conteúdo (imprimir vazaria o segredo).
+        php -l api/config.php
+
     - name: 📂 Sync files
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
       with:
         server: ${{ secrets.FTP_SERVER }}
         username: ${{ secrets.FTP_USER }}
         password: ${{ secrets.FTP_PASSWORD }}
+        # Ao declarar exclude, os padrões default são substituídos —
+        # por isso os de git precisam ser repetidos aqui.
+        exclude: |
+          **/.git*
+          **/.git*/**
+          **/node_modules/**
+          api/storage/leads/**
+          api/storage/ratelimit/**

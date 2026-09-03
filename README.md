@@ -141,8 +141,16 @@ if (is_file($root . $path)) { return false; }
 if (is_file($root . $path . '.html')) { require $root . $path . '.html'; return true; }
 http_response_code(404); require $root . '/404.html'; return true;
 EOF
-php -S localhost:8000 -t . /tmp/router.php
+php -S 0.0.0.0:8000 -t . /tmp/router.php
 ```
+
+Depois acesse `http://127.0.0.1:8000`.
+
+> Use `0.0.0.0`, **não** `localhost`. Com `localhost` o PHP escuta apenas em
+> IPv6 (`[::1]`), e um servidor estático (Live Server, `http-server`) pode
+> ocupar `127.0.0.1:8000` em paralelo sem acusar conflito — o navegador então
+> alterna entre os dois e o `POST` do formulário cai no estático, resultando em
+> 404. Não deixe os dois rodando juntos: só o PHP executa `api/leads.php`.
 
 ---
 
@@ -220,10 +228,27 @@ apontar `storage_dir` para um diretório fora do document root.
 
 ### Configuração e integrações
 
-Copie `api/config.example.php` para `api/config.php` (não versionado) ou use
-variáveis de ambiente `DEVBATISTA_<CHAVE>`. As integrações ficam desligadas por
-padrão, cada uma em sua função: `sendToHubSpot()`, `sendEmailNotification()` e
-`sendWhatsAppNotification()`. Nenhuma delas derruba a resposta ao visitante.
+A configuração é resolvida em três camadas, nesta ordem de precedência:
+
+```
+padrões em lead_config()  →  api/config.php  →  variáveis DEVBATISTA_*
+```
+
+Nenhuma delas é obrigatória: sem `config.php` e sem ambiente, tudo roda com os
+padrões e as integrações desligadas.
+
+**Local:** copie `api/config.example.php` para `api/config.php` (não versionado).
+
+**Produção:** os secrets do GitHub geram o `api/config.php` durante o deploy —
+ver a seção Deploy. Se a hospedagem permitir variáveis de ambiente no painel
+(PHP-FPM), prefira `DEVBATISTA_HUBSPOT_TOKEN` etc. e dispense o arquivo: aí o
+segredo não existe em disco nem passa pelo CI. Aceita `int`, `bool` (`true`/`1`)
+e listas separadas por vírgula. **Não** use `SetEnv` no `.htaccess` — ele é
+versionado.
+
+As integrações ficam desligadas por padrão, cada uma em sua função:
+`sendToHubSpot()`, `sendEmailNotification()` e `sendWhatsAppNotification()`.
+Nenhuma delas derruba a resposta ao visitante.
 
 > `css/lead-quiz.css` e `js/lead-quiz.js` são servidos com cache `immutable` de
 > 1 ano. Ao editá-los, **incremente o `?v=` nos 9 HTMLs**, senão ninguém verá a
@@ -291,9 +316,35 @@ O `.htaccess` precisa ser enviado junto — confirme que ele não está na lista
 exclusões do deploy. O mesmo vale para `api/storage/.htaccess`, que impede o
 acesso web aos leads gravados.
 
-`api/config.php` e o conteúdo de `api/storage/leads/` e `api/storage/ratelimit/`
-estão no `.gitignore` e **não sobem pelo deploy** — configure-os direto no
-servidor.
+### Secrets das integrações
+
+O `api/config.php` está no `.gitignore`, então não vem no checkout. O workflow
+o **gera** antes do sync, a partir dos secrets do repositório, e é esse arquivo
+gerado que sobe por FTP.
+
+| Secret | Liga |
+|---|---|
+| `HUBSPOT_TOKEN` | HubSpot (junto com `HUBSPOT_PORTAL_ID`) |
+| `LEADS_EMAIL_TO` | Notificação por e-mail (`LEADS_EMAIL_FROM`, `AWS_SES_REGION`) |
+| `WHATSAPP_TOKEN` | Notificação por WhatsApp (`WHATSAPP_ENDPOINT`, `WHATSAPP_TO`) |
+
+Cada integração liga sozinha quando o secret correspondente existe. Sem nenhum
+secret, o arquivo sai com tudo desligado — igual ao padrão do `leads.php`.
+
+A geração usa `var_export()`, então um segredo com aspas, `$` ou barras não
+quebra o arquivo nem injeta código. O step valida com `php -l` e **nunca
+imprime o conteúdo** — um `cat` de debug ali vazaria o token, porque o
+mascaramento do GitHub não cobre valor derivado.
+
+Três coisas para saber:
+
+- Se você remover o step de geração, o FTP-Deploy vai **apagar** o `config.php`
+  do servidor, porque passou a rastrear o arquivo. As integrações somem sem aviso.
+- O arquivo gerado **sobrescreve** qualquer `config.php` criado à mão no servidor.
+- Quem tem push na `main` consegue exfiltrar os secrets. É inerente a CI.
+
+`api/storage/leads/` e `api/storage/ratelimit/` estão no `exclude` do sync, para
+o deploy nunca encostar nos leads já gravados.
 
 ---
 

@@ -161,13 +161,26 @@ function lead_config(): array
     }
 
     // Variáveis de ambiente têm a última palavra (útil em CI/hospedagem).
+    // getenv() não enxerga SetEnv do Apache em todas as SAPIs; $_SERVER e
+    // $_ENV cobrem PHP-FPM, mod_php e CGI.
     $fromEnv = [];
     foreach (array_keys($defaults) as $key) {
-        $env = getenv('DEVBATISTA_' . strtoupper($key));
-        if ($env !== false && $env !== '') {
-            $fromEnv[$key] = in_array($defaults[$key], [true, false], true)
-                ? filter_var($env, FILTER_VALIDATE_BOOLEAN)
-                : $env;
+        $name = 'DEVBATISTA_' . strtoupper($key);
+        $env = $_SERVER[$name] ?? $_ENV[$name] ?? getenv($name);
+
+        if ($env === false || $env === null || $env === '') {
+            continue;
+        }
+
+        if (is_bool($defaults[$key])) {
+            $fromEnv[$key] = filter_var($env, FILTER_VALIDATE_BOOLEAN);
+        } elseif (is_int($defaults[$key])) {
+            $fromEnv[$key] = (int) $env;
+        } elseif (is_array($defaults[$key])) {
+            // Lista separada por vírgula: "https://a.com,https://b.com"
+            $fromEnv[$key] = array_values(array_filter(array_map('trim', explode(',', (string) $env))));
+        } else {
+            $fromEnv[$key] = (string) $env;
         }
     }
 
