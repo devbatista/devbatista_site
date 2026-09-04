@@ -733,25 +733,97 @@ function sendToHubSpot(array $lead): array
         'http_code' => $upsert['http_code'],
     ];
 
-    if ($contactId === '' || ($config['hubspot_create_note'] ?? true) === false) {
+    if ($contactId === '') {
         return $result;
     }
 
-    // A nota carrega o diagnóstico completo sem exigir propriedade customizada.
-    $note = hubspot_request('POST', '/crm/v3/objects/notes', [
-        'properties' => [
-            'hs_timestamp' => round(microtime(true) * 1000),
-            'hs_note_body' => hubspot_note_body($lead),
-        ],
-        'associations' => [[
+    // Negócio no pipeline comercial.
+    $dealId = '';
+    if (($config['hubspot_create_deal'] ?? true) !== false) {
+        [$dealId, $result['deal']] = hubspot_ensure_deal($lead, $contactId);
+        if ($dealId !== '') {
+            $result['deal_id'] = $dealId;
+        }
+    }
+
+    // A nota carrega o diagnóstico completo sem exigir propriedade
+    // customizada, e fica visível na timeline do contato e do negócio.
+    if (($config['hubspot_create_note'] ?? true) !== false) {
+        $associations = [[
             'to' => ['id' => $contactId],
             // 202 = note_to_contact (associação padrão do HubSpot)
             'types' => [['associationCategory' => 'HUBSPOT_DEFINED', 'associationTypeId' => 202]],
+        ]];
+
+        if ($dealId !== '') {
+            $associations[] = [
+                'to' => ['id' => $dealId],
+                // 214 = note_to_deal
+                'types' => [['associationCategory' => 'HUBSPOT_DEFINED', 'associationTypeId' => 214]],
+            ];
+        }
+
+        $note = hubspot_request('POST', '/crm/v3/objects/notes', [
+            'properties' => [
+                'hs_timestamp' => round(microtime(true) * 1000),
+                'hs_note_body' => hubspot_note_body($lead),
+            ],
+            'associations' => $associations,
+        ]);
+
+        $result['note'] = $note['ok'] ? 'ok' : ('falhou: ' . $note['message']);
+    }
+
+    return $result;
+}
+
+/**
+ * Cria o negócio, a menos que o contato já tenha um negócio aberto.
+ *
+ * Sem essa verificação, quem refizesse o diagnóstico geraria um negócio
+ * duplicado no pipeline a cada envio.
+ *
+ * @return array{0:string,1:string} [dealId, status legível]
+ */
+function hubspot_ensure_deal(array $lead, string $contactId): array
+{
+    $config = lead_config();
+
+    $existing = hubspot_request('GET', '/crm/v4/objects/contacts/' . $contactId . '/associations/deals');
+    foreach ($existing['body']['results'] ?? [] as $association) {
+        $dealId = (string) ($association['toObjectId'] ?? '');
+        if ($dealId === '') {
+            continue;
+        }
+
+        $deal = hubspot_request('GET', '/crm/v3/objects/deals/' . $dealId . '?properties=dealstage');
+        $stage = (string) ($deal['body']['properties']['dealstage'] ?? '');
+        if ($stage !== '' && strpos($stage, 'closed') !== 0) {
+            return [$dealId, 'negócio aberto já existia'];
+        }
+    }
+
+    $company = $lead['company'] !== '' ? $lead['company'] : $lead['name'];
+    $problem = MAIN_PROBLEM_LABELS[$lead['main_problem']] ?? 'Diagnóstico Tecnológico';
+
+    $created = hubspot_request('POST', '/crm/v3/objects/deals', [
+        'properties' => [
+            'dealname' => $company . ' — ' . $problem,
+            'pipeline' => (string) ($config['hubspot_pipeline'] ?? 'default'),
+            'dealstage' => (string) ($config['hubspot_deal_stage'] ?? 'appointmentscheduled'),
+        ],
+        'associations' => [[
+            'to' => ['id' => $contactId],
+            // 3 = deal_to_contact
+            'types' => [['associationCategory' => 'HUBSPOT_DEFINED', 'associationTypeId' => 3]],
         ]],
     ]);
 
-    $result['note'] = $note['ok'] ? 'ok' : ('falhou: ' . $note['message']);
-    return $result;
+    if (!$created['ok']) {
+        return ['', 'falhou: ' . $created['message']];
+    }
+
+    return [(string) ($created['body']['id'] ?? ''), 'criado'];
 }
 
 /** Divide o nome informado em firstname / lastname. */

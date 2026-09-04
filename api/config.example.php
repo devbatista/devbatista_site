@@ -35,6 +35,11 @@ return [
     'hubspot_enabled' => false,
     'hubspot_token' => '',
     'hubspot_portal_id' => '',
+    'hubspot_create_note' => true,
+    'hubspot_create_deal' => true,
+    // IDs vêm de GET /crm/v3/pipelines/deals
+    'hubspot_pipeline' => 'default',
+    'hubspot_deal_stage' => 'appointmentscheduled',
 
     // Notificação por e-mail (AWS SES ou SMTP)
     'email_enabled' => false,

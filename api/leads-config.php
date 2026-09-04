@@ -31,7 +31,10 @@ function lead_config(): array
         'hubspot_enabled' => false,
         'hubspot_token' => '',
         'hubspot_portal_id' => '',
-        'hubspot_create_note' => true,  // anexa o diagnóstico como nota no contato
+        'hubspot_create_note' => true,  // anexa o diagnóstico como nota no contato e no negócio
+        'hubspot_create_deal' => true,  // cria negócio no pipeline comercial
+        'hubspot_pipeline' => 'default',              // "Novos negócios"
+        'hubspot_deal_stage' => 'appointmentscheduled', // "Oportunidade identificada"
         'hubspot_properties' => [],     // ['diagnostic_score' => 'nome_da_prop_no_portal']
         'email_enabled' => false,
         'email_to' => '',
