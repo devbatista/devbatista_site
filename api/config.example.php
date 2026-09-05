@@ -46,11 +46,18 @@ return [
     'ebook_hubspot_enabled' => false,
     'ebook_hubspot_note' => true,
 
-    // Notificação por e-mail (AWS SES ou SMTP)
+    // Notificação por e-mail — API do Amazon SES v2 (api/mailer.php).
+    // Em produção estes valores vêm dos secrets do GitHub; ver a seção
+    // Deploy do README. Aqui ficam só para teste local.
     'email_enabled' => false,
-    'email_to' => 'rafael@devbatista.com',
-    'email_from' => 'no-reply@devbatista.com',
+    'email_to' => 'rafael@devbatista.com',   // vários? separe por vírgula
+    'email_from' => 'leads@devbatista.com',  // identidade verificada no SES
+    'email_from_name' => 'DevBatista Leads',
+    // Quais faixas de potencial comercial viram e-mail. [] = todas.
+    'email_tiers' => ['morno', 'quente'],
     'ses_region' => 'sa-east-1',
+    'ses_key' => '',      // usuário IAM com a política ses:SendEmail
+    'ses_secret' => '',
 
     // Notificação interna via WhatsApp Cloud API
     'whatsapp_enabled' => false,

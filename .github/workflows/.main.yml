@@ -25,7 +25,10 @@ jobs:
         HUBSPOT_PORTAL_ID: ${{ secrets.HUBSPOT_PORTAL_ID }}
         LEADS_EMAIL_TO: ${{ secrets.LEADS_EMAIL_TO }}
         LEADS_EMAIL_FROM: ${{ secrets.LEADS_EMAIL_FROM }}
+        LEADS_EMAIL_TIERS: ${{ secrets.LEADS_EMAIL_TIERS }}
         AWS_SES_REGION: ${{ secrets.AWS_SES_REGION }}
+        AWS_SES_KEY: ${{ secrets.AWS_SES_KEY }}
+        AWS_SES_SECRET: ${{ secrets.AWS_SES_SECRET }}
         WHATSAPP_TOKEN: ${{ secrets.WHATSAPP_TOKEN }}
         WHATSAPP_ENDPOINT: ${{ secrets.WHATSAPP_ENDPOINT }}
         WHATSAPP_TO: ${{ secrets.WHATSAPP_TO }}
@@ -37,7 +40,17 @@ jobs:
 
           $hubspot = $env("HUBSPOT_TOKEN");
           $emailTo = $env("LEADS_EMAIL_TO");
+          $sesKey  = $env("AWS_SES_KEY");
           $waToken = $env("WHATSAPP_TOKEN");
+
+          // Faixas comerciais que viram e-mail. Secret opcional: sem ele,
+          // notifica morno e quente. "todos" manda tudo, inclusive frio.
+          $tiers = array_values(array_filter(array_map("trim", explode(",", strtolower($env("LEADS_EMAIL_TIERS"))))));
+          if ($tiers === []) {
+              $tiers = ["morno", "quente"];
+          } elseif ($tiers === ["todos"]) {
+              $tiers = [];
+          }
 
           $config = [
               "health_token" => $env("HEALTH_TOKEN"),
@@ -48,10 +61,15 @@ jobs:
               "hubspot_token"     => $hubspot,
               "hubspot_portal_id" => $env("HUBSPOT_PORTAL_ID"),
 
-              "email_enabled" => $emailTo !== "",
+              // Só liga com destinatário E credencial: ligado sem chave só
+              // encheria o log de erro a cada lead.
+              "email_enabled" => $emailTo !== "" && $sesKey !== "",
               "email_to"      => $emailTo,
               "email_from"    => $env("LEADS_EMAIL_FROM"),
+              "email_tiers"   => $tiers,
               "ses_region"    => $env("AWS_SES_REGION"),
+              "ses_key"       => $sesKey,
+              "ses_secret"    => $env("AWS_SES_SECRET"),
 
               "whatsapp_enabled"  => $waToken !== "",
               "whatsapp_token"    => $waToken,

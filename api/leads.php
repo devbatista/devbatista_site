@@ -24,6 +24,7 @@ header('Cache-Control: no-store');
 header('Referrer-Policy: strict-origin-when-cross-origin');
 
 require_once __DIR__ . '/leads-config.php';
+require_once __DIR__ . '/mailer.php';
 
 // ============================================================
 // Limites
@@ -894,7 +895,13 @@ function hubspot_request(string $method, string $path, ?array $payload = null): 
     );
 }
 
-/** TODO: notificação por e-mail (AWS SES ou SMTP). */
+/**
+ * Avisa por e-mail que chegou um lead qualificado.
+ *
+ * Só as faixas listadas em 'email_tiers' viram notificação — a caixa de
+ * entrada é para agir, não para arquivar. O lead frio continua gravado no
+ * JSONL e criado no HubSpot; apenas não interrompe ninguém.
+ */
 function sendEmailNotification(array $lead): array
 {
     $config = lead_config();
@@ -902,7 +909,206 @@ function sendEmailNotification(array $lead): array
         return ['status' => 'disabled'];
     }
 
-    return ['status' => 'not_implemented'];
+    $tiers = array_map('strval', (array) ($config['email_tiers'] ?? []));
+    $tier = (string) ($lead['commercial_tier'] ?? '');
+    if ($tiers !== [] && !in_array($tier, $tiers, true)) {
+        return ['status' => 'skipped', 'reason' => 'tier "' . $tier . '" fora de email_tiers'];
+    }
+
+    $sent = ses_send_email(
+        (string) $config['email_to'],
+        lead_email_subject($lead),
+        lead_email_html($lead),
+        lead_email_text($lead),
+        (string) $lead['email']   // responder cai direto no lead
+    );
+
+    if (!$sent['ok']) {
+        return ['status' => 'error', 'http_code' => $sent['http_code'], 'message' => $sent['message']];
+    }
+
+    return [
+        'status' => 'ok',
+        'http_code' => $sent['http_code'],
+        'message_id' => (string) ($sent['body']['MessageId'] ?? ''),
+        'tier' => $tier,
+    ];
+}
+
+/** Faixa comercial em rótulo legível. */
+function commercial_tier_label(string $tier): string
+{
+    $labels = ['quente' => 'Quente', 'morno' => 'Morno', 'frio' => 'Frio'];
+    return $labels[$tier] ?? ucfirst($tier);
+}
+
+/** Data do lead no fuso de quem vai ler, não em UTC. */
+function lead_local_time(string $iso): string
+{
+    try {
+        $date = new DateTimeImmutable($iso !== '' ? $iso : 'now');
+        return $date->setTimezone(new DateTimeZone('America/Sao_Paulo'))->format('d/m/Y H:i');
+    } catch (Throwable $exception) {
+        return gmdate('d/m/Y H:i') . ' UTC';
+    }
+}
+
+/**
+ * Assunto: o suficiente para decidir se abre agora, direto na lista de
+ * e-mails — faixa, empresa e o desafio declarado.
+ */
+function lead_email_subject(array $lead): string
+{
+    $company = $lead['company'] !== '' ? $lead['company'] : $lead['name'];
+
+    // Em "Outro", o rótulo genérico não diz nada — o que o lead escreveu diz.
+    $problem = MAIN_PROBLEM_LABELS[$lead['main_problem']] ?? 'Diagnóstico Tecnológico';
+    if ($lead['main_problem'] === 'outro' && $lead['main_problem_other'] !== '') {
+        $problem = str_replace("\n", ' ', $lead['main_problem_other']);
+        if (text_length($problem) > 70) {
+            $problem = rtrim(function_exists('mb_substr')
+                ? mb_substr($problem, 0, 70, 'UTF-8')
+                : substr($problem, 0, 70)) . '…';
+        }
+    }
+
+    return sprintf(
+        'Lead %s · %s — %s',
+        strtolower(commercial_tier_label((string) $lead['commercial_tier'])),
+        $company,
+        $problem
+    );
+}
+
+/** Versão texto — clientes que não renderizam HTML e prévia no celular. */
+function lead_email_text(array $lead): string
+{
+    $lines = [
+        sprintf(
+            'Lead %s (%d pontos comerciais) — %s',
+            commercial_tier_label((string) $lead['commercial_tier']),
+            $lead['commercial_score'],
+            lead_local_time((string) ($lead['created_at'] ?? ''))
+        ),
+        '',
+        'Nome: ' . $lead['name'],
+        'Empresa: ' . $lead['company'],
+        'E-mail: ' . $lead['email'],
+        'WhatsApp: ' . $lead['phone_e164'],
+        '',
+        'Principal desafio: ' . (MAIN_PROBLEM_LABELS[$lead['main_problem']] ?? $lead['main_problem']),
+    ];
+
+    if ($lead['main_problem_other'] !== '') {
+        $lines[] = $lead['main_problem_other'];
+    }
+
+    $lines[] = '';
+    $lines[] = sprintf(
+        'Diagnóstico: %s (%d pontos)',
+        DIAGNOSTIC_LEVEL_LABELS[$lead['diagnostic_level']] ?? $lead['diagnostic_level'],
+        $lead['diagnostic_score']
+    );
+    $lines[] = '';
+    $lines[] = 'RESPOSTAS';
+    foreach (ANSWER_LABELS as $key => $meta) {
+        $lines[] = $meta['label'] . ': ' . answer_label($key, (string) ($lead['answers'][$key] ?? ''));
+    }
+
+    $tracking = (array) $lead['tracking'];
+    if ($tracking !== []) {
+        $lines[] = '';
+        $lines[] = 'ORIGEM';
+        foreach ($tracking as $key => $value) {
+            $lines[] = $key . ': ' . $value;
+        }
+    }
+
+    $lines[] = '';
+    $lines[] = 'Lead #' . ($lead['id'] ?? '');
+
+    return implode("\n", $lines);
+}
+
+/**
+ * Corpo HTML. Tabelas e estilo inline de propósito: cliente de e-mail não
+ * entende folha de estilo externa nem flexbox de forma confiável.
+ */
+function lead_email_html(array $lead): string
+{
+    $e = static fn($text): string => htmlspecialchars((string) $text, ENT_QUOTES, 'UTF-8');
+
+    $tier = (string) $lead['commercial_tier'];
+    $tierColor = ['quente' => '#b91c1c', 'morno' => '#b45309'][$tier] ?? '#475569';
+
+    $whatsapp = 'https://wa.me/' . (preg_replace('/\D+/', '', (string) $lead['phone_e164']) ?? '');
+
+    // Linhas de "rótulo: valor" com o mesmo desenho em todo o e-mail.
+    $row = static function (string $label, string $value) use ($e): string {
+        return '<tr>'
+            . '<td style="padding:6px 12px 6px 0;color:#64748b;font-size:13px;vertical-align:top;white-space:nowrap;">'
+            . $e($label) . '</td>'
+            . '<td style="padding:6px 0;color:#0f172a;font-size:14px;">' . $value . '</td>'
+            . '</tr>';
+    };
+
+    $contact = $row('Empresa', '<strong>' . $e($lead['company']) . '</strong>')
+        . $row('Nome', $e($lead['name']))
+        . $row('E-mail', '<a href="mailto:' . $e($lead['email']) . '" style="color:#1d4ed8;">' . $e($lead['email']) . '</a>')
+        . $row('WhatsApp', '<a href="' . $e($whatsapp) . '" style="color:#1d4ed8;">' . $e($lead['phone_e164']) . '</a>');
+
+    $answers = '';
+    foreach (ANSWER_LABELS as $key => $meta) {
+        $answers .= $row($meta['label'], $e(answer_label($key, (string) ($lead['answers'][$key] ?? ''))));
+    }
+
+    $origin = '';
+    foreach ((array) $lead['tracking'] as $key => $value) {
+        $origin .= $row((string) $key, $e($value));
+    }
+    $origin = $origin === ''
+        ? ''
+        : '<h2 style="margin:28px 0 8px;font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:#64748b;">Origem</h2>'
+            . '<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse;">' . $origin . '</table>';
+
+    $problem = '<p style="margin:0;font-size:15px;color:#0f172a;"><strong>'
+        . $e(MAIN_PROBLEM_LABELS[$lead['main_problem']] ?? $lead['main_problem']) . '</strong></p>';
+    if ($lead['main_problem_other'] !== '') {
+        $problem .= '<p style="margin:6px 0 0;font-size:14px;color:#334155;font-style:italic;">'
+            . nl2br($e($lead['main_problem_other'])) . '</p>';
+    }
+
+    return '<!doctype html><html lang="pt-BR"><head><meta charset="utf-8">'
+        . '<meta name="viewport" content="width=device-width,initial-scale=1"></head>'
+        . '<body style="margin:0;padding:24px 12px;background:#f1f5f9;font-family:-apple-system,BlinkMacSystemFont,\'Segoe UI\',Arial,sans-serif;">'
+        . '<div style="max-width:600px;margin:0 auto;background:#ffffff;border-radius:12px;padding:28px;">'
+
+        . '<p style="margin:0 0 4px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:' . $tierColor . ';">'
+        . 'Lead ' . $e(commercial_tier_label($tier)) . ' · ' . (int) $lead['commercial_score'] . ' pontos comerciais</p>'
+        . '<p style="margin:0 0 20px;font-size:13px;color:#64748b;">'
+        . $e(lead_local_time((string) ($lead['created_at'] ?? ''))) . '</p>'
+
+        . '<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse;">'
+        . $contact . '</table>'
+
+        . '<h2 style="margin:28px 0 8px;font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:#64748b;">Principal desafio</h2>'
+        . $problem
+
+        . '<h2 style="margin:28px 0 8px;font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:#64748b;">Diagnóstico</h2>'
+        . '<p style="margin:0;font-size:15px;color:#0f172a;"><strong>'
+        . $e(DIAGNOSTIC_LEVEL_LABELS[$lead['diagnostic_level']] ?? $lead['diagnostic_level'])
+        . '</strong> · ' . (int) $lead['diagnostic_score'] . ' pontos</p>'
+
+        . '<h2 style="margin:28px 0 8px;font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:#64748b;">Respostas</h2>'
+        . '<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse;">'
+        . $answers . '</table>'
+
+        . $origin
+
+        . '<p style="margin:28px 0 0;padding-top:16px;border-top:1px solid #e2e8f0;font-size:12px;color:#94a3b8;">'
+        . 'Lead #' . $e($lead['id'] ?? '') . ' · responder este e-mail fala direto com o contato.</p>'
+
+        . '</div></body></html>';
 }
 
 /** TODO: notificação interna via WhatsApp Cloud API. */

@@ -74,6 +74,7 @@ Preços não são exibidos em nenhuma página.
 ├── js/lead-quiz.js       # Diagnóstico Tecnológico (modal, scoring, envio)
 ├── api/leads.php         # Endpoint de recebimento dos leads
 ├── api/leads-config.php  # Configuração compartilhada (leads + health)
+├── api/mailer.php        # Envio pela API do Amazon SES (SigV4 assinado à mão)
 ├── api/health.php        # Diagnóstico do ambiente (protegido por token)
 ├── api/config.example.php# Modelo de configuração (copie para config.php)
 ├── api/storage/          # Leads em JSONL + rate limit (bloqueado por .htaccess)
@@ -251,6 +252,42 @@ O campo `warnings` é o que importa. O mais grave:
 Esse caso é invisível de fora — o endpoint de leads continua respondendo `201`
 e o visitante vê o resultado normalmente, mas nada é gravado.
 
+Duas verificações sob demanda, ambas read-only (não criam contato nem enviam
+e-mail):
+
+```bash
+curl -s ".../api/health.php?token=SEU_TOKEN&check=hubspot" | jq .data.integrations.hubspot
+curl -s ".../api/health.php?token=SEU_TOKEN&check=ses"     | jq .data.integrations.email
+```
+
+`check=ses` valida a assinatura SigV4 e informa `production_access` — se vier
+`false`, a conta ainda está no sandbox do SES.
+
+### Notificação de lead por e-mail (Amazon SES)
+
+Lead qualificado vira e-mail na hora, com **Reply-To do próprio lead**:
+responder o aviso já fala com o contato.
+
+O envio usa a **API do SES v2 sobre HTTPS**, com SigV4 assinado em
+`api/mailer.php` — sem Composer e sem SMTP (a porta 587 costuma estar
+bloqueada em hospedagem compartilhada). A assinatura é conferível contra os
+vetores oficiais da AWS via `aws_sigv4_headers()`.
+
+Só as faixas em `email_tiers` são notificadas — por padrão `morno` e `quente`.
+Lead frio continua gravado no JSONL e criado no HubSpot; apenas não interrompe
+ninguém. Lista vazia notifica todos.
+
+Pré-requisitos na AWS:
+
+1. Domínio verificado no SES (DKIM), na mesma região de `ses_region`.
+2. `email_from` numa identidade verificada.
+3. Usuário IAM com a política `ses:SendEmail` (e `ses:GetAccount`, para o
+   `check=ses`). A chave vai nos secrets `AWS_SES_KEY` / `AWS_SES_SECRET`.
+
+No sandbox o SES só entrega para endereços/domínios verificados. Como
+remetente e destinatário estão no mesmo domínio verificado, a notificação
+funciona sem sair do sandbox.
+
 ### Configuração e integrações
 
 A configuração é resolvida em três camadas, nesta ordem de precedência:
@@ -272,8 +309,10 @@ e listas separadas por vírgula. **Não** use `SetEnv` no `.htaccess` — ele é
 versionado.
 
 As integrações ficam desligadas por padrão, cada uma em sua função:
-`sendToHubSpot()`, `sendEmailNotification()` e `sendWhatsAppNotification()`.
-Nenhuma delas derruba a resposta ao visitante.
+`sendToHubSpot()` e `sendEmailNotification()` (implementadas) e
+`sendWhatsAppNotification()` (ainda um stub). Todas rodam **depois** de o
+visitante já ter recebido a resposta e nenhuma derruba o formulário; o
+resultado de cada uma fica em `api/storage/integrations/AAAA-MM.jsonl`.
 
 > `css/lead-quiz.css` e `js/lead-quiz.js` são servidos com cache `immutable` de
 > 1 ano. Ao editá-los, **incremente o `?v=` nos 9 HTMLs**, senão ninguém verá a
@@ -350,7 +389,7 @@ gerado que sobe por FTP.
 | Secret | Liga |
 |---|---|
 | `HUBSPOT_TOKEN` | HubSpot (junto com `HUBSPOT_PORTAL_ID`) |
-| `LEADS_EMAIL_TO` | Notificação por e-mail (`LEADS_EMAIL_FROM`, `AWS_SES_REGION`) |
+| `LEADS_EMAIL_TO` + `AWS_SES_KEY` | Notificação por e-mail — precisa também de `AWS_SES_SECRET`, `AWS_SES_REGION` e `LEADS_EMAIL_FROM`. Opcional: `LEADS_EMAIL_TIERS` (`morno,quente` por padrão; `todos` inclui os frios) |
 | `WHATSAPP_TOKEN` | Notificação por WhatsApp (`WHATSAPP_ENDPOINT`, `WHATSAPP_TO`) |
 
 Cada integração liga sozinha quando o secret correspondente existe. Sem nenhum

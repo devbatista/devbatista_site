@@ -40,10 +40,16 @@ function lead_config(): array
         // contato como subscriber, sem abrir negócio no pipeline.
         'ebook_hubspot_enabled' => false,
         'ebook_hubspot_note' => true,   // registra a origem/UTM como nota no contato
+        // Notificação por e-mail via API do Amazon SES (api/mailer.php).
         'email_enabled' => false,
-        'email_to' => '',
-        'email_from' => '',
+        'email_to' => '',               // aceita vários separados por vírgula
+        'email_from' => '',             // precisa ser identidade verificada no SES
+        'email_from_name' => 'DevBatista Leads', // só ASCII: vai cru no header From
+        // Quais faixas de potencial comercial viram e-mail. Lista vazia = todas.
+        'email_tiers' => ['morno', 'quente'],
         'ses_region' => '',
+        'ses_key' => '',                // IAM com permissão ses:SendEmail
+        'ses_secret' => '',
         'whatsapp_enabled' => false,
         'whatsapp_endpoint' => '',
         'whatsapp_token' => '',
@@ -113,12 +119,18 @@ const HTTP_TOTAL_TIMEOUT = 8;
  * Nunca lança e nunca devolve o corpo cru num erro — só o suficiente para
  * diagnosticar. Usa cURL quando disponível; cai para stream context.
  *
+ * $payload aceita array (serializado aqui) ou string já serializada. A
+ * segunda forma existe para o SES: a assinatura SigV4 é calculada sobre os
+ * bytes exatos do corpo, então quem assina precisa enviar o mesmo texto que
+ * hasheou — não uma reserialização.
+ *
+ * @param array|string|null $payload
  * @return array{ok:bool,http_code:int,body:array,message:string}
  */
-function http_json(string $method, string $url, ?array $payload = null, array $headers = []): array
+function http_json(string $method, string $url, $payload = null, array $headers = []): array
 {
     $method = strtoupper($method);
-    $body = $payload === null ? null : json_encode($payload, JSON_UNESCAPED_UNICODE);
+    $body = is_string($payload) ? $payload : ($payload === null ? null : json_encode($payload, JSON_UNESCAPED_UNICODE));
     $headers = array_merge($headers, ['Accept: application/json']);
     if ($body !== null) {
         $headers[] = 'Content-Type: application/json';
