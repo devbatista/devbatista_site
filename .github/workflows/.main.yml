@@ -23,6 +23,7 @@ jobs:
         HEALTH_TOKEN: ${{ secrets.HEALTH_TOKEN }}
         HUBSPOT_TOKEN: ${{ secrets.HUBSPOT_TOKEN }}
         HUBSPOT_PORTAL_ID: ${{ secrets.HUBSPOT_PORTAL_ID }}
+        HUBSPOT_EBOOK_STAGE: ${{ secrets.HUBSPOT_EBOOK_STAGE }}
         LEADS_EMAIL_TO: ${{ secrets.LEADS_EMAIL_TO }}
         LEADS_EMAIL_FROM: ${{ secrets.LEADS_EMAIL_FROM }}
         LEADS_EMAIL_TIERS: ${{ secrets.LEADS_EMAIL_TIERS }}
@@ -60,6 +61,21 @@ jobs:
               "hubspot_enabled"   => $hubspot !== "",
               "hubspot_token"     => $hubspot,
               "hubspot_portal_id" => $env("HUBSPOT_PORTAL_ID"),
+
+              // Landing page do e-book. Usa o mesmo token do diagnóstico.
+              // Sem HUBSPOT_EBOOK_STAGE nenhum negócio é aberto — o contato
+              // ainda é criado, só não aparece no board.
+              "ebook_hubspot_enabled" => $hubspot !== "",
+              "ebook_pipeline"        => "default",
+              "ebook_deal_stage"      => $env("HUBSPOT_EBOOK_STAGE"),
+
+              // O material só chega por e-mail: sem SES, não há entrega.
+              // Sai do endereço pessoal — o e-book é assinado pelo Rafael e
+              // promete resposta direta. Nada aqui é segredo.
+              "ebook_email_enabled"   => $sesKey !== "",
+              "ebook_download_url"    => "https://www.devbatista.com/materiais/ebook-devbatista-sua-empresa-esta-perdendo-dinheir-com-a-ti.pdf",
+              "ebook_email_from"      => "rafael@devbatista.com",
+              "ebook_email_from_name" => "Rafael Batista",
 
               // Só liga com destinatário E credencial: ligado sem chave só
               // encheria o log de erro a cada lead.

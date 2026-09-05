@@ -799,9 +799,25 @@ function hubspot_ensure_deal(array $lead, string $contactId): array
 
         $deal = hubspot_request('GET', '/crm/v3/objects/deals/' . $dealId . '?properties=dealstage');
         $stage = (string) ($deal['body']['properties']['dealstage'] ?? '');
-        if ($stage !== '' && strpos($stage, 'closed') !== 0) {
-            return [$dealId, 'negócio aberto já existia'];
+        if ($stage === '' || strpos($stage, 'closed') === 0) {
+            continue;
         }
+
+        // Quem baixou o e-book e agora fez o diagnóstico não pode ficar
+        // parado na coluna do topo de funil: o negócio já existe, então
+        // ninguém o criaria de novo e o board mentiria.
+        $ebookStage = (string) ($config['ebook_deal_stage'] ?? '');
+        $diagnosticStage = (string) ($config['hubspot_deal_stage'] ?? 'appointmentscheduled');
+
+        if ($ebookStage !== '' && $stage === $ebookStage && $diagnosticStage !== $ebookStage) {
+            $moved = hubspot_request('PATCH', '/crm/v3/objects/deals/' . $dealId, [
+                'properties' => ['dealstage' => $diagnosticStage],
+            ]);
+
+            return [$dealId, $moved['ok'] ? 'avançado do e-book' : ('avanço falhou: ' . $moved['message'])];
+        }
+
+        return [$dealId, 'negócio aberto já existia'];
     }
 
     $company = $lead['company'] !== '' ? $lead['company'] : $lead['name'];
@@ -920,7 +936,7 @@ function sendEmailNotification(array $lead): array
         lead_email_subject($lead),
         lead_email_html($lead),
         lead_email_text($lead),
-        (string) $lead['email']   // responder cai direto no lead
+        ['reply_to' => (string) $lead['email']]   // responder cai direto no lead
     );
 
     if (!$sent['ok']) {

@@ -157,15 +157,26 @@ function ses_request(string $method, string $path, ?array $payload = null): arra
 /**
  * Envia um e-mail. $to aceita vários destinatários separados por vírgula.
  *
+ * $options aceita:
+ *   'from'      → remetente, se não for o email_from do config
+ *   'from_name' → nome de exibição, se não for o email_from_name
+ *   'reply_to'  → para onde vai a resposta
+ *
+ * O aviso interno de lead e o material que vai para o visitante não saem do
+ * mesmo endereço nem assinam igual — daí a sobrescrita.
+ *
  * @return array{ok:bool,http_code:int,body:array,message:string}
  */
-function ses_send_email(string $to, string $subject, string $html, string $text, string $replyTo = ''): array
+function ses_send_email(string $to, string $subject, string $html, string $text, array $options = []): array
 {
     $config = lead_config();
 
-    $from = trim((string) ($config['email_from'] ?? ''));
+    $from = trim((string) ($options['from'] ?? $config['email_from'] ?? ''));
     if ($from === '') {
-        return ['ok' => false, 'http_code' => 0, 'body' => [], 'message' => 'email_from não configurado'];
+        return ['ok' => false, 'http_code' => 0, 'body' => [], 'message' => 'remetente não configurado (email_from)'];
+    }
+    if (!filter_var($from, FILTER_VALIDATE_EMAIL)) {
+        return ['ok' => false, 'http_code' => 0, 'body' => [], 'message' => 'remetente inválido: ' . $from];
     }
 
     $recipients = array_values(array_filter(
@@ -179,11 +190,11 @@ function ses_send_email(string $to, string $subject, string $html, string $text,
 
     // Nome de exibição sem acento e sem aspas: entra cru no header From, e
     // codificar MIME aqui não vale o risco de quebrar a linha.
-    $fromName = preg_replace('/[^A-Za-z0-9 .\-]/', '', (string) ($config['email_from_name'] ?? '')) ?? '';
-    $fromName = trim($fromName);
+    $displayName = (string) ($options['from_name'] ?? $config['email_from_name'] ?? '');
+    $displayName = trim(preg_replace('/[^A-Za-z0-9 .\-]/', '', $displayName) ?? '');
 
     $payload = [
-        'FromEmailAddress' => $fromName !== '' ? $fromName . ' <' . $from . '>' : $from,
+        'FromEmailAddress' => $displayName !== '' ? $displayName . ' <' . $from . '>' : $from,
         'Destination' => ['ToAddresses' => $recipients],
         'Content' => [
             'Simple' => [
@@ -196,8 +207,10 @@ function ses_send_email(string $to, string $subject, string $html, string $text,
         ],
     ];
 
-    // Responder o e-mail cai direto no lead, não na caixa do remetente.
-    if ($replyTo !== '' && filter_var($replyTo, FILTER_VALIDATE_EMAIL)) {
+    // Só faz sentido quando a resposta deve ir para outro lugar que não o
+    // remetente — no aviso de lead, para o próprio lead.
+    $replyTo = trim((string) ($options['reply_to'] ?? ''));
+    if ($replyTo !== '' && $replyTo !== $from && filter_var($replyTo, FILTER_VALIDATE_EMAIL)) {
         $payload['ReplyToAddresses'] = [$replyTo];
     }
 

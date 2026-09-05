@@ -37,9 +37,19 @@ function lead_config(): array
         'hubspot_deal_stage' => 'appointmentscheduled', // "Oportunidade identificada"
         'hubspot_properties' => [],     // ['diagnostic_score' => 'nome_da_prop_no_portal']
         // Landing page do e-book (api/ebook.php). Topo de funil: cria o
-        // contato como subscriber, sem abrir negócio no pipeline.
+        // contato como subscriber e abre o negócio na etapa do e-book.
         'ebook_hubspot_enabled' => false,
         'ebook_hubspot_note' => true,   // registra a origem/UTM como nota no contato
+        'ebook_pipeline' => 'default',  // "Novos negócios"
+        'ebook_deal_stage' => '',       // ID da etapa "E-book"; vazio = não abre negócio
+        // Entrega do material. O PDF vai como link, não como anexo: 326 KB
+        // saindo de um domínio novo é convite para o filtro de spam.
+        'ebook_email_enabled' => false,
+        'ebook_download_url' => '',     // URL absoluta do PDF
+        // Remetente do material: endereço pessoal, não o leads@. Vazio cai
+        // em email_from. Precisa ser identidade verificada no SES.
+        'ebook_email_from' => '',
+        'ebook_email_from_name' => 'Rafael Batista', // só ASCII: vai cru no From
         // Notificação por e-mail via API do Amazon SES (api/mailer.php).
         'email_enabled' => false,
         'email_to' => '',               // aceita vários separados por vírgula

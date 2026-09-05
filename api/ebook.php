@@ -24,6 +24,7 @@ header('Cache-Control: no-store');
 header('Referrer-Policy: strict-origin-when-cross-origin');
 
 require_once __DIR__ . '/leads-config.php';
+require_once __DIR__ . '/mailer.php';
 
 // ============================================================
 // Limites
@@ -225,6 +226,99 @@ function ebook_store(array $record): bool
 }
 
 // ============================================================
+// Entrega do material
+// O e-book agora chega SÓ por e-mail: a página não baixa mais nada. Por
+// isso este envio é síncrono e o seu resultado decide a resposta HTTP —
+// dizer "enviamos" sem ter enviado perde o lead e a confiança dele.
+// ============================================================
+function ebook_deliver(array $lead): array
+{
+    $config = lead_config();
+
+    if (!($config['ebook_email_enabled'] ?? false)) {
+        return ['status' => 'disabled'];
+    }
+
+    $url = trim((string) ($config['ebook_download_url'] ?? ''));
+    if ($url === '') {
+        return ['status' => 'error', 'message' => 'ebook_download_url não configurada'];
+    }
+
+    // Sai do endereço pessoal, não de um leads@: o material é assinado pelo
+    // Rafael e promete resposta direta. Remetente genérico desmente isso —
+    // e responder o e-mail já cai na caixa certa, sem Reply-To.
+    $sent = ses_send_email(
+        $lead['email'],
+        'Seu e-book chegou: onde a TI drena o lucro da sua empresa',
+        ebook_email_html($url),
+        ebook_email_text($url),
+        [
+            'from' => (string) ($config['ebook_email_from'] ?: $config['email_from']),
+            'from_name' => (string) $config['ebook_email_from_name'],
+        ]
+    );
+
+    if (!$sent['ok']) {
+        return ['status' => 'error', 'http_code' => $sent['http_code'], 'message' => $sent['message']];
+    }
+
+    return ['status' => 'ok', 'message_id' => (string) ($sent['body']['MessageId'] ?? '')];
+}
+
+function ebook_email_text(string $url): string
+{
+    return implode("\n", [
+        'Obrigado pelo interesse!',
+        '',
+        'Seu e-book "Sua empresa está perdendo dinheiro com a TI sem perceber?"',
+        'está disponível neste link:',
+        '',
+        $url,
+        '',
+        'São 5 sinais de que a tecnologia está custando mais do que deveria —',
+        'e o que fazer sobre cada um deles, sem linguagem técnica.',
+        '',
+        'Qualquer dúvida, é só responder este e-mail.',
+        '',
+        'Rafael Batista',
+        'DevBatista — devbatista.com',
+    ]);
+}
+
+function ebook_email_html(string $url): string
+{
+    $link = htmlspecialchars($url, ENT_QUOTES, 'UTF-8');
+
+    return '<!doctype html><html lang="pt-BR"><head><meta charset="utf-8">'
+        . '<meta name="viewport" content="width=device-width,initial-scale=1"></head>'
+        . '<body style="margin:0;padding:24px 12px;background:#f1f5f9;font-family:-apple-system,BlinkMacSystemFont,\'Segoe UI\',Arial,sans-serif;">'
+        . '<div style="max-width:560px;margin:0 auto;background:#ffffff;border-radius:12px;padding:32px;">'
+
+        . '<h1 style="margin:0 0 16px;font-size:22px;line-height:1.3;color:#0f172a;">Seu e-book está pronto</h1>'
+
+        . '<p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#334155;">'
+        . '<strong>Sua empresa está perdendo dinheiro com a TI sem perceber?</strong><br>'
+        . '5 sinais de que a tecnologia está custando mais do que deveria — e o que fazer '
+        . 'sobre cada um deles, sem linguagem técnica.</p>'
+
+        . '<p style="margin:0 0 28px;"><a href="' . $link . '" '
+        . 'style="display:inline-block;background:#1d4ed8;color:#ffffff;text-decoration:none;'
+        . 'padding:14px 28px;border-radius:8px;font-size:15px;font-weight:700;">'
+        . 'Baixar o e-book (PDF)</a></p>'
+
+        . '<p style="margin:0 0 24px;font-size:13px;line-height:1.6;color:#64748b;">'
+        . 'Se o botão não funcionar, copie este endereço no navegador:<br>'
+        . '<a href="' . $link . '" style="color:#1d4ed8;word-break:break-all;">' . $link . '</a></p>'
+
+        . '<p style="margin:0;padding-top:20px;border-top:1px solid #e2e8f0;font-size:14px;line-height:1.6;color:#334155;">'
+        . 'Qualquer dúvida, é só responder este e-mail — ele chega direto em mim.<br><br>'
+        . '<strong>Rafael Batista</strong><br>'
+        . '<span style="color:#64748b;">DevBatista · devbatista.com</span></p>'
+
+        . '</div></body></html>';
+}
+
+// ============================================================
 // HubSpot — desligado por padrão.
 // Topo de funil: cria/atualiza o contato como subscriber. Não abre
 // negócio (isso é papel do diagnóstico, em leads.php).
@@ -261,26 +355,97 @@ function ebook_send_to_hubspot(array $lead): array
     $contactId = (string) ($upsert['body']['results'][0]['id'] ?? '');
     $result = ['status' => 'ok', 'contact_id' => $contactId, 'http_code' => $upsert['http_code']];
 
-    if ($contactId === '' || ($config['ebook_hubspot_note'] ?? true) === false) {
+    if ($contactId === '') {
+        return $result;
+    }
+
+    // Negócio na etapa do e-book: o board mostra o topo do funil.
+    $dealId = '';
+    if ((string) ($config['ebook_deal_stage'] ?? '') !== '') {
+        [$dealId, $result['deal']] = ebook_ensure_deal($lead, $contactId);
+        if ($dealId !== '') {
+            $result['deal_id'] = $dealId;
+        }
+    }
+
+    if (($config['ebook_hubspot_note'] ?? true) === false) {
         return $result;
     }
 
     // A nota registra a origem sem exigir propriedade customizada no portal.
+    $associations = [[
+        'to' => ['id' => $contactId],
+        // 202 = note_to_contact (associação padrão do HubSpot)
+        'types' => [['associationCategory' => 'HUBSPOT_DEFINED', 'associationTypeId' => 202]],
+    ]];
+
+    if ($dealId !== '') {
+        $associations[] = [
+            'to' => ['id' => $dealId],
+            // 214 = note_to_deal
+            'types' => [['associationCategory' => 'HUBSPOT_DEFINED', 'associationTypeId' => 214]],
+        ];
+    }
+
     $note = ebook_hubspot_request('POST', '/crm/v3/objects/notes', [
         'properties' => [
             'hs_timestamp' => round(microtime(true) * 1000),
             'hs_note_body' => ebook_hubspot_note_body($lead),
         ],
-        'associations' => [[
-            'to' => ['id' => $contactId],
-            // 202 = note_to_contact (associação padrão do HubSpot)
-            'types' => [['associationCategory' => 'HUBSPOT_DEFINED', 'associationTypeId' => 202]],
-        ]],
+        'associations' => $associations,
     ]);
 
     $result['note'] = $note['ok'] ? 'ok' : ('falhou: ' . $note['message']);
 
     return $result;
+}
+
+/**
+ * Abre o negócio na etapa do e-book, a menos que o contato já tenha um
+ * negócio aberto.
+ *
+ * Sem essa checagem, quem baixasse o material duas vezes — ou já estivesse
+ * em negociação — ganharia um negócio duplicado no pipeline. E um lead que
+ * já fez o diagnóstico NÃO pode ser puxado de volta para o topo do funil.
+ *
+ * @return array{0:string,1:string} [dealId, status legível]
+ */
+function ebook_ensure_deal(array $lead, string $contactId): array
+{
+    $config = lead_config();
+
+    $existing = ebook_hubspot_request('GET', '/crm/v4/objects/contacts/' . $contactId . '/associations/deals');
+    foreach ($existing['body']['results'] ?? [] as $association) {
+        $dealId = (string) ($association['toObjectId'] ?? '');
+        if ($dealId === '') {
+            continue;
+        }
+
+        $deal = ebook_hubspot_request('GET', '/crm/v3/objects/deals/' . $dealId . '?properties=dealstage');
+        $stage = (string) ($deal['body']['properties']['dealstage'] ?? '');
+        if ($stage !== '' && strpos($stage, 'closed') !== 0) {
+            return [$dealId, 'negócio aberto já existia'];
+        }
+    }
+
+    $created = ebook_hubspot_request('POST', '/crm/v3/objects/deals', [
+        'properties' => [
+            'dealname' => 'E-book · ' . $lead['email'],
+            'pipeline' => (string) ($config['ebook_pipeline'] ?? 'default'),
+            'dealstage' => (string) $config['ebook_deal_stage'],
+        ],
+        'associations' => [[
+            'to' => ['id' => $contactId],
+            // 3 = deal_to_contact
+            'types' => [['associationCategory' => 'HUBSPOT_DEFINED', 'associationTypeId' => 3]],
+        ]],
+    ]);
+
+    if (!$created['ok']) {
+        return ['', 'falhou: ' . $created['message']];
+    }
+
+    return [(string) ($created['body']['id'] ?? ''), 'criado'];
 }
 
 function ebook_hubspot_request(string $method, string $path, ?array $payload = null): array
@@ -369,7 +534,22 @@ try {
         error_log('[ebook] falha ao gravar lead ' . $record['id']);
     }
 
-    // Responde antes de falar com o HubSpot: o e-book é liberado na hora.
+    // O e-mail É a entrega — a página não baixa mais o PDF. Então ele roda
+    // ANTES da resposta: se o envio falhar, o visitante precisa saber disso
+    // e poder tentar de novo, em vez de ficar esperando um e-mail que nunca
+    // chegou. O lead já está gravado, então nada se perde nesse caminho.
+    $delivery = ebook_deliver($record);
+
+    if (($delivery['status'] ?? '') === 'error') {
+        error_log('[ebook] entrega ' . $record['id'] . ': ' . ($delivery['message'] ?? ''));
+        ebook_fail(
+            502,
+            'delivery_failed',
+            'Não conseguimos enviar o e-book para esse endereço agora. Confira o e-mail digitado e tente novamente.'
+        );
+    }
+
+    // Responde antes de falar com o HubSpot: o CRM não segura o visitante.
     ebook_respond_and_continue(201, ['ok' => true, 'data' => ['lead_id' => $record['id']]]);
 
     // A partir daqui o visitante já recebeu a resposta: uma falha de

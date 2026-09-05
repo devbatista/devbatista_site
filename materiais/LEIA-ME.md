@@ -8,10 +8,15 @@ Arquivos entregues após a conversão nas landing pages.
 | --- | --- |
 | `ebook-devbatista-sua-empresa-esta-perdendo-dinheir-com-a-ti.pdf` | `/sua-empresa-esta-perdendo-dinheiro-com-a-ti-sem-perceber` — e-book "Sua empresa está perdendo dinheiro com a TI sem perceber?" |
 
-O nome do arquivo está configurado em `js/ebook.js` (`CONFIG.ebookUrl` e
-`CONFIG.ebookFileName`) e no botão de fallback de
-`sua-empresa-esta-perdendo-dinheiro-com-a-ti-sem-perceber.html`. Se o PDF tiver
-outro nome, ajuste nos dois lugares.
+O PDF **não é entregue pela página**: `api/ebook.php` manda o link por e-mail
+depois que o visitante informa o endereço. A URL fica em `ebook_download_url`
+(`api/config.php`), gerado pelo deploy a partir de `.github/workflows/.main.yml`.
+Se o PDF mudar de nome, ajuste nesses dois lugares — o front não conhece mais
+o arquivo.
+
+Como o link é público, quem tiver o endereço baixa sem preencher nada. Isso é
+proposital: o mesmo link precisa funcionar quando o lead abrir o e-mail dias
+depois, em outro dispositivo.
 
 > O diretório se chama `materiais/` para ficar separado das páginas: um
 > diretório com o mesmo nome de uma página faria o Apache sequestrar a URL.

@@ -18,10 +18,9 @@
     // backend, um proxy ou um serviço externo.
     endpoint: '/api/ebook.php',
 
-    // Arquivo entregue após a conversão. Fica em /materiais/ e não em
-    // /ebook/: um diretório com esse nome sequestraria a URL da página.
-    ebookUrl: '/materiais/ebook-devbatista-sua-empresa-esta-perdendo-dinheir-com-a-ti.pdf',
-    ebookFileName: 'ebook-devbatista-sua-empresa-esta-perdendo-dinheir-com-a-ti.pdf',
+    // O PDF não é entregue aqui: o servidor manda o link por e-mail
+    // (ebook_download_url em api/config.php). Assim o endereço informado
+    // precisa existir de verdade para o material chegar.
 
     // Identifica a origem do lead no CRM.
     source: 'ebook-gestao-estrategica-ti',
@@ -35,6 +34,9 @@
   // Os nomes ficam centralizados aqui. Nada é instalado por este script:
   // ele apenas alimenta o que já existir na página (GTM, GA4, Meta Pixel).
   // ========================================
+  // 'ebook_download' virou "e-book enviado", já que a entrega passou a ser
+  // por e-mail. O nome do evento fica: renomear quebraria os relatórios
+  // já existentes no GA4 e no Meta.
   const EVENTS = {
     view: 'ebook_lp_view',
     formStarted: 'ebook_form_started',
@@ -80,13 +82,7 @@
     dom.panelForm = dom.card.querySelector('[data-ebook-panel="form"]');
     dom.panelSuccess = dom.card.querySelector('[data-ebook-panel="success"]');
     dom.successEmail = dom.card.querySelector('[data-ebook-success-email]');
-    dom.download = dom.card.querySelector('[data-ebook-download]');
     dom.live = dom.card.querySelector('[data-ebook-live]');
-
-    if (dom.download) {
-      dom.download.href = CONFIG.ebookUrl;
-      dom.download.setAttribute('download', CONFIG.ebookFileName);
-    }
 
     initNavScroll();
     initCoverFallback();
@@ -342,30 +338,10 @@
 
     if (dom.successEmail) dom.successEmail.textContent = email;
 
-    dom.live.textContent = 'E-book liberado. O download vai começar automaticamente.';
+    dom.live.textContent = 'E-book enviado para ' + email + '. Confira sua caixa de entrada.';
     dom.panelSuccess.focus({ preventScroll: true });
 
     trackConversion();
-    startDownload();
-  }
-
-  /**
-   * Dispara o download sem tirar o visitante da página.
-   * O botão do card de sucesso continua disponível: alguns navegadores
-   * bloqueiam downloads automáticos fora de um clique direto.
-   */
-  function startDownload() {
-    try {
-      const link = document.createElement('a');
-      link.href = CONFIG.ebookUrl;
-      link.download = CONFIG.ebookFileName;
-      link.rel = 'noopener';
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-    } catch (error) {
-      /* o botão visível cobre este caso */
-    }
   }
 
   // ========================================

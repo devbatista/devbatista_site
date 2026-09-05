@@ -42,9 +42,21 @@ return [
     'hubspot_deal_stage' => 'appointmentscheduled',
 
     // Landing page do e-book (api/ebook.php) — usa o mesmo hubspot_token.
-    // Cria o contato como subscriber; não abre negócio no pipeline.
+    // Cria o contato como subscriber e abre o negócio na etapa do e-book.
     'ebook_hubspot_enabled' => false,
     'ebook_hubspot_note' => true,
+    'ebook_pipeline' => 'default',
+    // ID da etapa "E-book". Vazio = não abre negócio (o contato ainda é
+    // criado). Os IDs saem de GET /crm/v3/pipelines/deals.
+    'ebook_deal_stage' => '',
+
+    // Entrega do material. A página não baixa mais o PDF: quem informa um
+    // e-mail falso não recebe nada.
+    'ebook_email_enabled' => false,
+    'ebook_download_url' => 'https://www.devbatista.com/materiais/ebook-devbatista-sua-empresa-esta-perdendo-dinheir-com-a-ti.pdf',
+    // Remetente do material — pessoal, não o leads@. Vazio cai em email_from.
+    'ebook_email_from' => 'rafael@devbatista.com',
+    'ebook_email_from_name' => 'Rafael Batista',
 
     // Notificação por e-mail — API do Amazon SES v2 (api/mailer.php).
     // Em produção estes valores vêm dos secrets do GitHub; ver a seção

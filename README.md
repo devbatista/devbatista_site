@@ -288,6 +288,42 @@ No sandbox o SES só entrega para endereços/domínios verificados. Como
 remetente e destinatário estão no mesmo domínio verificado, a notificação
 funciona sem sair do sandbox.
 
+### Landing page do e-book (`api/ebook.php`)
+
+O visitante informa o e-mail e **o PDF não é baixado na página** — o servidor
+envia o link por e-mail, pelo mesmo SES. Endereço inventado não recebe nada,
+o que filtra o lead na origem.
+
+Os dois e-mails do site saem de remetentes diferentes, de propósito:
+
+| E-mail | Sai de | Reply-To |
+|---|---|---|
+| Material para o lead | `Rafael Batista <rafael@devbatista.com>` | — (responder já cai nele) |
+| Aviso interno de lead qualificado | `DevBatista Leads <leads@devbatista.com>` | o próprio lead |
+
+O e-book é assinado pelo Rafael e promete resposta direta; sair de um
+`leads@` desmentiria isso. Ambos os endereços pertencem ao domínio verificado
+no SES, então nenhum precisa de verificação própria.
+
+Por isso o envio é **síncrono**, ao contrário das demais integrações: se o SES
+falhar, o endpoint responde `502` e o visitante vê a mensagem, em vez de ficar
+esperando um e-mail que nunca sairia. O lead já foi gravado antes disso, então
+nada se perde.
+
+No HubSpot o contato entra como `subscriber` e abre negócio na etapa
+`ebook_deal_stage`, que é a coluna de topo de funil do board. Quem depois
+preenche o diagnóstico **não ganha um segundo negócio**: o existente é movido
+para `hubspot_deal_stage` por [`hubspot_ensure_deal()`](api/leads.php#L788).
+Sem esse avanço o lead ficaria parado na coluna do e-book para sempre.
+
+Os IDs das etapas saem de:
+
+```bash
+curl -s https://api.hubapi.com/crm/v3/pipelines/deals \
+  -H "Authorization: Bearer $HUBSPOT_TOKEN" | jq -r \
+  '.results[] | .label, (.stages[] | "   \(.id)  \(.label)")'
+```
+
 ### Configuração e integrações
 
 A configuração é resolvida em três camadas, nesta ordem de precedência:
@@ -388,7 +424,8 @@ gerado que sobe por FTP.
 
 | Secret | Liga |
 |---|---|
-| `HUBSPOT_TOKEN` | HubSpot (junto com `HUBSPOT_PORTAL_ID`) |
+| `HUBSPOT_TOKEN` | HubSpot (junto com `HUBSPOT_PORTAL_ID`) — liga o diagnóstico **e** a landing page do e-book |
+| `HUBSPOT_EBOOK_STAGE` | ID da etapa onde o e-book abre negócio. Sem ele o contato é criado, mas nada aparece no board |
 | `LEADS_EMAIL_TO` + `AWS_SES_KEY` | Notificação por e-mail — precisa também de `AWS_SES_SECRET`, `AWS_SES_REGION` e `LEADS_EMAIL_FROM`. Opcional: `LEADS_EMAIL_TIERS` (`morno,quente` por padrão; `todos` inclui os frios) |
 | `WHATSAPP_TOKEN` | Notificação por WhatsApp (`WHATSAPP_ENDPOINT`, `WHATSAPP_TO`) |
 
