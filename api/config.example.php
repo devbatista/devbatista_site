@@ -41,6 +41,11 @@ return [
     'hubspot_pipeline' => 'default',
     'hubspot_deal_stage' => 'appointmentscheduled',
 
+    // Landing page do e-book (api/ebook.php) — usa o mesmo hubspot_token.
+    // Cria o contato como subscriber; não abre negócio no pipeline.
+    'ebook_hubspot_enabled' => false,
+    'ebook_hubspot_note' => true,
+
     // Notificação por e-mail (AWS SES ou SMTP)
     'email_enabled' => false,
     'email_to' => 'rafael@devbatista.com',

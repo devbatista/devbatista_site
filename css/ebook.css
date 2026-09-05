@@ -1,0 +1,860 @@
+/* ========================================
+   DevBatista - Landing page do e-book
+   Complementa css/style.css: só o que não existe lá.
+   Usa os mesmos tokens (:root de style.css).
+   ======================================== */
+
+/* ========================================
+   Base
+   ======================================== */
+
+/* O atributo hidden vem do UA stylesheet e perde para qualquer regra de
+   classe com display. Mensagens de erro e o painel de sucesso dependem
+   dele para começarem invisíveis. */
+[hidden] { display: none !important; }
+
+/* ========================================
+   Acessibilidade
+   ======================================== */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.skip-link {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translate(-50%, -120%);
+  z-index: 100;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0 0 0.5rem 0.5rem;
+  background: var(--cyan-400);
+  color: var(--bg-primary);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  transition: transform 0.2s;
+}
+
+.skip-link:focus-visible {
+  transform: translate(-50%, 0);
+}
+
+/* ========================================
+   Header
+   Reaproveita .nav / .nav-inner / .nav-logo de style.css — mesmo
+   comportamento do site: transparente no topo, escurece ao rolar
+   (.scrolled aplicado por js/ebook.js). Só o menu não existe aqui.
+   ======================================== */
+.lp-header-tag {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--slate-500);
+}
+
+@media (max-width: 599px) {
+  .lp-header-tag { display: none; }
+}
+
+/* ========================================
+   Hero
+   Mobile:  headline > mockup > benefícios+formulário
+   Desktop: mockup à esquerda | headline + benefícios + formulário
+   ======================================== */
+.lp-hero {
+  position: relative;
+  overflow-x: clip;
+  padding-top: calc(var(--nav-h) + clamp(1.25rem, 0.8rem + 1.6vw, 2.25rem));
+  padding-bottom: clamp(3rem, 2rem + 4vw, 5rem);
+}
+
+.lp-hero .grid-bg {
+  position: absolute;
+  inset: 0;
+  opacity: 0.18;
+  pointer-events: none;
+}
+
+.lp-hero-grid {
+  position: relative;
+  display: grid;
+  gap: 2.25rem;
+  grid-template-areas:
+    "copy"
+    "cover"
+    "panel";
+}
+
+.lp-hero-copy { grid-area: copy; }
+.lp-hero-cover { grid-area: cover; }
+.lp-hero-panel { grid-area: panel; }
+
+@media (min-width: 1024px) {
+  .lp-hero-grid {
+    grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
+    grid-template-areas:
+      "cover copy"
+      "cover panel";
+    column-gap: 3.5rem;
+    row-gap: 1.5rem;
+    align-items: start;
+  }
+
+  .lp-hero-cover { align-self: center; }
+}
+
+.lp-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.8rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(22, 78, 99, 0.6);
+  background: rgba(8, 51, 68, 0.35);
+  color: var(--cyan-400);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: 1.25rem;
+}
+
+.lp-badge .lp-badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--cyan-400);
+  flex-shrink: 0;
+}
+
+.lp-title {
+  font-size: var(--fs-h1);
+  font-weight: 700;
+  color: var(--white);
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+@media (min-width: 1280px) {
+  .lp-title { font-size: clamp(2.25rem, 1.6rem + 1.7vw, 3rem); }
+}
+
+.lp-subtitle {
+  margin-top: 1rem;
+  font-size: var(--fs-lead);
+  line-height: 1.6;
+  color: var(--slate-300);
+  max-width: 38rem;
+}
+
+.lp-kicker {
+  margin-top: 0.75rem;
+  font-size: var(--fs-sm);
+  color: var(--slate-400);
+  max-width: 40rem;
+}
+
+/* ========================================
+   Mockup do e-book
+   Capa real em /images/ebook-capa.png; enquanto ela não existir,
+   o JS marca .is-fallback e a capa desenhada em CSS assume.
+   ======================================== */
+.ebook-mockup {
+  /* Contido no mobile: o formulário precisa aparecer rápido na rolagem. */
+  max-width: 15rem;
+  margin: 0 auto;
+  perspective: 1600px;
+}
+
+@media (min-width: 640px) {
+  .ebook-mockup { max-width: 20rem; }
+}
+
+@media (min-width: 1024px) {
+  .ebook-mockup { max-width: 22.5rem; }
+}
+
+.ebook-book {
+  position: relative;
+  aspect-ratio: 1 / 1.414;
+  transform: rotateY(-17deg) rotateX(2deg);
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  border-radius: 0.2rem 0.6rem 0.6rem 0.2rem;
+  box-shadow:
+    -6px 0 0 rgba(2, 8, 23, 0.5),
+    28px 32px 70px rgba(2, 8, 23, 0.75),
+    0 0 0 1px rgba(148, 163, 184, 0.12);
+}
+
+.ebook-mockup:hover .ebook-book,
+.ebook-mockup:focus-within .ebook-book {
+  transform: rotateY(-9deg) rotateX(1deg);
+}
+
+/* Bloco de páginas: fatia fina girada 90° na borda direita. */
+.ebook-book-pages {
+  position: absolute;
+  top: 1.5%;
+  bottom: 1.5%;
+  right: 0;
+  width: 20px;
+  transform-origin: right center;
+  transform: rotateY(90deg);
+  background: repeating-linear-gradient(
+    90deg,
+    #cbd5e1 0 1px,
+    #f1f5f9 1px 3px
+  );
+  border-radius: 1px;
+}
+
+.ebook-book-face {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  background: linear-gradient(155deg, #0f2434 0%, #0b1120 55%, #071018 100%);
+}
+
+/* Filho direto de propósito: o logo da capa desenhada também é um <img>
+   aqui dentro e não pode herdar o object-fit da capa. */
+.ebook-book-face > picture {
+  position: absolute;
+  inset: 0;
+}
+
+.ebook-book-face > picture img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ebook-mockup.is-fallback .ebook-book-face > picture { display: none; }
+
+/* Lombada + brilho de papel, por cima da capa (real ou fallback). */
+.ebook-book-face::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.45) 0%,
+      rgba(0, 0, 0, 0.18) 3.5%,
+      rgba(255, 255, 255, 0.1) 5.5%,
+      rgba(255, 255, 255, 0) 16%,
+      rgba(255, 255, 255, 0) 82%,
+      rgba(255, 255, 255, 0.06) 100%
+    );
+}
+
+/* Capa desenhada — usada só até a capa real do PDF ser publicada. */
+.ebook-cover-fallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 12% 9% 9% 13%;
+  color: var(--white);
+}
+
+.ebook-cover-fallback::before {
+  content: "";
+  position: absolute;
+  top: -30%;
+  right: -35%;
+  width: 80%;
+  height: 60%;
+  background: rgba(34, 211, 238, 0.16);
+  filter: blur(50px);
+  border-radius: 50%;
+}
+
+.ebook-cover-logo {
+  height: 1.25rem;
+  width: auto;
+  align-self: flex-start;
+  margin-bottom: auto;
+  position: relative;
+  filter: brightness(0) invert(1);
+  opacity: 0.9;
+}
+
+.ebook-cover-kicker {
+  position: relative;
+  font-size: 0.5rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--cyan-400);
+  margin-bottom: 0.6rem;
+}
+
+.ebook-cover-title {
+  position: relative;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  line-height: 1.22;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.ebook-cover-rule {
+  position: relative;
+  width: 2.25rem;
+  height: 2px;
+  background: var(--cyan-400);
+  margin: 0.85rem 0;
+}
+
+.ebook-cover-text {
+  position: relative;
+  font-size: 0.5625rem;
+  line-height: 1.5;
+  color: var(--slate-400);
+}
+
+.ebook-cover-foot {
+  position: relative;
+  margin-top: 1.1rem;
+  font-size: 0.5rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--slate-500);
+}
+
+.ebook-mockup-note {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.75rem;
+}
+
+.ebook-mockup-note span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(30, 41, 59, 1);
+  background: rgba(15, 23, 42, 0.7);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--slate-300);
+}
+
+.ebook-mockup-note svg {
+  width: 0.875rem;
+  height: 0.875rem;
+  color: var(--cyan-400);
+  flex-shrink: 0;
+}
+
+/* ========================================
+   Benefícios
+   ======================================== */
+.ebook-benefits-title {
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 1rem;
+}
+
+.ebook-benefits {
+  list-style: none;
+  display: grid;
+  gap: 0.7rem;
+  margin: 0 0 1.5rem;
+  padding: 0;
+}
+
+.ebook-benefits li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: 0.75rem;
+  color: var(--slate-300);
+  font-size: var(--fs-sm);
+  line-height: 1.6;
+}
+
+.ebook-check {
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 0.375rem;
+  background: rgba(34, 211, 238, 0.12);
+  color: var(--cyan-400);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.1rem;
+  flex-shrink: 0;
+}
+
+.ebook-check svg { width: 0.75rem; height: 0.75rem; }
+
+/* ========================================
+   Card do formulário
+   ======================================== */
+.ebook-form-card {
+  position: relative;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(34, 211, 238, 0.3);
+  border-radius: var(--radius-xl);
+  padding: 1.5rem;
+  box-shadow: 0 24px 60px rgba(2, 8, 23, 0.55);
+  scroll-margin-top: calc(var(--nav-h) + 1rem);
+}
+
+@media (min-width: 640px) {
+  .ebook-form-card { padding: 2rem; }
+}
+
+.ebook-form-card::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(140deg, rgba(34, 211, 238, 0.35), transparent 45%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.ebook-form-title {
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: var(--white);
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+}
+
+.ebook-form-text {
+  margin-top: 0.5rem;
+  margin-bottom: 1.5rem;
+  font-size: var(--fs-sm);
+  color: var(--slate-400);
+  line-height: 1.6;
+}
+
+.ebook-form-field { margin-bottom: 1rem; }
+
+.ebook-form .form-input {
+  padding: 0.875rem 1rem;
+  font-size: 0.9375rem;
+}
+
+.ebook-form .form-input[aria-invalid="true"] {
+  border-color: #f87171;
+}
+
+.ebook-form .form-input[aria-invalid="true"]:focus {
+  box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.12);
+}
+
+.ebook-field-error {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+  font-size: var(--fs-xs);
+  color: #fca5a5;
+}
+
+.ebook-field-error svg { width: 0.875rem; height: 0.875rem; flex-shrink: 0; }
+
+.ebook-submit {
+  width: 100%;
+  padding: 1rem 1.5rem;
+  font-size: 0.9375rem;
+  letter-spacing: 0.02em;
+}
+
+.ebook-submit[disabled] {
+  opacity: 0.7;
+  cursor: progress;
+}
+
+.ebook-spinner {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  border: 2px solid rgba(11, 17, 32, 0.25);
+  border-top-color: var(--bg-primary);
+  animation: ebook-spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes ebook-spin { to { transform: rotate(360deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .ebook-spinner { animation-duration: 1.4s !important; }
+}
+
+.ebook-secure {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  margin-top: 1rem;
+  font-size: var(--fs-xs);
+  color: var(--slate-400);
+}
+
+.ebook-secure svg { width: 0.875rem; height: 0.875rem; color: var(--emerald-400); flex-shrink: 0; }
+
+.ebook-consent {
+  margin-top: 0.6rem;
+  text-align: center;
+  font-size: 0.6875rem;
+  line-height: 1.5;
+  color: var(--slate-500);
+}
+
+.ebook-consent a {
+  color: var(--slate-400);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.ebook-consent a:hover { color: var(--cyan-400); }
+
+/* Erro geral do envio (rede, servidor) */
+.ebook-form-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin-top: 1rem;
+  padding: 0.75rem 0.875rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(248, 113, 113, 0.3);
+  background: rgba(127, 29, 29, 0.18);
+  font-size: var(--fs-xs);
+  line-height: 1.55;
+  color: #fecaca;
+}
+
+.ebook-form-alert svg { width: 0.9375rem; height: 0.9375rem; flex-shrink: 0; margin-top: 0.1rem; }
+
+/* Honeypot: fora da tela, invisível para gente, tentador para bot. */
+.ebook-hp {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ========================================
+   Estado de sucesso
+   ======================================== */
+.ebook-success { text-align: center; }
+
+.ebook-success-icon {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 9999px;
+  margin: 0 auto 1.125rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(52, 211, 153, 0.12);
+  color: var(--emerald-400);
+  border: 1px solid rgba(52, 211, 153, 0.3);
+}
+
+.ebook-success-icon svg { width: 1.375rem; height: 1.375rem; }
+
+.ebook-success h2 {
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: var(--white);
+  line-height: 1.25;
+}
+
+.ebook-success p {
+  margin: 0.65rem auto 1.5rem;
+  max-width: 26rem;
+  font-size: var(--fs-sm);
+  color: var(--slate-400);
+  line-height: 1.65;
+}
+
+.ebook-success-note {
+  margin-top: 1rem !important;
+  margin-bottom: 0 !important;
+  font-size: var(--fs-xs) !important;
+}
+
+/* ========================================
+   Garantias abaixo do formulário
+   ======================================== */
+.ebook-assurances {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem 1.25rem;
+  margin: 1.5rem 0 0;
+  padding: 0;
+}
+
+.ebook-assurances li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: var(--fs-xs);
+  color: var(--slate-400);
+}
+
+.ebook-assurances svg {
+  width: 0.875rem;
+  height: 0.875rem;
+  color: var(--cyan-400);
+  flex-shrink: 0;
+}
+
+/* ========================================
+   Seções internas
+   ======================================== */
+.lp-section {
+  padding-top: var(--space-block);
+  padding-bottom: var(--space-block);
+  position: relative;
+}
+
+.lp-section-head {
+  max-width: 46rem;
+  margin: 0 auto clamp(2rem, 1.4rem + 2vw, 3rem);
+  text-align: center;
+}
+
+.lp-section-head p {
+  margin-top: 1rem;
+  font-size: var(--fs-lead);
+  color: var(--slate-400);
+  line-height: 1.65;
+}
+
+/* Cards de problema */
+.lp-problem-card h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 0.5rem;
+}
+
+.lp-problem-card p {
+  font-size: var(--fs-sm);
+  color: var(--slate-400);
+  line-height: 1.6;
+}
+
+.lp-problem-card .icon-box { margin-bottom: 1rem; }
+
+.lp-closing {
+  margin-top: clamp(2rem, 1.4rem + 2vw, 3rem);
+  text-align: center;
+}
+
+.lp-closing p {
+  font-size: var(--fs-lead);
+  color: var(--slate-300);
+  max-width: 44rem;
+  margin: 0 auto 1.75rem;
+  line-height: 1.6;
+  text-wrap: balance;
+}
+
+/* ========================================
+   Checklist
+   ======================================== */
+.lp-checklist-panel {
+  display: grid;
+  gap: 2rem;
+  padding: clamp(1.5rem, 1rem + 2vw, 2.75rem);
+  border-radius: var(--radius-2xl);
+  border: 1px solid rgba(22, 78, 99, 0.45);
+  background:
+    radial-gradient(120% 120% at 0% 0%, rgba(8, 51, 68, 0.5), transparent 60%),
+    rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+@media (min-width: 900px) {
+  .lp-checklist-panel {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+    gap: 3rem;
+    align-items: center;
+  }
+}
+
+.lp-checklist-copy h2 { margin-bottom: 1rem; }
+
+.lp-checklist-copy p {
+  font-size: var(--fs-sm);
+  color: var(--slate-400);
+  line-height: 1.7;
+}
+
+.lp-checklist-copy p + p { margin-top: 1rem; }
+
+.lp-checklist-items {
+  list-style: none;
+  display: grid;
+  gap: 0.625rem;
+  margin: 0;
+  padding: 0;
+}
+
+.lp-checklist-items li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  border-radius: 0.625rem;
+  border: 1px solid rgba(30, 41, 59, 1);
+  background: rgba(11, 17, 32, 0.6);
+  font-size: var(--fs-sm);
+  color: var(--slate-300);
+  line-height: 1.5;
+}
+
+.lp-checkbox {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 0.25rem;
+  border: 1.5px solid var(--slate-600);
+  margin-top: 0.15rem;
+  flex-shrink: 0;
+}
+
+.lp-checklist-more {
+  margin-top: 1rem;
+  font-size: var(--fs-xs);
+  color: var(--slate-500);
+  text-align: center;
+}
+
+/* ========================================
+   Autoridade
+   ======================================== */
+.lp-authority {
+  max-width: 52rem;
+  margin: 0 auto;
+  text-align: center;
+  padding: clamp(1.75rem, 1.2rem + 2vw, 2.75rem);
+}
+
+.lp-authority h2 {
+  font-size: var(--fs-h3);
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 0.35rem;
+}
+
+.lp-authority-role {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--cyan-400);
+  margin-bottom: 1.25rem;
+}
+
+.lp-authority p {
+  font-size: var(--fs-sm);
+  color: var(--slate-400);
+  line-height: 1.75;
+  max-width: 44rem;
+  margin: 0 auto;
+}
+
+.lp-authority .chip-row {
+  justify-content: center;
+  margin-top: 1.75rem;
+}
+
+.lp-authority-logo {
+  height: 2rem;
+  width: auto;
+  margin: 0 auto 1.25rem;
+  filter: brightness(0) invert(1);
+  opacity: 0.85;
+}
+
+/* ========================================
+   CTA final
+   ======================================== */
+.lp-final {
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+  padding: clamp(2.5rem, 1.8rem + 3vw, 4rem) clamp(1.25rem, 1rem + 2vw, 3rem);
+  border-radius: var(--radius-2xl);
+  border: 1px solid rgba(22, 78, 99, 0.5);
+  background:
+    radial-gradient(90% 140% at 50% 0%, rgba(8, 51, 68, 0.65), transparent 65%),
+    rgba(11, 17, 32, 0.75);
+}
+
+.lp-final h2 {
+  max-width: 40rem;
+  margin: 0 auto;
+}
+
+.lp-final p {
+  max-width: 38rem;
+  margin: 1.25rem auto 2rem;
+  font-size: var(--fs-lead);
+  color: var(--slate-400);
+  line-height: 1.65;
+}
+
+/* ========================================
+   Footer minimalista
+   ======================================== */
+.lp-footer {
+  border-top: 1px solid rgba(30, 41, 59, 0.7);
+  background: #080d1a;
+}
+
+.lp-footer-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1.5rem;
+  padding: 1.75rem 0;
+  font-size: var(--fs-xs);
+  color: var(--slate-500);
+}
+
+.lp-footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+}
+
+.lp-footer-links a { color: var(--slate-400); transition: color 0.3s; }
+.lp-footer-links a:hover { color: var(--white); }

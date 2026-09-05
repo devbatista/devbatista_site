@@ -36,6 +36,10 @@ function lead_config(): array
         'hubspot_pipeline' => 'default',              // "Novos negócios"
         'hubspot_deal_stage' => 'appointmentscheduled', // "Oportunidade identificada"
         'hubspot_properties' => [],     // ['diagnostic_score' => 'nome_da_prop_no_portal']
+        // Landing page do e-book (api/ebook.php). Topo de funil: cria o
+        // contato como subscriber, sem abrir negócio no pipeline.
+        'ebook_hubspot_enabled' => false,
+        'ebook_hubspot_note' => true,   // registra a origem/UTM como nota no contato
         'email_enabled' => false,
         'email_to' => '',
         'email_from' => '',
