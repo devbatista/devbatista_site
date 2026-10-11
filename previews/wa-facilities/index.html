@@ -1,0 +1,1558 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Roboto:wght@400;500;700&family=Roboto+Mono&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,300..500,0..1,0&display=block" rel="stylesheet">
+<link rel="stylesheet" href="assets/app.css">
+<script src="assets/app.js"></script>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div class="app-stack">
+	<!-- Barra do protótipo: troca de perfil (gestor / supervisor / prestador) -->
+	<sc-if value="{{ showRoleBar }}" hint-placeholder-val="{{ true }}">
+		<div class="rolebar-row-1">
+			<span class="rolebar-text-1">Protótipo navegável</span>
+			<span class="rolebar-text-2">Ver como:</span>
+			<div class="rolebar-row-2">
+				<sc-for list="{{ roles }}" as="r" hint-placeholder-count="3">
+					<button onClick="{{ r.onPick }}" class="rolebar-btn {{ r.cls }}">{{ r.label }}</button>
+				</sc-for>
+			</div>
+			<span class="rolebar-text-3">Data simulada: terça-feira, 20/10/2026 · 10:40</span>
+		</div>
+	</sc-if>
+	<!-- ===== DESKTOP (gestor e supervisor) ===== -->
+	<sc-if value="{{ isDesktop }}" hint-placeholder-val="{{ true }}">
+		<div class="app-row-1">
+			<aside class="app-aside">
+				<img src="assets/logo-wa.webp" alt="WA Facilities" class="app-img">
+				<div class="app-box-1">Gestão de serviços</div>
+				<nav class="app-nav">
+					<sc-for list="{{ nav1 }}" as="n" hint-placeholder-count="3">
+						<button onClick="{{ n.onGo }}" class="app-btn {{ n.cls }}">
+							<span class="icon ui-icon-1">{{ n.icon }}</span>
+							<span class="ui-text-1">{{ n.label }}</span>
+							<sc-if value="{{ n.hasBadge }}">
+								<span title="Sem responsável" class="app-text-1 {{ n.badgeCls }}">{{ n.badge }}</span>
+							</sc-if>
+						</button>
+					</sc-for>
+				</nav>
+				<div class="app-row-2">
+					<span class="app-text-2">Segunda etapa</span>
+					<span class="app-text-3">
+					</span>
+				</div>
+				<nav class="app-nav">
+					<sc-for list="{{ nav2 }}" as="n" hint-placeholder-count="2">
+						<button onClick="{{ n.onGo }}" class="app-btn {{ n.cls }}">
+							<span class="icon ui-icon-1">{{ n.icon }}</span>
+							<span class="ui-text-1">{{ n.label }}</span>
+							<sc-if value="{{ n.hasBadge }}">
+								<span class="app-text-1 {{ n.badgeCls }}">{{ n.badge }}</span>
+							</sc-if>
+							<span class="ui-text-2">Etapa 2</span>
+						</button>
+					</sc-for>
+				</nav>
+				<div class="app-row-3">
+					<span class="app-circle">{{ user.i }}</span>
+					<div class="ui-box-1">
+						<div class="app-box-2">{{ user.nome }}</div>
+						<div class="app-box-3">{{ user.perfil }}</div>
+					</div>
+				</div>
+			</aside>
+			<main class="app-main">
+				<!-- Tela: Agenda (semana / dia / lista) -->
+				<sc-if value="{{ v.agenda }}" hint-placeholder-val="{{ true }}">
+					<div class="agenda-stack-1">
+						<div class="ui-row-1">
+							<div class="agenda-box-1">
+								<div class="ui-box-2">{{ greeting }}</div>
+								<h1 class="ui-title-1">Agenda</h1>
+							</div>
+							<button onClick="{{ openNew }}" class="ui-btn-primary-1">
+								<span class="icon ui-icon-2">add</span>Novo serviço</button>
+						</div>
+						<div class="agenda-row-1">
+							<div class="ui-row-2">
+								<button onClick="{{ navPrev }}" aria-label="Anterior" class="agenda-btn-1">
+									<span class="icon ui-icon-1">chevron_left</span>
+								</button>
+								<button onClick="{{ navNext }}" aria-label="Próximo" class="agenda-btn-1">
+									<span class="icon ui-icon-1">chevron_right</span>
+								</button>
+								<button onClick="{{ goToday }}" class="agenda-btn-2">Hoje</button>
+								<div class="agenda-box-2">{{ rangeLabel }}</div>
+							</div>
+							<div class="agenda-row-2">
+								<sc-for list="{{ amodes }}" as="m" hint-placeholder-count="3">
+									<button onClick="{{ m.onPick }}" class="agenda-btn-3 {{ m.cls }}">
+										<span class="icon ui-icon-3">{{ m.icon }}</span>{{ m.label }}</button>
+								</sc-for>
+							</div>
+						</div>
+						<div class="agenda-row-3">
+							<span class="icon agenda-icon-1">filter_list</span>
+							{{ selPrest }}
+							{{ selStatus }}
+							<span class="agenda-text-1">
+							</span>
+							<sc-for list="{{ alertChips }}" as="c" hint-placeholder-count="3">
+								<button onClick="{{ c.onPick }}" class="agenda-btn-4 {{ c.cls }}">
+									<span class="icon ui-icon-4">{{ c.icon }}</span>{{ c.label }}</button>
+							</sc-for>
+							<sc-if value="{{ hasFilters }}">
+								<button onClick="{{ clearFilters }}" class="agenda-btn-5">Limpar filtros</button>
+							</sc-if>
+						</div>
+					</div>
+					<sc-if value="{{ ag.loading }}">
+						<div class="agenda-grid-1" aria-busy="true">
+							<sc-for list="{{ skCols }}" as="k" hint-placeholder-count="6">
+								<div class="ui-stack-1">
+									<div class="agenda-box-3">
+									</div>
+									<sc-for list="{{ k.cards }}" as="c">
+										<div class="agenda-stack-2 {{ c.cls }}">
+											<div class="agenda-box-4">
+											</div>
+											<div class="agenda-box-5">
+											</div>
+											<div class="agenda-box-6">
+											</div>
+										</div>
+									</sc-for>
+								</div>
+							</sc-for>
+						</div>
+						<div class="agenda-box-7">Carregando agenda…</div>
+					</sc-if>
+					<sc-if value="{{ ag.error }}">
+						<div class="agenda-stack-3">
+							<span class="icon agenda-circle-1">cloud_off</span>
+							<div class="ui-box-3">Não foi possível carregar a agenda</div>
+							<div class="agenda-box-8">Verifique sua conexão com a internet e tente novamente. Nenhum dado foi perdido.</div>
+							<button onClick="{{ retry }}" class="agenda-btn-primary">
+								<span class="icon ui-icon-2">refresh</span>Tentar novamente</button>
+						</div>
+					</sc-if>
+					<sc-if value="{{ ag.empty }}">
+						<div class="agenda-stack-4">
+							<span class="icon ui-circle-1">event_available</span>
+							<div class="ui-box-3">{{ ag.emptyTitle }}</div>
+							<div class="agenda-box-8">Cadastre um serviço para montar a programação. Você pode salvar sem prestador e distribuir a equipe depois.</div>
+							<button onClick="{{ openNew }}" class="agenda-btn-primary">
+								<span class="icon ui-icon-2">add</span>Novo serviço</button>
+						</div>
+					</sc-if>
+					<sc-if value="{{ ag.emptyF }}">
+						<div class="agenda-stack-5">
+							<span class="icon agenda-icon-2">filter_alt_off</span>
+							<div class="agenda-box-9">Nenhum serviço com estes filtros</div>
+							<button onClick="{{ clearFilters }}" class="agenda-btn-6">Limpar filtros</button>
+						</div>
+					</sc-if>
+					<sc-if value="{{ ag.week }}" hint-placeholder-val="{{ true }}">
+						<div class="agenda-grid-2">
+							<sc-for list="{{ weekDays }}" as="d" hint-placeholder-count="6">
+								<div class="agenda-stack-6">
+									<button onClick="{{ d.onDay }}" title="Ver o dia" class="agenda-btn-7 {{ d.cls }}">
+										<span class="ui-text-3">{{ d.label }}</span>
+										<span class="ui-text-4">{{ d.dateBr }}</span>
+										<span class="agenda-text-2">{{ d.countTxt }}</span>
+									</button>
+									<sc-for list="{{ d.items }}" as="s" hint-placeholder-count="2">
+										<button onClick="{{ s.onOpen }}" class="agenda-btn-8 {{ s.stateCls }}">
+											<div class="agenda-row-4">
+												<span class="agenda-text-3">{{ s.hora }}</span>
+												<sc-if value="{{ s.isRec }}">
+													<span title="{{ s.recTxt }}" class="icon agenda-icon-3">event_repeat</span>
+												</sc-if>
+											</div>
+											<span class="agenda-pill {{ s.st.cls }}">
+												<span class="icon ui-text-4">{{ s.st.icon }}</span>{{ s.st.label }}</span>
+											<div class="agenda-box-10 {{ s.stateCls }}">{{ s.cliente }}</div>
+											<div class="agenda-box-11">{{ s.localNome }} · {{ s.bairro }}</div>
+											<div class="agenda-box-12">{{ s.tipo }}</div>
+											<sc-if value="{{ s.hasResp }}">
+												<div class="agenda-row-5">
+													<div class="agenda-row-6">
+														<sc-for list="{{ s.avatars }}" as="a">
+															<span class="agenda-circle-2">{{ a.i }}</span>
+														</sc-for>
+													</div>
+													<span class="agenda-text-4">{{ s.respTxt }}</span>
+												</div>
+											</sc-if>
+											<sc-if value="{{ s.hasAlert }}">
+												<div class="agenda-stack-7">
+													<sc-if value="{{ s.semResp }}">
+														<span class="agenda-row-7">
+															<span class="icon ui-icon-5">person_off</span>Sem responsável</span>
+													</sc-if>
+													<sc-if value="{{ s.ocorr }}">
+														<span class="agenda-row-8">
+															<span class="icon ui-icon-5">report</span>Ocorrência</span>
+													</sc-if>
+													<sc-if value="{{ s.conflito }}">
+														<span class="agenda-row-9">
+															<span class="icon ui-icon-5">event_busy</span>Conflito de horário</span>
+													</sc-if>
+												</div>
+											</sc-if>
+										</button>
+									</sc-for>
+									<sc-if value="{{ d.none }}">
+										<div class="agenda-box-13">Sem serviços</div>
+									</sc-if>
+								</div>
+							</sc-for>
+						</div>
+					</sc-if>
+					<sc-if value="{{ ag.day }}">
+						<div class="ui-box-4">
+							<div class="ui-box-5">
+								<div class="agenda-box-14">
+									<div class="agenda-grid-3">
+										<div class="agenda-box-15">Prestador</div>
+										<div class="agenda-box-16">
+											<sc-for list="{{ hours }}" as="h">
+												<span class="agenda-text-5 {{ h.cls }}">{{ h.label }}</span>
+											</sc-for>
+										</div>
+									</div>
+									<sc-for list="{{ dayRows }}" as="r" hint-placeholder-count="6">
+										<div class="agenda-grid-4 {{ r.cls }}">
+											<div class="agenda-row-10">
+												<sc-if value="{{ r.notSem }}">
+													<span class="ui-circle-2">{{ r.i }}</span>
+												</sc-if>
+												<sc-if value="{{ r.isSem }}">
+													<span class="icon agenda-circle-3">person_off</span>
+												</sc-if>
+												<div class="ui-box-1">
+													<div class="ui-box-6">{{ r.nome }}</div>
+													<div class="agenda-box-17 {{ r.subCls }}">{{ r.sub }}</div>
+												</div>
+											</div>
+											<div class="agenda-box-18 {{ r.hCls }}">
+												<sc-for list="{{ hours }}" as="h">
+													<div class="agenda-box-19 {{ h.cls }}">
+													</div>
+												</sc-for>
+												<sc-if value="{{ isTodayDay }}">
+													<div class="agenda-box-20">
+													</div>
+												</sc-if>
+												<sc-for list="{{ r.items }}" as="b">
+													<button onClick="{{ b.onOpen }}" title="{{ b.cliente }} · {{ b.hora }}" class="agenda-btn-9 {{ b.stateCls }} {{ b.posCls }}">
+														<span class="agenda-row-11">
+															<span class="agenda-circle-4 {{ b.st.cls }}">
+															</span>{{ b.hora }}<sc-if value="{{ b.ocorr }}">
+																<span class="icon agenda-icon-4">report</span>
+															</sc-if>
+															<sc-if value="{{ b.conflito }}">
+																<span class="icon agenda-icon-5">event_busy</span>
+															</sc-if>
+														</span>
+														<span class="agenda-text-6">{{ b.cliente }}</span>
+													</button>
+												</sc-for>
+											</div>
+										</div>
+									</sc-for>
+								</div>
+							</div>
+							<div class="agenda-row-12">
+								<span class="agenda-row-13">
+									<span class="agenda-text-7">
+									</span>Sem responsável</span>
+								<span class="agenda-row-13">
+									<span class="agenda-text-8">
+									</span>Conflito: mesmo prestador em dois serviços</span>
+								<span class="agenda-row-13">
+									<span class="agenda-text-9">
+									</span>Agora (10:40)</span>
+							</div>
+						</div>
+					</sc-if>
+					<sc-if value="{{ ag.list }}">
+						<div class="ui-box-4">
+							<div class="ui-box-5">
+								<div class="agenda-box-21">
+									<div class="agenda-grid-5">
+										<span>Data</span>
+										<span>Horário</span>
+										<span>Cliente e local</span>
+										<span>Tipo de serviço</span>
+										<span>Responsáveis</span>
+										<span>Status</span>
+										<span>Alertas</span>
+									</div>
+									<sc-for list="{{ listRows }}" as="s" hint-placeholder-count="8">
+										<button onClick="{{ s.onOpen }}" class="agenda-btn-10 {{ s.stateCls }}">
+											<span>{{ s.dataCurta }}</span>
+											<span class="ui-text-5">{{ s.hora }}</span>
+											<span class="ui-box-1">
+												<span class="ui-text-6 {{ s.stateCls }}">{{ s.cliente }}</span>
+												<span class="agenda-text-10">{{ s.localNome }} · {{ s.bairro }}</span>
+											</span>
+											<span class="ui-text-7">{{ s.tipo }}</span>
+											<span class="ui-text-7">{{ s.respTxt }}</span>
+											<span class="ui-pill-1 {{ s.st.cls }}">
+												<span class="icon ui-text-4">{{ s.st.icon }}</span>{{ s.st.label }}</span>
+											<span class="agenda-stack-8">
+												<sc-if value="{{ s.semResp }}">
+													<span class="agenda-row-14">
+														<span class="icon ui-icon-6">person_off</span>Sem responsável</span>
+												</sc-if>
+												<sc-if value="{{ s.ocorr }}">
+													<span class="agenda-row-15">
+														<span class="icon ui-icon-6">report</span>Ocorrência</span>
+												</sc-if>
+												<sc-if value="{{ s.conflito }}">
+													<span class="agenda-row-16">
+														<span class="icon ui-icon-6">event_busy</span>Conflito</span>
+												</sc-if>
+											</span>
+										</button>
+									</sc-for>
+								</div>
+							</div>
+						</div>
+					</sc-if>
+				</sc-if>
+				<!-- Tela: Clientes -->
+				<sc-if value="{{ v.clientes }}">
+					<div class="ui-stack-2">
+						<div class="ui-row-1">
+							<div class="ui-text-1">
+								<div class="ui-box-2">{{ cliCount }}</div>
+								<h1 class="ui-title-1">Clientes</h1>
+							</div>
+							<button onClick="{{ openNewCli }}" class="ui-btn-primary-1">
+								<span class="icon ui-icon-2">person_add</span>Novo cliente</button>
+						</div>
+						<div class="clientes-row-1">
+							<div class="clientes-box-1">
+								<span class="icon clientes-icon">search</span>
+								<input value="{{ cliQ }}" onChange="{{ onCliQ }}" placeholder="Buscar por nome ou telefone" class="clientes-input">
+							</div>
+							<div class="ui-row-3">
+								<sc-for list="{{ cliTabs }}" as="t" hint-placeholder-count="3">
+									<button onClick="{{ t.onPick }}" class="ui-btn-1 {{ t.cls }}">{{ t.label }}</button>
+								</sc-for>
+							</div>
+						</div>
+					</div>
+					<div class="ui-box-4">
+						<div class="ui-box-5">
+							<div class="clientes-box-2">
+								<div class="clientes-grid">
+									<span>Cliente</span>
+									<span>Tipo</span>
+									<span>Locais</span>
+									<span>Último serviço</span>
+									<span>Próximo serviço</span>
+									<span>Total</span>
+									<span>
+									</span>
+								</div>
+								<sc-for list="{{ cliRows }}" as="c" hint-placeholder-count="8">
+									<button onClick="{{ c.onOpen }}" class="clientes-btn">
+										<span class="clientes-row-2">
+											<span class="clientes-text">{{ c.i }}</span>
+											<span class="ui-box-1">
+												<span class="ui-text-6">{{ c.nome }}</span>
+												<span class="ui-text-8">{{ c.tel }}</span>
+											</span>
+										</span>
+										<span class="ui-pill-1 {{ c.ts.cls }}">
+											<span class="icon ui-text-4">{{ c.ts.icon }}</span>{{ c.tipo }}</span>
+										<span class="ui-text-7">{{ c.nLoc }}</span>
+										<span class="ui-text-7">{{ c.ultimo }}</span>
+										<span class="ui-text-7">{{ c.proximo }}</span>
+										<span class="ui-text-7">{{ c.total }}</span>
+										<span class="icon ui-icon-7">chevron_right</span>
+									</button>
+								</sc-for>
+								<sc-if value="{{ noCli }}">
+									<div class="ui-box-7">Nenhum cliente encontrado para “{{ cliQ }}”.</div>
+								</sc-if>
+							</div>
+						</div>
+					</div>
+				</sc-if>
+				<!-- Tela: Equipe -->
+				<sc-if value="{{ v.equipe }}">
+					<div class="ui-stack-2">
+						<div class="ui-row-1">
+							<div class="ui-text-1">
+								<div class="ui-box-2">{{ memCount }}</div>
+								<h1 class="ui-title-1">Equipe</h1>
+							</div>
+							<button onClick="{{ openNewMem }}" class="ui-btn-primary-1">
+								<span class="icon ui-icon-2">person_add</span>Novo membro</button>
+						</div>
+						<div class="ui-row-4">
+							<sc-for list="{{ memTabs }}" as="t" hint-placeholder-count="3">
+								<button onClick="{{ t.onPick }}" class="ui-btn-1 {{ t.cls }}">{{ t.label }}</button>
+							</sc-for>
+						</div>
+					</div>
+					<div class="ui-box-4">
+						<div class="ui-box-5">
+							<div class="equipe-box">
+								<div class="equipe-grid">
+									<span>Nome</span>
+									<span>Telefone</span>
+									<span>Perfil de acesso</span>
+									<span>Situação</span>
+									<span>Esta semana</span>
+									<span>
+									</span>
+								</div>
+								<sc-for list="{{ memRows }}" as="p" hint-placeholder-count="10">
+									<button onClick="{{ p.onOpen }}" class="equipe-btn">
+										<span class="ui-row-5">
+											<span class="equipe-circle">{{ p.i }}</span>
+											<span class="ui-text-5">{{ p.nome }}</span>
+										</span>
+										<span class="ui-text-7">{{ p.tel }}</span>
+										<span class="equipe-text {{ p.ps.cls }}">{{ p.perfil }}</span>
+										<span class="equipe-pill {{ p.sitCls }}">
+											<span class="ui-circle-3 {{ p.sitCls }}">
+											</span>{{ p.sit }}</span>
+										<span class="equipe-row-1">{{ p.nSem }}<sc-if value="{{ p.hasConf }}">
+												<span class="equipe-row-2">
+													<span class="icon ui-icon-6">event_busy</span>Conflito</span>
+											</sc-if>
+										</span>
+										<span class="icon ui-icon-7">chevron_right</span>
+									</button>
+								</sc-for>
+							</div>
+						</div>
+					</div>
+				</sc-if>
+				<!-- Tela: Pagamentos dos prestadores (segunda etapa) -->
+				<sc-if value="{{ v.pagamentos }}">
+					<div class="ui-stack-3">
+						<div class="ui-row-6">
+							<div class="ui-text-1">
+								<span class="ui-text-9">Segunda etapa</span>
+								<h1 class="ui-title-1">Pagamentos dos prestadores</h1>
+							</div>
+						</div>
+						<div class="pagamentos-row-1">
+							<span class="icon ui-icon-8">info</span>Controle de registros: o sistema anota o que foi pago e quando. Nenhuma transferência bancária é feita por aqui.</div>
+						<div class="pagamentos-row-2">{{ selPayPrest }}{{ selPayPer }}<div class="ui-row-3">
+								<sc-for list="{{ paySits }}" as="t" hint-placeholder-count="3">
+									<button onClick="{{ t.onPick }}" class="ui-btn-1 {{ t.cls }}">{{ t.label }}</button>
+								</sc-for>
+							</div>
+						</div>
+					</div>
+					<div class="pagamentos-stack">
+						<div class="pagamentos-grid-1">
+							<div class="pagamentos-box-1">
+								<div class="pagamentos-row-3">
+									<span class="icon ui-icon-3">pending</span>Pendente</div>
+								<div class="pagamentos-box-2">{{ paySum.pend }}</div>
+								<div class="ui-box-8">{{ paySum.nPend }}</div>
+							</div>
+							<div class="pagamentos-box-1">
+								<div class="pagamentos-row-4">
+									<span class="icon ui-icon-3">check_circle</span>Pago</div>
+								<div class="pagamentos-box-2">{{ paySum.pago }}</div>
+								<div class="ui-box-8">{{ paySum.nPago }}</div>
+							</div>
+							<div class="pagamentos-box-1">
+								<div class="pagamentos-row-5">
+									<span class="icon ui-icon-3">functions</span>Total no período</div>
+								<div class="pagamentos-box-2">{{ paySum.total }}</div>
+								<div class="ui-box-8">Serviços concluídos</div>
+							</div>
+						</div>
+						<div class="ui-box-5">
+							<div class="pagamentos-box-3">
+								<div class="pagamentos-grid-2">
+									<span>Data</span>
+									<span>Serviço</span>
+									<span>Prestador</span>
+									<span>Valor</span>
+									<span>Situação</span>
+									<span>
+									</span>
+								</div>
+								<sc-for list="{{ payRows }}" as="r" hint-placeholder-count="8">
+									<div class="pagamentos-grid-3">
+										<span>{{ r.dataBr }}</span>
+										<span class="ui-box-1">
+											<span class="ui-text-6">{{ r.cliente }}</span>
+											<span class="ui-text-8">{{ r.tipo }}</span>
+										</span>
+										<span>{{ r.prest }}</span>
+										<span class="ui-text-5">{{ r.valorTxt }}</span>
+										<span class="pagamentos-pill {{ r.sitCls }}">{{ r.sit }}</span>
+										<span class="pagamentos-text-1">
+											<sc-if value="{{ r.pend }}">
+												<button onClick="{{ r.onPay }}" class="pagamentos-btn">
+													<span class="icon ui-icon-4">price_check</span>Registrar pagamento</button>
+											</sc-if>
+											<sc-if value="{{ r.pago }}">
+												<span class="pagamentos-text-2">{{ r.pagoEm }} · {{ r.obs }}</span>
+											</sc-if>
+										</span>
+									</div>
+								</sc-for>
+								<sc-if value="{{ noPay }}">
+									<div class="ui-box-7">Nenhum registro para este filtro.</div>
+								</sc-if>
+							</div>
+						</div>
+					</div>
+				</sc-if>
+				<!-- Tela: Central de avisos (segunda etapa) -->
+				<sc-if value="{{ v.avisos }}">
+					<div class="ui-stack-3">
+						<div class="ui-row-6">
+							<div class="ui-text-1">
+								<span class="ui-text-9">Segunda etapa</span>
+								<h1 class="ui-title-1">Central de avisos</h1>
+							</div>
+							<span class="ui-text-10">{{ unreadTxt }}</span>
+							<button onClick="{{ markAll }}" class="avisos-btn-1">
+								<span class="icon ui-icon-3">done_all</span>Marcar todos como lidos</button>
+						</div>
+						<div class="ui-row-4">
+							<sc-for list="{{ avTabs }}" as="t" hint-placeholder-count="4">
+								<button onClick="{{ t.onPick }}" class="ui-btn-1 {{ t.cls }}">{{ t.label }}</button>
+							</sc-for>
+						</div>
+					</div>
+					<div class="avisos-stack">
+						<sc-for list="{{ avisos }}" as="a" hint-placeholder-count="5">
+							<div class="avisos-row-1 {{ a.cardCls }}">
+								<span class="icon avisos-circle-1 {{ a.cls }}">{{ a.icon }}</span>
+								<div class="avisos-box-1">
+									<div class="avisos-row-2">
+										<span class="ui-text-11">{{ a.titulo }}</span>
+										<sc-if value="{{ a.unread }}">
+											<span class="avisos-circle-2" title="Não lido">
+											</span>
+										</sc-if>
+									</div>
+									<div class="avisos-box-2">{{ a.texto }}</div>
+									<div class="avisos-box-3">{{ a.tipoLabel }} · {{ a.quando }}</div>
+								</div>
+								<button onClick="{{ a.onOpen }}" class="avisos-btn-2">Ver serviço</button>
+							</div>
+						</sc-for>
+						<sc-if value="{{ noAv }}">
+							<div class="ui-box-7">Nenhum aviso nesta categoria.</div>
+						</sc-if>
+					</div>
+				</sc-if>
+			</main>
+			<!-- Painel lateral: detalhes do serviço -->
+			<sc-if value="{{ hasDrawer }}">
+				<div onClick="{{ closeDrawer }}" class="ui-overlay-1">
+				</div>
+				<aside role="dialog" aria-label="Detalhes do serviço" class="servico-aside">
+					<div class="ui-stack-4">
+						<div class="ui-row-2">
+							<span class="servico-text-1">{{ d.tipo }}</span>
+							<sc-if value="{{ d.isRec }}">
+								<span class="servico-row-1">
+									<span class="icon ui-icon-5">event_repeat</span>{{ d.recTxt }}</span>
+							</sc-if>
+							<button onClick="{{ closeDrawer }}" aria-label="Fechar" class="ui-btn-2">
+								<span class="icon ui-icon-1">close</span>
+							</button>
+						</div>
+						<h2 class="ui-title-2">{{ d.cliente }}</h2>
+						<div class="servico-row-2">
+							<span class="servico-row-3">
+								<span class="icon ui-icon-3">calendar_today</span>{{ d.dowL }}, {{ d.dataBr }}</span>
+							<span class="servico-row-3">
+								<span class="icon ui-icon-3">schedule</span>{{ d.hora }}</span>
+							<span class="servico-pill {{ d.st.cls }}">
+								<span class="icon ui-icon-5">{{ d.st.icon }}</span>{{ d.st.label }}</span>
+						</div>
+						<sc-if value="{{ d.canAct }}">
+							<div class="servico-row-4">
+								<button onClick="{{ openEdit }}" class="servico-btn-1">
+									<span class="icon ui-icon-3">edit</span>Editar</button>
+								<button onClick="{{ openAssign }}" class="servico-btn-primary">
+									<span class="icon ui-icon-3">group_add</span>Atribuir equipe</button>
+								<button onClick="{{ openCancel }}" class="servico-btn-2">
+									<span class="icon ui-icon-3">block</span>Cancelar serviço</button>
+							</div>
+						</sc-if>
+					</div>
+					<div class="ui-stack-5">
+						<sc-if value="{{ d.semResp }}">
+							<div class="servico-row-5">
+								<span class="icon servico-icon-1">person_off</span>
+								<div class="ui-text-1">
+									<div class="ui-text-3">Serviço sem responsável</div>
+									<div class="servico-box-1">Atribua pelo menos um prestador para que o serviço apareça na agenda da equipe.</div>
+								</div>
+								<button onClick="{{ openAssign }}" class="servico-btn-3">Atribuir agora</button>
+							</div>
+						</sc-if>
+						<sc-if value="{{ d.ocorr }}">
+							<div class="servico-row-6">
+								<span class="icon servico-icon-2">report</span>
+								<div>
+									<div class="ui-text-3">Ocorrência registrada</div>
+									<div class="servico-box-1">{{ d.lastOcorr }}</div>
+								</div>
+							</div>
+						</sc-if>
+						<sc-if value="{{ d.conflito }}">
+							<div class="servico-row-7">
+								<span class="icon servico-icon-3">event_busy</span>
+								<div>
+									<div class="ui-text-3">Conflito de horário</div>
+									<div class="servico-box-1">{{ d.confTxt }}</div>
+								</div>
+							</div>
+						</sc-if>
+						<sc-if value="{{ d.isCancel }}">
+							<div class="servico-row-8">
+								<span class="icon ui-icon-9">block</span>
+								<div>
+									<div class="ui-text-3">Serviço cancelado</div>
+									<div class="servico-box-2">Motivo: {{ d.motivo }}</div>
+								</div>
+							</div>
+						</sc-if>
+						<section class="servico-stack-1">
+							<h3 class="ui-title-3">Status</h3>
+							<div class="servico-row-9">
+								<sc-for list="{{ d.steps }}" as="t">
+									<div class="servico-row-10">
+										<span class="servico-circle-1 {{ t.dotCls }}">
+										</span>
+										<span class="ui-text-12 servico-step-label {{ t.textCls }}">{{ t.label }}</span>
+									</div>
+									<sc-if value="{{ t.notLast }}">
+										<span class="servico-text-2 {{ t.lineCls }}">
+										</span>
+									</sc-if>
+								</sc-for>
+							</div>
+						</section>
+						<section class="servico-grid-1">
+							<div class="servico-box-3">
+								<div class="servico-box-4">Local de atendimento</div>
+								<div class="ui-text-11">{{ d.localNome }}</div>
+								<div class="servico-box-5">{{ d.endereco }}</div>
+							</div>
+							<div>
+								<div class="servico-box-4">Cliente</div>
+								<div class="ui-text-4">{{ d.cliente }} · {{ d.cliTipo }}</div>
+								<div class="ui-box-9">{{ d.cliTel }}</div>
+							</div>
+							<div>
+								<div class="servico-box-4">Data e horário</div>
+								<div class="ui-text-4">{{ d.dataBr }}</div>
+								<div class="ui-box-9">Início {{ d.ini }} · término previsto {{ d.fim }}</div>
+							</div>
+						</section>
+						<section class="ui-stack-1">
+							<h3 class="ui-title-3">Orientações</h3>
+							<div class="servico-box-6">{{ d.orient }}</div>
+						</section>
+						<section class="ui-stack-1">
+							<h3 class="ui-title-3">Prestadores responsáveis</h3>
+							<sc-if value="{{ d.semResp }}">
+								<div class="servico-box-7">Nenhum prestador atribuído.</div>
+							</sc-if>
+							<div class="ui-grid-1">
+								<sc-for list="{{ d.team }}" as="p">
+									<div class="servico-row-11">
+										<span class="servico-circle-2">{{ p.i }}</span>
+										<div>
+											<div class="ui-box-10">{{ p.nome }}</div>
+											<div class="ui-box-8">{{ p.tel }}</div>
+										</div>
+									</div>
+								</sc-for>
+							</div>
+						</section>
+						<section class="servico-stack-1">
+							<h3 class="ui-title-3">Fotos</h3>
+							<div class="servico-grid-2">
+								<div class="ui-stack-1">
+									<div class="ui-box-6">Antes</div>
+									<sc-if value="{{ d.noAntes }}">
+										<div class="servico-box-8">Nenhuma foto enviada.</div>
+									</sc-if>
+									<div class="servico-grid-3">
+										<sc-for list="{{ d.antes }}" as="f">
+											<div class="servico-row-12">{{ f.lab }}</div>
+										</sc-for>
+									</div>
+								</div>
+								<div class="ui-stack-1">
+									<div class="ui-box-6">Depois</div>
+									<sc-if value="{{ d.noDepois }}">
+										<div class="servico-box-8">Nenhuma foto enviada.</div>
+									</sc-if>
+									<div class="servico-grid-3">
+										<sc-for list="{{ d.depois }}" as="f">
+											<div class="servico-row-13">{{ f.lab }}</div>
+										</sc-for>
+									</div>
+								</div>
+							</div>
+						</section>
+						<section class="ui-stack-1">
+							<h3 class="ui-title-3">Ocorrências e observações</h3>
+							<sc-if value="{{ d.noOcorr }}">
+								<div class="ui-box-11">Nenhuma ocorrência registrada.</div>
+							</sc-if>
+							<sc-for list="{{ d.ocorrList }}" as="x">
+								<div class="servico-stack-2">
+									<div class="servico-row-14">
+										<span class="servico-text-3">{{ x.tipo }}</span>
+										<span class="servico-text-4">{{ x.autor }} · {{ x.quando }}</span>
+									</div>
+									<div class="servico-box-9">{{ x.texto }}</div>
+								</div>
+							</sc-for>
+						</section>
+						<section class="servico-stack-1">
+							<h3 class="ui-title-3">Histórico</h3>
+							<div class="servico-stack-3">
+								<sc-for list="{{ d.hist }}" as="h">
+									<div class="servico-row-15">
+										<span class="servico-circle-3">{{ h.i }}</span>
+										<div>
+											<div class="ui-text-4">{{ h.texto }}</div>
+											<div class="servico-box-10">{{ h.autor }} · {{ h.quando }}</div>
+										</div>
+									</div>
+								</sc-for>
+							</div>
+						</section>
+					</div>
+				</aside>
+			</sc-if>
+			<!-- Modal: novo / editar serviço -->
+			<sc-if value="{{ m.form }}">
+				<div class="form-servico-overlay">
+					<div role="dialog" aria-label="{{ form.title }}" class="form-servico-stack-1">
+						<div class="form-servico-row-1">
+							<h2 class="ui-title-4">{{ form.title }}</h2>
+							<button onClick="{{ closeModal }}" aria-label="Fechar" class="ui-btn-2">
+								<span class="icon ui-icon-1">close</span>
+							</button>
+						</div>
+						<div class="ui-grid-2">
+							<label class="ui-label-1">
+								<span class="ui-text-13">Cliente *</span>{{ fSelCli }}<sc-if value="{{ fx.cliente }}">
+									<span class="ui-text-14">{{ fe.cliente }}</span>
+								</sc-if>
+							</label>
+							<label class="ui-label-1">
+								<span class="ui-text-13">Tipo de serviço *</span>{{ fSelTipo }}<sc-if value="{{ fx.tipo }}">
+									<span class="ui-text-14">{{ fe.tipo }}</span>
+								</sc-if>
+							</label>
+							<label class="ui-label-1">
+								<span class="ui-text-13">Local de atendimento</span>{{ fSelLoc }}</label>
+							<div class="ui-label-1">
+								<span class="ui-text-13">Endereço</span>
+								<div class="form-servico-row-2">
+									<span class="icon ui-icon-3">location_on</span>{{ form.endereco }}</div>
+							</div>
+							<div class="form-servico-grid">
+								<label class="ui-label-1">
+									<span class="ui-text-13">Data *</span>
+									<input value="{{ form.data }}" onChange="{{ fh.data }}" placeholder="DD/MM/AAAA" inputmode="numeric" class="form-servico-input {{ eb.data }}">
+									<sc-if value="{{ fx.data }}">
+										<span class="ui-text-14">{{ fe.data }}</span>
+									</sc-if>
+								</label>
+								<label class="ui-label-1">
+									<span class="ui-text-13">Horário inicial *</span>
+									<input value="{{ form.ini }}" onChange="{{ fh.ini }}" placeholder="08:00" inputmode="numeric" class="form-servico-input {{ eb.ini }}">
+									<sc-if value="{{ fx.ini }}">
+										<span class="ui-text-14">{{ fe.ini }}</span>
+									</sc-if>
+								</label>
+								<label class="ui-label-1">
+									<span class="ui-text-13">Previsão de término *</span>
+									<input value="{{ form.fim }}" onChange="{{ fh.fim }}" placeholder="12:00" inputmode="numeric" class="form-servico-input {{ eb.fim }}">
+									<sc-if value="{{ fx.fim }}">
+										<span class="ui-text-14">{{ fe.fim }}</span>
+									</sc-if>
+								</label>
+							</div>
+							<label class="ui-label-2">
+								<span class="ui-text-13">Orientações para a equipe</span>
+								<textarea value="{{ form.orient }}" onChange="{{ fh.orient }}" rows="3" placeholder="Ex.: chave na portaria, cuidados com o piso, prioridades do cliente" class="form-servico-textarea"></textarea>
+							</label>
+							<div class="ui-stack-6">
+								<div class="form-servico-row-3">
+									<span class="ui-text-13">Prestadores</span>
+									<span class="ui-box-8">Opcional — sem prestador, o serviço fica pendente de distribuição.</span>
+									<span class="form-servico-text-1">{{ form.nSel }}</span>
+								</div>
+								<div class="ui-grid-3">
+									<sc-for list="{{ fAvail }}" as="p" hint-placeholder-count="6">
+										<button onClick="{{ p.onToggle }}" class="form-servico-btn-1 {{ p.rowCls }}">
+											<span class="icon ui-text-15 {{ p.boxCls }}">check</span>
+											<span class="ui-box-1">
+												<span class="ui-text-16">{{ p.nome }}</span>
+												<span class="ui-text-17 {{ p.dispCls }}">{{ p.disp }}</span>
+											</span>
+										</button>
+									</sc-for>
+								</div>
+							</div>
+							<div class="form-servico-stack-2">
+								<div class="ui-row-2">
+									<span class="icon ui-icon-8">event_repeat</span>
+									<span class="ui-box-6">Repetição</span>
+									<span class="ui-text-2">Segunda etapa</span>
+								</div>
+								<div class="ui-row-4">
+									<sc-for list="{{ recOpts }}" as="r" hint-placeholder-count="4">
+										<button onClick="{{ r.onPick }}" class="form-servico-btn-2 {{ r.cls }}">{{ r.label }}</button>
+									</sc-for>
+								</div>
+								<sc-if value="{{ form.showScope }}">
+									<div class="form-servico-stack-3">
+										<span class="ui-text-13">Este serviço faz parte de uma recorrência. Aplicar alterações a:</span>
+										<div class="ui-grid-1">
+											<sc-for list="{{ scopeOpts }}" as="o">
+												<button onClick="{{ o.onPick }}" class="form-servico-btn-3 {{ o.cls }}">
+													<span class="form-servico-circle-1">
+														<span class="ui-circle-4 {{ o.cls }}">
+														</span>
+													</span>
+													<span>
+														<span class="ui-text-16">{{ o.label }}</span>
+														<span class="form-servico-text-2">{{ o.txt }}</span>
+													</span>
+												</button>
+											</sc-for>
+										</div>
+									</div>
+								</sc-if>
+							</div>
+						</div>
+						<div class="form-servico-row-4">
+							<sc-if value="{{ form.semPrest }}">
+								<span class="form-servico-row-5">
+									<span class="icon ui-icon-3">person_off</span>Será salvo como pendente de distribuição</span>
+							</sc-if>
+							<button onClick="{{ closeModal }}" class="form-servico-btn-4">Cancelar</button>
+							<button onClick="{{ saveForm }}" class="form-servico-btn-primary">
+								<sc-if value="{{ form.saving }}">
+									<span class="form-servico-circle-2">
+									</span>
+								</sc-if>
+								<sc-if value="{{ form.notSaving }}">
+									<span class="icon ui-icon-2">check</span>
+								</sc-if>{{ form.saveLabel }}</button>
+						</div>
+					</div>
+				</div>
+			</sc-if>
+			<!-- Modal: atribuir equipe -->
+			<sc-if value="{{ m.assign }}">
+				<div class="atribuir-overlay">
+					<div role="dialog" aria-label="Atribuir equipe" class="atribuir-stack-1">
+						<div class="atribuir-row-1">
+							<div>
+								<h2 class="ui-title-4">Atribuir equipe</h2>
+								<div class="atribuir-box">{{ d.cliente }} · {{ d.dataCurta }} · {{ d.hora }}</div>
+							</div>
+							<button onClick="{{ closeModal }}" aria-label="Fechar" class="ui-btn-2">
+								<span class="icon ui-icon-1">close</span>
+							</button>
+						</div>
+						<div class="atribuir-stack-2">
+							<div class="atribuir-row-2">
+								<span>Disponibilidade calculada para o horário do serviço.</span>
+								<span class="atribuir-text-1">{{ aNSel }}</span>
+							</div>
+							<div class="ui-grid-3">
+								<sc-for list="{{ aAvail }}" as="p" hint-placeholder-count="6">
+									<button onClick="{{ p.onToggle }}" class="atribuir-btn-1 {{ p.rowCls }}">
+										<span class="icon ui-text-15 {{ p.boxCls }}">check</span>
+										<span class="ui-circle-2">{{ p.i }}</span>
+										<span class="ui-box-1">
+											<span class="ui-text-16">{{ p.nome }}</span>
+											<span class="ui-text-17 {{ p.dispCls }}">{{ p.disp }}</span>
+										</span>
+									</button>
+								</sc-for>
+							</div>
+						</div>
+						<div class="atribuir-row-3">
+							<sc-if value="{{ aNone }}">
+								<span class="atribuir-text-2">O serviço continuará sem responsável.</span>
+							</sc-if>
+							<button onClick="{{ closeModal }}" class="atribuir-btn-2">Cancelar</button>
+							<button onClick="{{ saveAssign }}" class="ui-btn-primary-2">
+								<span class="icon ui-icon-2">check</span>Salvar equipe</button>
+						</div>
+					</div>
+				</div>
+			</sc-if>
+			<!-- Modal: cancelar serviço -->
+			<sc-if value="{{ m.cancel }}">
+				<div class="ui-overlay-2">
+					<div role="dialog" aria-label="Cancelar serviço" class="cancelar-box-1">
+						<div class="cancelar-stack">
+							<div class="cancelar-row-1">
+								<span class="icon cancelar-circle-1">block</span>
+								<div>
+									<h2 class="cancelar-title">Cancelar este serviço?</h2>
+									<div class="cancelar-box-2">{{ d.cliente }} · {{ d.dataCurta }} · {{ d.hora }}</div>
+								</div>
+							</div>
+							<div class="cancelar-box-3">O serviço continua no histórico com o status Cancelado. A equipe atribuída deixa de vê-lo na agenda.</div>
+							<sc-if value="{{ d.isRec }}">
+								<div class="ui-stack-1">
+									<div class="cancelar-row-2">Aplicar a<span class="ui-text-2">Segunda etapa</span>
+									</div>
+									<div class="ui-grid-1">
+										<sc-for list="{{ cancelScopes }}" as="o">
+											<button onClick="{{ o.onPick }}" class="cancelar-btn-1 {{ o.cls }}">
+												<span class="cancelar-circle-2">
+													<span class="ui-circle-4 {{ o.cls }}">
+													</span>
+												</span>{{ o.label }}</button>
+										</sc-for>
+									</div>
+								</div>
+							</sc-if>
+							<label class="ui-label-1">
+								<span class="ui-text-13">Motivo do cancelamento</span>
+								<textarea value="{{ cancelMotivo }}" onChange="{{ onCancelMotivo }}" rows="2" placeholder="Ex.: cliente pediu para remarcar" class="ui-textarea"></textarea>
+							</label>
+						</div>
+						<div class="ui-row-7">
+							<button onClick="{{ closeModal }}" class="ui-btn-3">Voltar</button>
+							<button onClick="{{ confirmCancel }}" class="cancelar-btn-2">Cancelar serviço</button>
+						</div>
+					</div>
+				</div>
+			</sc-if>
+			<!-- Painel lateral: detalhes do cliente -->
+			<sc-if value="{{ hasCli }}">
+				<div onClick="{{ closeCli }}" class="ui-overlay-1">
+				</div>
+				<aside role="dialog" aria-label="Cliente" class="cliente-aside">
+					<div class="ui-stack-4">
+						<div class="ui-row-2">
+							<span class="cliente-pill {{ cd.ts.cls }}">
+								<span class="icon ui-icon-6">{{ cd.ts.icon }}</span>{{ cd.tipo }}</span>
+							<button onClick="{{ closeCli }}" aria-label="Fechar" class="ui-btn-2">
+								<span class="icon ui-icon-1">close</span>
+							</button>
+						</div>
+						<h2 class="ui-title-2">{{ cd.nome }}</h2>
+						<div class="ui-row-8">
+							<span class="icon ui-icon-3">call</span>{{ cd.tel }}</div>
+						<div class="cliente-row-1">
+							<button onClick="{{ newForCli }}" class="cliente-btn-primary">
+								<span class="icon ui-icon-3">add</span>Novo serviço para este cliente</button>
+						</div>
+					</div>
+					<div class="ui-stack-5">
+						<sc-if value="{{ cd.hasObs }}">
+							<section class="ui-stack-1">
+								<h3 class="ui-title-3">Observações</h3>
+								<div class="ui-box-12">{{ cd.obs }}</div>
+							</section>
+						</sc-if>
+						<section class="ui-stack-1">
+							<h3 class="ui-title-3">Locais de atendimento</h3>
+							<sc-for list="{{ cd.locais }}" as="l">
+								<div class="cliente-row-2">
+									<span class="icon ui-icon-8">location_on</span>
+									<div>
+										<div class="ui-box-10">{{ l.nome }}</div>
+										<div class="ui-box-9">{{ l.end }}</div>
+									</div>
+								</div>
+							</sc-for>
+						</section>
+						<section class="ui-stack-1">
+							<h3 class="ui-title-3">Histórico de serviços · {{ cd.nServ }}</h3>
+							<sc-for list="{{ cd.servicos }}" as="s">
+								<button onClick="{{ s.onOpen }}" class="cliente-btn">
+									<span class="ui-text-12">
+										<span class="ui-text-6">{{ s.dataBr }}</span>
+										<span class="ui-text-8">{{ s.hora }}</span>
+									</span>
+									<span class="ui-box-1">
+										<span class="cliente-text">{{ s.tipo }}</span>
+										<span class="ui-text-8">{{ s.localNome }} · {{ s.respFull }}</span>
+									</span>
+									<span class="ui-pill-2 {{ s.st.cls }}">
+										<span class="icon ui-text-4">{{ s.st.icon }}</span>{{ s.st.label }}</span>
+								</button>
+							</sc-for>
+						</section>
+					</div>
+				</aside>
+			</sc-if>
+			<!-- Painel lateral: detalhes do membro da equipe -->
+			<sc-if value="{{ hasMem }}">
+				<div onClick="{{ closeMem }}" class="ui-overlay-1">
+				</div>
+				<aside role="dialog" aria-label="Membro da equipe" class="membro-aside">
+					<div class="membro-stack">
+						<div class="membro-row-1">
+							<span class="membro-circle">{{ md.i }}</span>
+							<div>
+								<h2 class="membro-title">{{ md.nome }}</h2>
+								<div class="membro-row-2">
+									<span class="membro-text {{ md.ps.cls }}">{{ md.perfil }}</span>
+									<span class="membro-pill {{ md.sitCls }}">
+										<span class="ui-circle-3 {{ md.sitCls }}">
+										</span>{{ md.sit }}</span>
+								</div>
+							</div>
+							<button onClick="{{ closeMem }}" aria-label="Fechar" class="membro-btn-1">
+								<span class="icon ui-icon-1">close</span>
+							</button>
+						</div>
+						<div class="ui-row-8">
+							<span class="icon ui-icon-3">call</span>{{ md.tel }}</div>
+						<div class="membro-row-3">
+							<button onClick="{{ openEditMem }}" class="membro-btn-2">
+								<span class="icon ui-icon-3">edit</span>Editar cadastro</button>
+							<button onClick="{{ toggleMem }}" class="membro-btn-3">
+								<span class="icon ui-icon-3">toggle_on</span>{{ md.toggleLabel }}</button>
+						</div>
+					</div>
+					<div class="ui-stack-5">
+						<section class="ui-stack-1">
+							<h3 class="ui-title-3">Acesso</h3>
+							<div class="ui-box-12">{{ md.acesso }}</div>
+						</section>
+						<sc-if value="{{ md.isPrest }}">
+							<section class="ui-stack-1">
+								<h3 class="ui-title-3">Serviços atribuídos (desta semana em diante)</h3>
+								<sc-if value="{{ md.noServ }}">
+									<div class="ui-box-11">Nenhum serviço atribuído.</div>
+								</sc-if>
+								<sc-for list="{{ md.servicos }}" as="s">
+									<button onClick="{{ s.onOpen }}" class="membro-btn-4 {{ s.stateCls }}">
+										<span class="ui-text-12">
+											<span class="ui-text-6">{{ s.dataCurta }}</span>
+											<span class="ui-text-8">{{ s.hora }}</span>
+										</span>
+										<span class="ui-box-1">
+											<span class="ui-text-16">{{ s.cliente }}</span>
+											<span class="ui-text-8">{{ s.tipo }}</span>
+											<sc-if value="{{ s.conflito }}">
+												<span class="membro-row-4">
+													<span class="icon ui-icon-6">event_busy</span>Conflito de horário</span>
+											</sc-if>
+										</span>
+										<span class="ui-pill-2 {{ s.st.cls }}">{{ s.st.label }}</span>
+									</button>
+								</sc-for>
+								<div class="ui-box-8">{{ md.pastTxt }}</div>
+							</section>
+						</sc-if>
+					</div>
+				</aside>
+			</sc-if>
+			<!-- Modal: novo cliente -->
+			<sc-if value="{{ m.cliente }}">
+				<div class="form-cliente-overlay">
+					<div role="dialog" aria-label="Novo cliente" class="form-cliente-box">
+						<div class="ui-row-9">
+							<h2 class="ui-title-4">Novo cliente</h2>
+							<button onClick="{{ closeModal }}" aria-label="Fechar" class="ui-btn-2">
+								<span class="icon ui-icon-1">close</span>
+							</button>
+						</div>
+						<div class="ui-grid-2">
+							<label class="ui-label-2">
+								<span class="ui-text-13">Nome *</span>
+								<input value="{{ cform.nome }}" onChange="{{ ch.nome }}" placeholder="Nome da pessoa ou empresa" class="ui-input {{ ceb.nome }}">
+								<sc-if value="{{ cx.nome }}">
+									<span class="ui-text-14">{{ ce.nome }}</span>
+								</sc-if>
+							</label>
+							<label class="ui-label-1">
+								<span class="ui-text-13">Telefone *</span>
+								<input value="{{ cform.tel }}" onChange="{{ ch.tel }}" placeholder="(11) 98765-4321" inputmode="tel" class="ui-input {{ ceb.tel }}">
+								<sc-if value="{{ cx.tel }}">
+									<span class="ui-text-14">{{ ce.tel }}</span>
+								</sc-if>
+							</label>
+							<div class="ui-label-1">
+								<span class="ui-text-13">Tipo de cliente</span>
+								<div class="ui-row-4">
+									<sc-for list="{{ cTipos }}" as="t">
+										<button onClick="{{ t.onPick }}" class="ui-btn-4 {{ t.cls }}">{{ t.label }}</button>
+									</sc-for>
+								</div>
+							</div>
+							<label class="ui-label-2">
+								<span class="ui-text-13">Observações</span>
+								<textarea value="{{ cform.obs }}" onChange="{{ ch.obs }}" rows="2" placeholder="Contato no local, preferências, restrições" class="ui-textarea"></textarea>
+							</label>
+							<div class="ui-stack-6">
+								<span class="ui-text-13">Locais de atendimento *</span>
+								<sc-for list="{{ cLocais }}" as="l">
+									<div class="form-cliente-grid">
+										<input value="{{ l.nome }}" onChange="{{ l.onNome }}" placeholder="Nome (ex.: Apto 82)" class="form-cliente-input">
+										<input value="{{ l.end }}" onChange="{{ l.onEnd }}" placeholder="Rua, número – bairro, cidade/UF" class="form-cliente-input">
+										<sc-if value="{{ l.canRm }}">
+											<button onClick="{{ l.onRm }}" aria-label="Remover local" class="form-cliente-btn-1">
+												<span class="icon ui-icon-2">delete</span>
+											</button>
+										</sc-if>
+									</div>
+								</sc-for>
+								<sc-if value="{{ cx.loc }}">
+									<span class="ui-text-14">{{ ce.loc }}</span>
+								</sc-if>
+								<button onClick="{{ addLocal }}" class="form-cliente-btn-2">
+									<span class="icon ui-icon-3">add_location</span>Adicionar local</button>
+							</div>
+						</div>
+						<div class="ui-row-7">
+							<button onClick="{{ closeModal }}" class="ui-btn-3">Cancelar</button>
+							<button onClick="{{ saveCli }}" class="ui-btn-primary-2">
+								<span class="icon ui-icon-2">check</span>Salvar</button>
+						</div>
+					</div>
+				</div>
+			</sc-if>
+			<!-- Modal: novo / editar membro -->
+			<sc-if value="{{ m.membro }}">
+				<div class="form-membro-overlay">
+					<div role="dialog" aria-label="{{ mform.title }}" class="form-membro-box-1">
+						<div class="ui-row-9">
+							<h2 class="ui-title-4">{{ mform.title }}</h2>
+							<button onClick="{{ closeModal }}" aria-label="Fechar" class="ui-btn-2">
+								<span class="icon ui-icon-1">close</span>
+							</button>
+						</div>
+						<div class="ui-stack-7">
+							<label class="ui-label-1">
+								<span class="ui-text-13">Nome completo *</span>
+								<input value="{{ mform.nome }}" onChange="{{ mh.nome }}" class="ui-input {{ meb.nome }}">
+								<sc-if value="{{ mx.nome }}">
+									<span class="ui-text-14">{{ me.nome }}</span>
+								</sc-if>
+							</label>
+							<label class="ui-label-1">
+								<span class="ui-text-13">Telefone (celular) *</span>
+								<input value="{{ mform.tel }}" onChange="{{ mh.tel }}" placeholder="(11) 98765-4321" inputmode="tel" class="ui-input {{ meb.tel }}">
+								<sc-if value="{{ mx.tel }}">
+									<span class="ui-text-14">{{ me.tel }}</span>
+								</sc-if>
+							</label>
+							<div class="form-membro-row">
+								<div class="ui-label-1">
+									<span class="ui-text-13">Perfil de acesso</span>
+									<div class="ui-row-3">
+										<sc-for list="{{ mPerfis }}" as="t">
+											<button onClick="{{ t.onPick }}" class="ui-btn-4 {{ t.cls }}">{{ t.label }}</button>
+										</sc-for>
+									</div>
+								</div>
+								<div class="ui-label-1">
+									<span class="ui-text-13">Situação</span>
+									<div class="ui-row-3">
+										<sc-for list="{{ mSits }}" as="t">
+											<button onClick="{{ t.onPick }}" class="ui-btn-4 {{ t.cls }}">{{ t.label }}</button>
+										</sc-for>
+									</div>
+								</div>
+							</div>
+							<div class="form-membro-box-2">{{ mPerfilTxt }}</div>
+						</div>
+						<div class="ui-row-7">
+							<button onClick="{{ closeModal }}" class="ui-btn-3">Cancelar</button>
+							<button onClick="{{ saveMem }}" class="ui-btn-primary-2">
+								<span class="icon ui-icon-2">check</span>Salvar</button>
+						</div>
+					</div>
+				</div>
+			</sc-if>
+			<!-- Modal: registrar pagamento -->
+			<sc-if value="{{ m.pagamento }}">
+				<div class="ui-overlay-2">
+					<div role="dialog" aria-label="Registrar pagamento" class="form-pagamento-box">
+						<div class="ui-row-9">
+							<h2 class="ui-title-4">Registrar pagamento</h2>
+							<button onClick="{{ closeModal }}" aria-label="Fechar" class="ui-btn-2">
+								<span class="icon ui-icon-1">close</span>
+							</button>
+						</div>
+						<div class="ui-stack-7">
+							<div class="form-pagamento-grid">
+								<span class="ui-box-10">{{ pk.prest }}</span>
+								<span class="ui-box-3">{{ pk.valorTxt }}</span>
+								<span class="form-pagamento-text">{{ pk.cliente }} · {{ pk.tipo }} · {{ pk.dataBr }}</span>
+							</div>
+							<label class="ui-label-1">
+								<span class="ui-text-13">Data do pagamento *</span>
+								<input value="{{ payDate }}" onChange="{{ onPayDate }}" placeholder="DD/MM/AAAA" class="form-pagamento-input {{ payDateCls }}">
+								<sc-if value="{{ payDateErr }}">
+									<span class="ui-text-14">Use o formato DD/MM/AAAA.</span>
+								</sc-if>
+							</label>
+							<label class="ui-label-1">
+								<span class="ui-text-13">Observação</span>
+								<textarea value="{{ payObs }}" onChange="{{ onPayObs }}" rows="2" placeholder="Ex.: PIX enviado por Walter" class="ui-textarea"></textarea>
+							</label>
+							<div class="ui-box-8">Apenas registro. A transferência é feita fora do sistema.</div>
+						</div>
+						<div class="ui-row-7">
+							<button onClick="{{ closeModal }}" class="ui-btn-3">Cancelar</button>
+							<button onClick="{{ confirmPay }}" class="ui-btn-primary-2">
+								<span class="icon ui-icon-2">price_check</span>Registrar</button>
+						</div>
+					</div>
+				</div>
+			</sc-if>
+		</div>
+	</sc-if>
+	<!-- ===== CELULAR (prestador) ===== -->
+	<sc-if value="{{ isMobile }}">
+		<div class="m-row-1 {{ phoneCls }}">
+			<div class="m-stack">
+				<div class="m-row-2">
+					<span>10:40</span>
+					<span class="icon m-row-3">
+						<span>signal_cellular_alt</span>
+						<span>wifi</span>
+						<span>battery_5_bar</span>
+					</span>
+				</div>
+				<!-- Tela celular: lista de serviços (hoje / próximos / concluídos) -->
+				<sc-if value="{{ ms.lista }}" hint-placeholder-val="{{ true }}">
+					<div class="m-lista-stack-1">
+						<div class="ui-row-5">
+							<img src="assets/logo-wa.webp" alt="WA Facilities" class="m-lista-img">
+							<span class="m-lista-circle">AS</span>
+						</div>
+						<div>
+							<div class="m-lista-box-1">Olá, Amaro</div>
+							<div class="ui-box-13">Terça-feira, 20/10/2026</div>
+						</div>
+						<div class="ui-row-10">
+							<sc-for list="{{ mTabs }}" as="t" hint-placeholder-count="3">
+								<button onClick="{{ t.onPick }}" class="m-lista-btn-1 {{ t.cls }}">{{ t.label }}</button>
+							</sc-for>
+						</div>
+					</div>
+					<div class="m-lista-stack-2">
+						<sc-for list="{{ mList }}" as="c" hint-placeholder-count="2">
+							<button onClick="{{ c.onOpenM }}" class="m-lista-btn-2">
+								<sc-if value="{{ c.showDate }}">
+									<span class="m-lista-text">{{ c.dataCurta }}</span>
+								</sc-if>
+								<div class="ui-row-2">
+									<span class="m-lista-box-1">{{ c.ini }}</span>
+									<span class="ui-text-10">até {{ c.fim }}</span>
+									<span class="m-lista-pill {{ c.st.cls }}">
+										<span class="icon ui-icon-6">{{ c.st.icon }}</span>{{ c.st.label }}</span>
+								</div>
+								<div class="m-lista-box-2">{{ c.cliente }}</div>
+								<div class="m-lista-row-1">
+									<span class="icon m-lista-icon">location_on</span>{{ c.endereco }}</div>
+								<div class="m-lista-box-3">{{ c.tipo }}</div>
+								<sc-if value="{{ c.ocorr }}">
+									<span class="m-lista-row-2">
+										<span class="icon ui-icon-4">report</span>Ocorrência registrada</span>
+								</sc-if>
+								<span class="m-lista-row-3">Ver detalhes<span class="icon ui-icon-2">chevron_right</span>
+								</span>
+							</button>
+						</sc-for>
+						<sc-if value="{{ mEmpty }}">
+							<div class="m-lista-stack-3">
+								<span class="icon ui-circle-1">event_available</span>
+								<span class="ui-icon-6">{{ mEmptyTxt }}</span>
+							</div>
+						</sc-if>
+					</div>
+				</sc-if>
+				<!-- Tela celular: detalhe do serviço -->
+				<sc-if value="{{ ms.detalhe }}">
+					<div class="ui-row-11">
+						<button onClick="{{ mBack }}" aria-label="Voltar" class="ui-btn-5">
+							<span class="icon ui-icon-9">arrow_back</span>
+						</button>
+						<span class="ui-text-18">Detalhes do serviço</span>
+					</div>
+					<div class="ui-stack-8">
+						<div class="ui-stack-1">
+							<span class="m-detalhe-pill {{ mv.st.cls }}">
+								<span class="icon ui-icon-5">{{ mv.st.icon }}</span>{{ mv.st.label }}</span>
+							<h2 class="ui-title-2">{{ mv.cliente }}</h2>
+							<span class="ui-box-13">{{ mv.tipo }}</span>
+						</div>
+						<div class="m-detalhe-stack-1">
+							<div class="m-detalhe-row-1">
+								<span class="icon ui-icon-8">calendar_today</span>{{ mv.dowL }}, {{ mv.dataBr }}</div>
+							<div class="m-detalhe-row-1">
+								<span class="icon ui-icon-8">schedule</span>{{ mv.ini }} às {{ mv.fim }}</div>
+							<div class="m-detalhe-row-2">
+								<span class="icon ui-icon-8">location_on</span>
+								<span>
+									<span class="ui-text-6">{{ mv.localNome }}</span>{{ mv.endereco }}</span>
+							</div>
+							<button onClick="{{ mRoute }}" class="m-detalhe-btn-1">
+								<span class="icon ui-icon-1">directions</span>Abrir rota</button>
+						</div>
+						<div class="m-detalhe-stack-2">
+							<span class="m-detalhe-text-1">Orientações</span>
+							<span class="m-detalhe-text-2">{{ mv.orient }}</span>
+						</div>
+						<div class="m-detalhe-stack-2">
+							<span class="m-detalhe-text-1">Equipe com você</span>
+							<span class="ui-icon-6">{{ mv.colegas }}</span>
+						</div>
+						<div class="m-detalhe-stack-3">
+							<span class="m-detalhe-text-1">Fotos · {{ mv.fotosTxt }}</span>
+							<sc-if value="{{ mv.hasFotos }}">
+								<div class="m-detalhe-grid">
+									<sc-for list="{{ mv.antes }}" as="f">
+										<div class="m-detalhe-row-3">{{ f.lab }}</div>
+									</sc-for>
+									<sc-for list="{{ mv.depois }}" as="f">
+										<div class="m-detalhe-row-4">{{ f.lab }}</div>
+									</sc-for>
+								</div>
+							</sc-if>
+						</div>
+						<sc-for list="{{ mv.ocorrList }}" as="x">
+							<div class="m-detalhe-stack-4">
+								<span class="m-detalhe-row-5">
+									<span class="icon ui-icon-3">report</span>{{ x.tipo }} · {{ x.quando }}</span>
+								<span class="m-detalhe-text-3">{{ x.texto }}</span>
+							</div>
+						</sc-for>
+					</div>
+					<div class="m-detalhe-stack-5">
+						<sc-if value="{{ mv.isAg }}">
+							<button onClick="{{ mStart }}" class="m-detalhe-btn-primary">
+								<span class="icon ui-icon-9">play_arrow</span>Iniciar serviço</button>
+							<button onClick="{{ mGoOcorr }}" class="m-detalhe-btn-2">
+								<span class="icon m-detalhe-icon">report</span>Registrar ocorrência</button>
+						</sc-if>
+						<sc-if value="{{ mv.isAnd }}">
+							<div class="ui-grid-4">
+								<button onClick="{{ mGoFotos }}" class="m-detalhe-btn-3">
+									<span class="icon ui-icon-8">add_a_photo</span>Enviar fotos</button>
+								<button onClick="{{ mGoOcorr }}" class="m-detalhe-btn-3">
+									<span class="icon m-detalhe-icon">report</span>Ocorrência</button>
+							</div>
+							<button onClick="{{ mGoConcluir }}" class="m-detalhe-btn-primary">
+								<span class="icon ui-icon-9">task_alt</span>Concluir serviço</button>
+						</sc-if>
+						<sc-if value="{{ mv.isConc }}">
+							<div class="m-detalhe-row-6">
+								<span class="icon ui-icon-1">check_circle</span>{{ mv.concTxt }}</div>
+						</sc-if>
+					</div>
+				</sc-if>
+				<!-- Tela celular: enviar fotos (antes / depois) -->
+				<sc-if value="{{ ms.fotos }}">
+					<div class="ui-row-11">
+						<button onClick="{{ mBack }}" aria-label="Voltar" class="ui-btn-5">
+							<span class="icon ui-icon-9">arrow_back</span>
+						</button>
+						<span class="ui-text-18">Enviar fotos</span>
+						<span class="m-fotos-text-1">{{ mv.cliente }}</span>
+					</div>
+					<sc-if value="{{ ps.escolher }}">
+						<div class="ui-stack-9">
+							<div class="ui-stack-1">
+								<span class="ui-box-10">Estas fotos são de:</span>
+								<div class="ui-row-10">
+									<sc-for list="{{ photoKinds }}" as="k">
+										<button onClick="{{ k.onPick }}" class="m-fotos-btn-1 {{ k.cls }}">{{ k.label }}</button>
+									</sc-for>
+								</div>
+							</div>
+							<div class="ui-grid-4">
+								<button onClick="{{ addCam }}" class="m-fotos-btn-2">
+									<span class="icon m-fotos-icon-1">photo_camera</span>Tirar foto</button>
+								<button onClick="{{ addGal }}" class="m-fotos-btn-3">
+									<span class="icon m-fotos-icon-2">photo_library</span>Escolher da galeria</button>
+							</div>
+							<span class="ui-box-10">Fotos selecionadas</span>
+							<sc-if value="{{ noPhotos }}">
+								<div class="m-fotos-box">Nenhuma foto selecionada ainda.</div>
+							</sc-if>
+							<div class="m-fotos-grid">
+								<sc-for list="{{ photoTiles }}" as="t">
+									<div class="m-fotos-row">{{ t.lab }}<button onClick="{{ t.onRm }}" aria-label="Remover foto" class="m-fotos-btn-4">
+											<span class="icon ui-icon-3">close</span>
+										</button>
+									</div>
+								</sc-for>
+							</div>
+						</div>
+						<div class="ui-box-14">
+							<button onClick="{{ sendPhotos }}" class="m-fotos-btn-5 {{ sendCls }}">
+								<span class="icon ui-icon-1">cloud_upload</span>{{ sendLabel }}</button>
+						</div>
+					</sc-if>
+					<sc-if value="{{ ps.enviando }}">
+						<div class="m-fotos-stack-1">
+							<span class="m-fotos-circle-1">
+							</span>
+							<span class="ui-text-18">Enviando fotos…</span>
+							<span class="m-fotos-text-2">Mantenha o aplicativo aberto até terminar.</span>
+						</div>
+					</sc-if>
+					<sc-if value="{{ ps.enviado }}">
+						<div class="m-fotos-stack-2">
+							<span class="icon m-fotos-circle-2">check_circle</span>
+							<span class="m-fotos-text-3">Fotos enviadas</span>
+							<span class="m-fotos-text-4">{{ sentTxt }}</span>
+							<div class="m-fotos-stack-3">
+								<button onClick="{{ mBack }}" class="m-fotos-btn-primary">Voltar ao serviço</button>
+								<button onClick="{{ morePhotos }}" class="m-fotos-btn-6">Enviar mais fotos</button>
+							</div>
+						</div>
+					</sc-if>
+				</sc-if>
+				<!-- Tela celular: registrar ocorrência -->
+				<sc-if value="{{ ms.ocorr }}">
+					<div class="ui-row-11">
+						<button onClick="{{ mBack }}" aria-label="Voltar" class="ui-btn-5">
+							<span class="icon ui-icon-9">arrow_back</span>
+						</button>
+						<span class="ui-text-18">Registrar ocorrência</span>
+					</div>
+					<div class="ui-stack-9">
+						<div class="ui-box-13">{{ mv.cliente }} · {{ mv.ini }} às {{ mv.fim }}</div>
+						<div class="ui-stack-1">
+							<span class="ui-box-10">O que aconteceu?</span>
+							<div class="m-ocorrencia-row-1">
+								<sc-for list="{{ oTipos }}" as="t">
+									<button onClick="{{ t.onPick }}" class="m-ocorrencia-btn-1 {{ t.cls }}">{{ t.label }}</button>
+								</sc-for>
+							</div>
+						</div>
+						<label class="ui-stack-1">
+							<span class="ui-box-10">Descrição *</span>
+							<textarea value="{{ oTexto }}" onChange="{{ onOTexto }}" rows="5" placeholder="Conte o que encontrou e o que precisa ser feito" class="m-ocorrencia-textarea {{ oTextCls }}"></textarea>
+							<sc-if value="{{ hasOErr }}">
+								<span class="m-ocorrencia-text">{{ oErr }}</span>
+							</sc-if>
+						</label>
+						<sc-if value="{{ noOFoto }}">
+							<button onClick="{{ toggleOFoto }}" class="m-ocorrencia-btn-2">
+								<span class="icon ui-icon-1">add_a_photo</span>Adicionar foto (opcional)</button>
+						</sc-if>
+						<sc-if value="{{ oFoto }}">
+							<div class="m-ocorrencia-row-2">
+								<div class="m-ocorrencia-row-3">ocorrencia.jpg</div>
+								<button onClick="{{ toggleOFoto }}" class="m-ocorrencia-btn-3">Remover foto</button>
+							</div>
+						</sc-if>
+					</div>
+					<div class="ui-box-14">
+						<button onClick="{{ sendOcorr }}" class="ui-btn-primary-3">
+							<span class="icon ui-icon-1">send</span>Enviar ocorrência</button>
+					</div>
+				</sc-if>
+				<!-- Tela celular: concluir serviço -->
+				<sc-if value="{{ ms.concluir }}">
+					<div class="ui-row-11">
+						<button onClick="{{ mBack }}" aria-label="Voltar" class="ui-btn-5">
+							<span class="icon ui-icon-9">arrow_back</span>
+						</button>
+						<span class="ui-text-18">Concluir serviço</span>
+					</div>
+					<div class="ui-stack-8">
+						<div class="m-concluir-box">{{ mv.cliente }}</div>
+						<div class="m-concluir-stack-1">
+							<div class="m-concluir-row-1">
+								<span class="icon m-concluir-icon">check_circle</span>Iniciado em {{ mv.iniTxt }}</div>
+							<div class="m-concluir-row-1">
+								<span class="icon m-concluir-icon">check_circle</span>{{ mv.antesTxt }}</div>
+							<sc-if value="{{ mv.depoisOk }}">
+								<div class="m-concluir-row-2">
+									<span class="icon m-concluir-icon">check_circle</span>{{ mv.depoisTxt }}</div>
+							</sc-if>
+							<sc-if value="{{ mv.depoisMissing }}">
+								<div class="m-concluir-row-3">
+									<span class="icon ui-icon-1">warning</span>
+									<span class="ui-text-1">{{ mv.depoisTxt }}</span>
+								</div>
+							</sc-if>
+						</div>
+						<sc-if value="{{ mv.depoisMissing }}">
+							<div class="m-concluir-stack-2">
+								<span class="m-concluir-text">Recomendamos enviar fotos de depois para a gestão acompanhar o resultado.</span>
+								<button onClick="{{ mGoFotosDepois }}" class="m-concluir-btn">
+									<span class="icon ui-icon-2">add_a_photo</span>Enviar fotos de depois</button>
+							</div>
+						</sc-if>
+						<label class="ui-stack-1">
+							<span class="ui-box-10">Observação final (opcional)</span>
+							<textarea value="{{ cObs }}" onChange="{{ onCObs }}" rows="3" placeholder="Ex.: chave devolvida ao encarregado" class="m-concluir-textarea"></textarea>
+						</label>
+					</div>
+					<div class="ui-box-14">
+						<button onClick="{{ confirmConc }}" class="ui-btn-primary-3">
+							<span class="icon ui-icon-9">task_alt</span>Confirmar conclusão</button>
+					</div>
+				</sc-if>
+				<!-- Tela celular: serviço concluído -->
+				<sc-if value="{{ ms.sucesso }}">
+					<div class="m-sucesso-stack">
+						<span class="icon m-sucesso-circle">task_alt</span>
+						<span class="m-sucesso-text-1">Serviço concluído</span>
+						<span class="ui-text-18">{{ mv.cliente }}</span>
+						<span class="m-sucesso-text-2">Concluído em 20/10/2026 às 10:40</span>
+						<span class="m-sucesso-text-3">A gestão já pode acompanhar o resultado e as fotos.</span>
+						<button onClick="{{ mHome }}" class="m-sucesso-btn-primary">Voltar para minha agenda</button>
+					</div>
+				</sc-if>
+				<!-- Aviso rápido (celular) -->
+				<sc-if value="{{ hasMToast }}">
+					<div role="status" class="m-toast-row">
+						<span class="icon ui-icon-1">check_circle</span>{{ mToast }}</div>
+				</sc-if>
+			</div>
+		</div>
+	</sc-if>
+	<!-- Aviso rápido (desktop) -->
+	<sc-if value="{{ hasToast }}">
+		<div class="toast-row {{ toast.cls }}">
+			<span class="icon ui-icon-1">{{ toast.icon }}</span>
+			<span>{{ toast.msg }}</span>
+		</div>
+	</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;role&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;gestor&quot;,&quot;supervisor&quot;,&quot;prestador&quot;],&quot;default&quot;:&quot;gestor&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;agendaState&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;normal&quot;,&quot;carregando&quot;,&quot;erro&quot;,&quot;vazia&quot;],&quot;default&quot;:&quot;normal&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;agendaMode&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;semana&quot;,&quot;dia&quot;,&quot;lista&quot;],&quot;default&quot;:&quot;semana&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;mode&quot;:{&quot;editor&quot;:null,&quot;default&quot;:&quot;proto&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;view&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;string&quot;},&quot;day&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;string&quot;},&quot;openId&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;string&quot;},&quot;modal&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;string&quot;},&quot;h&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;string&quot;}}">
+const Component = window.WAFacilities(DCLogic, React);
+</script>
+</body>
+</html>
