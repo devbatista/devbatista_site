@@ -61,10 +61,11 @@ window.WAFacilities = function (DCLogic, React) {
       .toFixed(2)
       .replace('.', ',')
       .replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  // iniciais do avatar, ignorando "da", "de", "do", "dos", "das", "e"
   const ini = n =>
     n
       .split(' ')
-      .filter(Boolean)
+      .filter(w => w && !/^(da|de|do|dos|das|e)$/.test(w))
       .map(w => w[0])
       .slice(0, 2)
       .join('')
@@ -109,8 +110,8 @@ window.WAFacilities = function (DCLogic, React) {
 
   // ===== Dados de exemplo: equipe =====
   const PEOPLE0 = [
-    ['walter', 'Walter Andrade', '(11) 94111-8267', 'Gestor', true],
-    ['carlos', 'Carlos Henrique Souza', '(11) 97752-0314', 'Supervisor', true],
+    ['walter', 'Gestor da Silva', '(11) 94111-8267', 'Gestor', true],
+    ['carlos', 'Supervisor Oliveira', '(11) 97752-0314', 'Supervisor', true],
     ['renata', 'Renata Campos', '(11) 96620-4471', 'Supervisor', false],
     ['amaro', 'Amaro Silva', '(11) 98431-2207', 'Prestador', true],
     ['josefa', 'Josefa Lima', '(11) 99218-5530', 'Prestador', true],
@@ -412,7 +413,7 @@ window.WAFacilities = function (DCLogic, React) {
       id: 'a3',
       tipo: 'horario',
       titulo: 'Horário alterado — Clínica Odonto Sorriso',
-      texto: 'Quarta, 21/10/2026: início alterado de 13:00 para 13:30 por Walter Andrade.',
+      texto: 'Quarta, 21/10/2026: início alterado de 13:00 para 13:30 pelo Gestor da Silva.',
       quando: '19/10/2026 16:40',
       lido: false,
       sid: 's9'
@@ -456,7 +457,7 @@ window.WAFacilities = function (DCLogic, React) {
     const nm = id => (pById[id] ? pById[id].nome : id);
     const h = [
       {
-        autor: 'Walter Andrade',
+        autor: 'Gestor da Silva',
         quando: br(addD(v.data, -5)) + ' 14:20',
         texto:
           v.rec !== 'nao'
@@ -466,7 +467,7 @@ window.WAFacilities = function (DCLogic, React) {
     ];
     if (v.prest.length)
       h.push({
-        autor: 'Carlos Henrique Souza',
+        autor: 'Supervisor Oliveira',
         quando: br(addD(v.data, -4)) + ' 17:05',
         texto: 'Equipe atribuída: ' + v.prest.map(nm).join(', ')
       });
@@ -502,7 +503,7 @@ window.WAFacilities = function (DCLogic, React) {
     }
     if (v.status === 'cancelado')
       h.push({
-        autor: 'Walter Andrade',
+        autor: 'Gestor da Silva',
         quando: br(addD(v.data, -4)) + ' 11:15',
         texto: 'Serviço cancelado. Motivo: ' + v.motivo
       });
@@ -715,7 +716,7 @@ window.WAFacilities = function (DCLogic, React) {
       );
     }
     me() {
-      return this.state.role === 'supervisor' ? 'Carlos Henrique Souza' : 'Walter Andrade';
+      return this.state.role === 'supervisor' ? 'Supervisor Oliveira' : 'Gestor da Silva';
     }
     updSvc(id, fn) {
       this.setState(st => ({ svcs: st.svcs.map(v => (v.id === id ? fn(v) : v)) }));
@@ -785,9 +786,10 @@ window.WAFacilities = function (DCLogic, React) {
         phoneCls: s.mode === 'proto' ? 'is-framed' : ''
       };
       o.roles = [
-        ['gestor', 'Gestor · Walter'],
-        ['supervisor', 'Supervisor · Carlos'],
-        ['prestador', 'Prestador · Amaro (celular)']
+        ['gestor', 'Gestor da Silva'],
+        ['supervisor', 'Supervisor Oliveira'],
+        // Versão celular (prestador) desativada no preview. Descomente para liberar.
+        // ['prestador', 'Prestador · Amaro (celular)']
       ].map(([k, l]) => ({
         label: l,
         cls: s.role === k ? 'is-active' : '',
@@ -828,8 +830,8 @@ window.WAFacilities = function (DCLogic, React) {
       ]);
       o.user =
         s.role === 'supervisor'
-          ? { nome: 'Carlos Henrique Souza', perfil: 'Supervisor', i: 'CH' }
-          : { nome: 'Walter Andrade', perfil: 'Gestor', i: 'WA' };
+          ? { nome: 'Supervisor Oliveira', perfil: 'Supervisor', i: 'SO' }
+          : { nome: 'Gestor da Silva', perfil: 'Gestor', i: 'GS' };
       o.v = {
         agenda: s.view === 'agenda',
         clientes: s.view === 'clientes',
@@ -838,7 +840,8 @@ window.WAFacilities = function (DCLogic, React) {
         avisos: s.view === 'avisos'
       };
       o.greeting =
-        (s.role === 'supervisor' ? 'Olá, Carlos' : 'Olá, Walter') + ' · Terça-feira, 20/10/2026';
+        (s.role === 'supervisor' ? 'Olá, Supervisor Oliveira' : 'Olá, Gestor da Silva') +
+        ' · Terça-feira, 20/10/2026';
       // agenda
       const pass = v => {
         if (s.fPrest === 'sem' && !v.semResp) return false;
