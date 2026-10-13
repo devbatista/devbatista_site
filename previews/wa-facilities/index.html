@@ -68,6 +68,11 @@
 					</div>
 				</div>
 			</aside>
+			<!-- Cabeçalho do celular (aparece só em telas estreitas, no lugar do menu lateral) -->
+			<header class="app-mobile-header">
+				<img src="assets/logo-wa.webp" alt="WA Facilities" class="app-mobile-logo">
+				<span class="app-mobile-avatar" title="{{ user.nome }} · {{ user.perfil }}">{{ user.i }}</span>
+			</header>
 			<main class="app-main">
 				<!-- Tela: Agenda (semana / dia / lista) -->
 				<sc-if value="{{ v.agenda }}" hint-placeholder-val="{{ true }}">
@@ -562,6 +567,18 @@
 					</div>
 				</sc-if>
 			</main>
+			<!-- Abas inferiores do celular (aparecem só em telas estreitas) -->
+			<nav class="app-mobile-nav">
+				<sc-for list="{{ navAll }}" as="n" hint-placeholder-count="5">
+					<button onClick="{{ n.onGo }}" class="app-mobile-nav-btn {{ n.cls }}">
+						<span class="icon app-mobile-nav-icon">{{ n.icon }}</span>
+						<span class="app-mobile-nav-label">{{ n.label }}</span>
+						<sc-if value="{{ n.hasBadge }}">
+							<span class="app-mobile-nav-badge {{ n.badgeCls }}">{{ n.badge }}</span>
+						</sc-if>
+					</button>
+				</sc-for>
+			</nav>
 			<!-- Painel lateral: detalhes do serviço -->
 			<sc-if value="{{ hasDrawer }}">
 				<div onClick="{{ closeDrawer }}" class="ui-overlay-1">

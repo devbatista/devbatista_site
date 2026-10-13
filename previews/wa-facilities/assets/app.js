@@ -828,6 +828,7 @@ window.WAFacilities = function (DCLogic, React) {
       o.nav2 = (s.role === 'gestor' ? [navI('pagamentos', 'Pagamentos', 'payments')] : []).concat([
         navI('avisos', 'Avisos', 'notifications', unread, 'is-info')
       ]);
+      o.navAll = o.nav1.concat(o.nav2); // abas inferiores no celular
       o.user =
         s.role === 'supervisor'
           ? { nome: 'Supervisor Oliveira', perfil: 'Supervisor', i: 'SO' }

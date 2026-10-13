@@ -4920,3 +4920,396 @@ button, input, textarea, select {
 .m-fotos-btn-5.is-ready {
   background: #133F86;
 }
+
+/* =====================================================================
+ * Celular e telas estreitas (até 760px)
+ * O menu lateral dá lugar a um cabeçalho com o logo e a abas inferiores;
+ * tabelas viram cartões e formulários passam a ter uma coluna.
+ * ===================================================================== */
+.app-mobile-header,
+.app-mobile-nav {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  /* ----- Estrutura ----- */
+  .app-stack {
+    height: 100dvh; /* acompanha a barra de endereço do navegador do celular */
+  }
+  .rolebar-row-1 {
+    gap: 8px;
+    padding: 8px 16px;
+  }
+  .rolebar-text-1,
+  .rolebar-text-3 {
+    display: none;
+  }
+  .rolebar-btn {
+    height: 30px;
+    padding: 0 12px;
+    font-size: 12.5px;
+  }
+  .app-row-1 {
+    flex-direction: column;
+  }
+  .app-aside {
+    display: none;
+  }
+  .app-main {
+    min-height: 0;
+  }
+
+  /* ----- Cabeçalho do celular ----- */
+  .app-mobile-header {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 16px;
+    background: #FFFFFF;
+    border-bottom: 1px solid #DCE1E9;
+  }
+  .app-mobile-logo {
+    height: 26px;
+    width: auto;
+  }
+  .app-mobile-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #133F86;
+    color: #FFFFFF;
+    display: grid;
+    place-items: center;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  /* ----- Abas inferiores ----- */
+  .app-mobile-nav {
+    flex: none;
+    display: flex;
+    gap: 2px;
+    padding: 6px 6px calc(6px + env(safe-area-inset-bottom));
+    background: #FFFFFF;
+    border-top: 1px solid #DCE1E9;
+  }
+  .app-mobile-nav-btn {
+    flex: 1;
+    min-width: 0;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 6px 2px;
+    border: none;
+    border-radius: 8px;
+    background: none;
+    color: #6B7485;
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .app-mobile-nav-btn.is-active {
+    background: #E8EEF8;
+    color: #133F86;
+  }
+  .app-mobile-nav-icon {
+    font-size: 22px;
+  }
+  .app-mobile-nav-label {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .app-mobile-nav-badge {
+    position: absolute;
+    top: 2px;
+    left: calc(50% + 6px);
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 9px;
+    background: #C2410C;
+    color: #FFFFFF;
+    font-size: 10.5px;
+    font-weight: 700;
+    display: grid;
+    place-items: center;
+  }
+  .app-mobile-nav-badge.is-info {
+    background: #133F86;
+  }
+
+  /* ----- Cabeçalhos e espaçamentos das telas ----- */
+  .agenda-stack-1,
+  .ui-stack-2,
+  .ui-stack-3 {
+    padding: 16px;
+  }
+  .ui-box-4,
+  .pagamentos-stack,
+  .avisos-stack {
+    padding: 12px 16px 20px;
+  }
+  .ui-title-1 {
+    font-size: 22px;
+  }
+  .agenda-box-1 {
+    min-width: 0;
+  }
+
+  /* ----- Agenda: navegação, modos e filtros ----- */
+  .agenda-box-2 {
+    font-size: 16px;
+  }
+  .agenda-row-2 {
+    margin-left: 0;
+    width: 100%;
+  }
+  .agenda-btn-3 {
+    flex: 1;
+    justify-content: center;
+  }
+  .agenda-icon-1,
+  .agenda-text-1 {
+    display: none;
+  }
+  .agenda-row-3 .select,
+  .pagamentos-row-2 .select {
+    flex: 1 1 140px;
+    width: auto;
+  }
+  .agenda-btn-4 {
+    white-space: nowrap;
+  }
+
+  /* ----- Agenda: semana em uma coluna (um dia embaixo do outro) ----- */
+  .agenda-grid-1,
+  .agenda-grid-2 {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 12px 16px 20px;
+  }
+
+  /* ----- Agenda: modo Dia continua com rolagem lateral ----- */
+  .agenda-box-14 {
+    min-width: 760px;
+  }
+  .agenda-grid-3,
+  .agenda-grid-4 {
+    grid-template-columns: 130px 1fr;
+  }
+
+  /* ----- Tabelas viram cartões: lista da agenda, clientes, equipe, pagamentos ----- */
+  .agenda-box-21,
+  .clientes-box-2,
+  .equipe-box,
+  .pagamentos-box-3 {
+    min-width: 0;
+  }
+  .agenda-grid-5,
+  .clientes-grid,
+  .equipe-grid,
+  .pagamentos-grid-2 {
+    display: none;
+  }
+  .agenda-btn-10,
+  .clientes-btn,
+  .equipe-btn,
+  .pagamentos-grid-3 {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 10px;
+    padding: 12px 14px;
+  }
+
+  /* lista da agenda: data · horário / cliente / tipo / status, responsáveis e alertas */
+  .agenda-btn-10 > :nth-child(1),
+  .agenda-btn-10 > :nth-child(2) {
+    font-size: 12.5px;
+    color: #4E5869;
+  }
+  .agenda-btn-10 > :nth-child(3),
+  .agenda-btn-10 > :nth-child(4) {
+    flex-basis: 100%;
+  }
+  .agenda-btn-10 > :nth-child(6) {
+    order: 1;
+  }
+  .agenda-btn-10 > :nth-child(5) {
+    order: 2;
+    flex: 1;
+  }
+  .agenda-btn-10 > :nth-child(7) {
+    order: 3;
+    flex-basis: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 4px 12px;
+  }
+  .agenda-stack-8:empty {
+    display: none;
+  }
+
+  /* clientes: nome e telefone / tipo, locais e próximo serviço */
+  .clientes-btn > :nth-child(1) {
+    flex: 1 1 calc(100% - 40px);
+  }
+  .clientes-btn > :nth-child(7) {
+    order: 1;
+  }
+  .clientes-btn > :nth-child(2) {
+    order: 2;
+    margin-left: 44px;
+  }
+  .clientes-btn > :nth-child(3) {
+    order: 2;
+    font-size: 12.5px;
+  }
+  .clientes-btn > :nth-child(5) {
+    order: 3;
+    flex-basis: calc(100% - 44px);
+    margin-left: 44px;
+    font-size: 12.5px;
+  }
+  .clientes-btn > :nth-child(5)::before {
+    content: "Próximo: ";
+  }
+  .clientes-btn > :nth-child(4),
+  .clientes-btn > :nth-child(6) {
+    display: none;
+  }
+
+  /* equipe: nome / perfil, situação e serviços da semana */
+  .equipe-btn > :nth-child(1) {
+    flex: 1 1 calc(100% - 40px);
+  }
+  .equipe-btn > :nth-child(6) {
+    order: 1;
+  }
+  .equipe-btn > :nth-child(3) {
+    order: 2;
+    margin-left: 42px;
+  }
+  .equipe-btn > :nth-child(4),
+  .equipe-btn > :nth-child(5) {
+    order: 2;
+    font-size: 12.5px;
+  }
+  .equipe-btn > :nth-child(2) {
+    display: none;
+  }
+
+  /* pagamentos: serviço e valor / data, prestador e situação / ação */
+  .pagamentos-grid-1 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .pagamentos-grid-3 > :nth-child(2) {
+    flex: 1 1 calc(100% - 110px);
+  }
+  .pagamentos-grid-3 > :nth-child(4) {
+    order: 1;
+    width: 100px;
+    text-align: right;
+  }
+  .pagamentos-grid-3 > :nth-child(1),
+  .pagamentos-grid-3 > :nth-child(3) {
+    order: 2;
+    font-size: 12.5px;
+    color: #4E5869;
+  }
+  .pagamentos-grid-3 > :nth-child(3)::before {
+    content: "· ";
+  }
+  .pagamentos-grid-3 > :nth-child(5) {
+    order: 3;
+    margin-left: auto;
+  }
+  .pagamentos-grid-3 > :nth-child(6) {
+    order: 4;
+    flex-basis: 100%;
+  }
+
+  /* avisos: ícone e texto em cima, botão "Ver serviço" embaixo */
+  .avisos-row-1 {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .avisos-box-1 {
+    flex: 1 1 calc(100% - 52px);
+  }
+  .avisos-btn-2 {
+    margin-left: 50px;
+  }
+
+  /* histórico de serviços nos painéis de cliente e de membro: data e status em cima, detalhes embaixo */
+  .cliente-btn,
+  .membro-btn-4 {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 6px 12px;
+  }
+  .cliente-btn > :nth-child(2),
+  .membro-btn-4 > :nth-child(2) {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  /* ----- Modais e painéis laterais ----- */
+  .form-servico-overlay,
+  .atribuir-overlay,
+  .ui-overlay-2,
+  .form-cliente-overlay,
+  .form-membro-overlay {
+    padding: 12px;
+  }
+  .ui-grid-2 {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 16px;
+  }
+  .form-servico-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .form-servico-grid > :first-child {
+    grid-column: 1 / -1;
+  }
+  .ui-grid-1,
+  .ui-grid-3 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  /* etapas do serviço mais compactas para caber em telas de 360px */
+  .servico-row-10 {
+    gap: 6px;
+  }
+  .servico-step-label {
+    font-size: 12.5px;
+  }
+  .servico-text-2 {
+    margin: 0 6px;
+    min-width: 12px;
+  }
+  .atribuir-text-1 {
+    white-space: nowrap;
+  }
+  /* locais do novo cliente: nome e endereço um embaixo do outro, lixeira ao lado */
+  .form-cliente-grid {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .form-cliente-grid > :nth-child(2) {
+    grid-column: 1;
+    grid-row: 2;
+  }
+  .form-cliente-grid > :nth-child(3) {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+  .ui-stack-4 {
+    padding: 16px 16px 12px;
+  }
+  .ui-stack-5 {
+    padding: 16px 16px 28px;
+  }
+}
