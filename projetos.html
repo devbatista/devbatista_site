@@ -254,12 +254,12 @@
           </div>
           <div class="project-filters" role="group" aria-label="Filtrar projetos por tipo">
             <button class="project-filter active" type="button" data-filter="all" aria-pressed="true">Todos</button>
-            <button class="project-filter" type="button" data-filter="sistema" aria-pressed="false">Sistemas</button>
-            <button class="project-filter" type="button" data-filter="backend" aria-pressed="false">Backend e APIs</button>
-            <button class="project-filter" type="button" data-filter="automacao" aria-pressed="false">Automação e IA</button>
+            <button class="project-filter" type="button" data-filter="sistema" aria-pressed="false">SaaS e plataformas</button>
+            <button class="project-filter" type="button" data-filter="app" aria-pressed="false">Apps mobile</button>
+            <button class="project-filter" type="button" data-filter="backend" aria-pressed="false">APIs e automação</button>
             <button class="project-filter" type="button" data-filter="institucional" aria-pressed="false">Sites</button>
           </div>
-          <p class="projects-count" id="projects-count">6 projetos encontrados</p>
+          <p class="projects-count" id="projects-count">13 projetos encontrados</p>
         </div>
 
         <div class="grid-2 u-grid-2-gap-5-only projects-grid">
@@ -277,23 +277,167 @@
                 <div>
                   <div class="project-meta-inline">
                     <span class="project-initial">C</span>
-                    <span class="project-meta-type">Plataforma SaaS</span>
+                    <span class="project-meta-type">SaaS multiempresa</span>
                   </div>
                   <h3 class="project-title">CatalystOps</h3>
-                  <p class="u-text-slate-400-sm-lh-lg">
-                    Plataforma de gestão de operações para prestadores de serviços técnicos:
-                    ordens de serviço, clientes, técnicos, estoque e pagamentos em um só sistema.
-                  </p>
+                  <p class="u-text-slate-400-sm-lh-lg">Plataforma SaaS para empresas de serviços técnicos: ordens de serviço, técnicos e agenda, clientes, anexos, base de conhecimento, assinaturas com Mercado Pago e dashboards por perfil.</p>
                   <div class="u-flex-wrap-gap-2-mb-6">
                     <span class="tag slate">Ruby on Rails</span>
                     <span class="tag slate">PostgreSQL</span>
+                    <span class="tag slate">Sidekiq</span>
                     <span class="tag slate">Docker</span>
-                    <span class="tag slate">Redis</span>
                   </div>
                 </div>
                 <div class="u-flex-gap-4">
+                  <a href="https://github.com/devbatista/catalyst_ops" target="_blank" rel="noopener noreferrer" class="u-inline-link-cyan">Ver no GitHub <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></a>
                   <a href="/produtos#cases" class="u-inline-link-cyan">Ver o case <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></a>
                 </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="project-card" data-project-category="sistema">
+            <div class="project-visual">
+              <div class="grid-bg"></div>
+              <div class="project-repo" aria-hidden="true">
+                <span>devbatista / <strong>prescsign</strong></span>
+                <p>PrescSign</p>
+              </div>
+            </div>
+            <div class="project-info">
+              <div>
+                <div class="project-meta-inline">
+                  <span class="project-initial">P</span>
+                  <span class="project-meta-type">Healthtech</span>
+                </div>
+                <h3 class="project-title">PrescSign</h3>
+                <p class="u-text-slate-400-sm-lh-lg">Emissão, assinatura e validação de receitas e atestados médicos digitais, com painel por organização, agenda, auditoria e validação pública por QR Code.</p>
+                <div class="u-flex-wrap-gap-2-mb-6">
+                  <span class="tag slate">Ruby on Rails</span>
+                  <span class="tag slate">PostgreSQL</span>
+                  <span class="tag slate">Sidekiq</span>
+                  <span class="tag slate">Tailwind</span>
+                </div>
+              </div>
+              <div class="u-flex-gap-4">
+                <a href="https://github.com/devbatista/prescsign" target="_blank" rel="noopener noreferrer" class="u-inline-link-cyan">Ver no GitHub <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></a>
+              </div>
+            </div>
+          </article>
+
+          <article class="project-card" data-project-category="sistema">
+            <div class="project-visual">
+              <div class="grid-bg"></div>
+              <div class="project-repo" aria-hidden="true">
+                <span>devbatista / <strong>r6tech_store</strong></span>
+                <p>R6Tech Store</p>
+              </div>
+              <span class="tag amber u-status-badge">Em desenvolvimento</span>
+            </div>
+            <div class="project-info">
+              <div>
+                <div class="project-meta-inline">
+                  <span class="project-initial">R</span>
+                  <span class="project-meta-type">E-commerce com IA</span>
+                </div>
+                <h3 class="project-title">R6Tech Store</h3>
+                <p class="u-text-slate-400-sm-lh-lg">E-commerce de eletrônicos com vitrine, checkout com Mercado Pago, frete em tempo real pelo Melhor Envio, painel administrativo e descrições de produto geradas por IA.</p>
+                <div class="u-flex-wrap-gap-2-mb-6">
+                  <span class="tag slate">Rails 8.1</span>
+                  <span class="tag slate">Hotwire</span>
+                  <span class="tag slate">OpenAI</span>
+                  <span class="tag slate">Amazon S3</span>
+                </div>
+              </div>
+              <div class="u-flex-gap-4">
+                <a href="https://github.com/devbatista/r6tech_store" target="_blank" rel="noopener noreferrer" class="u-inline-link-cyan">Ver no GitHub <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></a>
+              </div>
+            </div>
+          </article>
+
+          <article class="project-card" data-project-category="sistema">
+            <div class="project-visual">
+              <div class="grid-bg"></div>
+              <div class="project-repo" aria-hidden="true">
+                <span>devbatista / <strong>launch_os</strong></span>
+                <p>Launch OS</p>
+              </div>
+            </div>
+            <div class="project-info">
+              <div>
+                <div class="project-meta-inline">
+                  <span class="project-initial">L</span>
+                  <span class="project-meta-type">Plataforma própria</span>
+                </div>
+                <h3 class="project-title">Launch OS</h3>
+                <p class="u-text-slate-400-sm-lh-lg">Plataforma para vender produtos digitais no mercado americano, com checkout PayPal, entrega por link assinado, e-mails via Amazon SES e WhatsApp com Twilio.</p>
+                <div class="u-flex-wrap-gap-2-mb-6">
+                  <span class="tag slate">Rails 8.1</span>
+                  <span class="tag slate">PostgreSQL</span>
+                  <span class="tag slate">PayPal</span>
+                  <span class="tag slate">Amazon SES</span>
+                </div>
+              </div>
+              <div class="u-flex-gap-4">
+                <a href="https://github.com/devbatista/launch_os" target="_blank" rel="noopener noreferrer" class="u-inline-link-cyan">Ver no GitHub <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></a>
+              </div>
+            </div>
+          </article>
+
+          <article class="project-card" data-project-category="app">
+            <div class="project-visual">
+              <div class="grid-bg"></div>
+              <div class="project-repo" aria-hidden="true">
+                <span>devbatista / <strong>inimigos_da_bola</strong></span>
+                <p>Inimigos da Bola</p>
+              </div>
+            </div>
+            <div class="project-info">
+              <div>
+                <div class="project-meta-inline">
+                  <span class="project-initial">I</span>
+                  <span class="project-meta-type">App Flutter</span>
+                </div>
+                <h3 class="project-title">Inimigos da Bola</h3>
+                <p class="u-text-slate-400-sm-lh-lg">App offline-first para organizar o futebol semanal: presença com lista de espera, sorteio de times equilibrado, placar, ranking de artilheiros e notificações push.</p>
+                <div class="u-flex-wrap-gap-2-mb-6">
+                  <span class="tag slate">Flutter</span>
+                  <span class="tag slate">Riverpod</span>
+                  <span class="tag slate">Drift</span>
+                  <span class="tag slate">Firebase</span>
+                </div>
+              </div>
+              <div class="u-flex-gap-4">
+                <a href="https://github.com/devbatista/inimigos_da_bola" target="_blank" rel="noopener noreferrer" class="u-inline-link-cyan">Ver no GitHub <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></a>
+              </div>
+            </div>
+          </article>
+
+          <article class="project-card" data-project-category="app">
+            <div class="project-visual">
+              <div class="grid-bg"></div>
+              <div class="project-repo" aria-hidden="true">
+                <span>devbatista / <strong>mindcash_app</strong></span>
+                <p>MindCash</p>
+              </div>
+            </div>
+            <div class="project-info">
+              <div>
+                <div class="project-meta-inline">
+                  <span class="project-initial">M</span>
+                  <span class="project-meta-type">App Flutter</span>
+                </div>
+                <h3 class="project-title">MindCash</h3>
+                <p class="u-text-slate-400-sm-lh-lg">App de finanças pessoais que funciona sem internet: contas, cartões e faturas, parcelamentos, lançamentos recorrentes, relatórios e bloqueio por biometria.</p>
+                <div class="u-flex-wrap-gap-2-mb-6">
+                  <span class="tag slate">Flutter</span>
+                  <span class="tag slate">Drift</span>
+                  <span class="tag slate">SQLite</span>
+                  <span class="tag slate">Offline-first</span>
+                </div>
+              </div>
+              <div class="u-flex-gap-4">
+                <a href="https://github.com/devbatista/mindcash_app" target="_blank" rel="noopener noreferrer" class="u-inline-link-cyan">Ver no GitHub <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></a>
               </div>
             </div>
           </article>
@@ -301,62 +445,86 @@
           <article class="project-card" data-project-category="backend">
             <div class="project-visual">
               <div class="grid-bg"></div>
-              <div class="project-image-slot">
-                <img src="/images/projeto-5.webp" alt="Representação de APIs, sistemas e automações desenvolvidos pela DevBatista" loading="lazy" decoding="async" width="1536" height="1024">
+              <div class="project-repo" aria-hidden="true">
+                <span>devbatista / <strong>inimigos_da_bola_api</strong></span>
+                <p>Inimigos da Bola API</p>
               </div>
-              <span class="tag amber u-status-badge">Projetos técnicos</span>
             </div>
             <div class="project-info">
               <div>
                 <div class="project-meta-inline">
-                  <span class="project-initial">A</span>
-                  <span class="project-meta-type">Backend</span>
+                  <span class="project-initial">I</span>
+                  <span class="project-meta-type">API REST</span>
                 </div>
-                <h3 class="project-title">APIs, sistemas e automações</h3>
-                <p class="u-text-slate-400-sm-lh-lg">
-                  Desenvolvimento de APIs REST, sistemas web sob medida, autenticação,
-                  automações e integrações para operações digitais de empresas.
-                </p>
+                <h3 class="project-title">Inimigos da Bola API</h3>
+                <p class="u-text-slate-400-sm-lh-lg">API Rails do app Inimigos da Bola: presença, times e ranking, com autenticação JWT, sincronização offline e ambiente Docker-first.</p>
                 <div class="u-flex-wrap-gap-2-mb-6">
-                  <span class="tag slate">API REST</span>
+                  <span class="tag slate">Ruby on Rails</span>
                   <span class="tag slate">JWT</span>
+                  <span class="tag slate">Sidekiq</span>
                   <span class="tag slate">Docker</span>
-                  <span class="tag slate">n8n</span>
                 </div>
               </div>
               <div class="u-flex-gap-4">
-                <a href="https://github.com/devbatista" target="_blank" rel="noopener noreferrer" class="u-inline-link-cyan">Ver no GitHub <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></a>
+                <a href="https://github.com/devbatista/inimigos_da_bola_api" target="_blank" rel="noopener noreferrer" class="u-inline-link-cyan">Ver no GitHub <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></a>
               </div>
             </div>
           </article>
 
-          <article class="project-card" data-project-category="automacao">
+          <article class="project-card" data-project-category="backend">
             <div class="project-visual">
               <div class="grid-bg"></div>
-              <div class="project-image-slot">
-                <img src="/images/og-image.jpg" alt="Representação do agente de atendimento com inteligência artificial da R6Tech Store" loading="lazy" decoding="async" width="1536" height="1024">
+              <div class="project-repo" aria-hidden="true">
+                <span>devbatista / <strong>n8n_catalyst</strong></span>
+                <p>n8n Catalyst</p>
               </div>
-              <span class="tag emerald u-status-badge">Automação com IA</span>
             </div>
             <div class="project-info">
               <div>
                 <div class="project-meta-inline">
-                  <span class="project-initial">R</span>
-                  <span class="project-meta-type">Agente de IA</span>
+                  <span class="project-initial">N</span>
+                  <span class="project-meta-type">Automação e IA</span>
                 </div>
-                <h3 class="project-title">R6Tech Store</h3>
-                <p class="u-text-slate-400-sm-lh-lg">
-                  Agente de IA para atendimento de loja virtual, com foco em tirar dúvidas,
-                  qualificar clientes e acelerar o atendimento pelo WhatsApp.
-                </p>
+                <h3 class="project-title">n8n Catalyst</h3>
+                <p class="u-text-slate-400-sm-lh-lg">Ambiente n8n com PostgreSQL usado para os fluxos de inteligência artificial do CatalystOps.</p>
                 <div class="u-flex-wrap-gap-2-mb-6">
-                  <span class="tag slate">Agente de IA</span>
-                  <span class="tag slate">WhatsApp</span>
-                  <span class="tag slate">Automação</span>
+                  <span class="tag slate">n8n</span>
+                  <span class="tag slate">PostgreSQL</span>
+                  <span class="tag slate">Docker</span>
+                  <span class="tag slate">IA</span>
                 </div>
               </div>
               <div class="u-flex-gap-4">
-                <a href="/solucoes#automacao-ia" class="u-inline-link-cyan">Ver a solução <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></a>
+                <a href="https://github.com/devbatista/n8n_catalyst" target="_blank" rel="noopener noreferrer" class="u-inline-link-cyan">Ver no GitHub <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></a>
+              </div>
+            </div>
+          </article>
+
+          <article class="project-card" data-project-category="backend">
+            <div class="project-visual">
+              <div class="grid-bg"></div>
+              <div class="project-repo" aria-hidden="true">
+                <span>devbatista / <strong>cart_api</strong></span>
+                <p>Cart API</p>
+              </div>
+            </div>
+            <div class="project-info">
+              <div>
+                <div class="project-meta-inline">
+                  <span class="project-initial">C</span>
+                  <span class="project-meta-type">API REST</span>
+                </div>
+                <h3 class="project-title">Cart API</h3>
+                <p class="u-text-slate-400-sm-lh-lg">API de carrinho de compras em Rails com job agendado que marca carrinhos abandonados e remove os antigos automaticamente.</p>
+                <div class="u-flex-wrap-gap-2-mb-6">
+                  <span class="tag slate">Ruby on Rails</span>
+                  <span class="tag slate">Sidekiq</span>
+                  <span class="tag slate">Redis</span>
+                  <span class="tag slate">RSpec</span>
+                </div>
+              </div>
+              <div class="u-flex-gap-4">
+                <a href="https://github.com/devbatista/cart_api" target="_blank" rel="noopener noreferrer" class="u-inline-link-cyan">Ver no GitHub <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></a>
               </div>
             </div>
           </article>
@@ -364,31 +532,29 @@
           <article class="project-card" data-project-category="institucional">
             <div class="project-visual">
               <div class="grid-bg"></div>
-              <div class="project-image-slot">
-                <img src="/images/projeto-1.webp" alt="Site institucional da DevBatista" loading="lazy" decoding="async" width="1600" height="968">
+              <div class="project-repo" aria-hidden="true">
+                <span>devbatista / <strong>guia-da-copa</strong></span>
+                <p>Guia da Copa 2026</p>
               </div>
               <span class="tag emerald u-status-badge">Online</span>
             </div>
             <div class="project-info">
               <div>
                 <div class="project-meta-inline">
-                  <span class="project-initial">D</span>
-                  <span class="project-meta-type">Institucional</span>
+                  <span class="project-initial">G</span>
+                  <span class="project-meta-type">Site estático</span>
                 </div>
-                <h3 class="project-title">DevBatista</h3>
-                <p class="u-text-slate-400-sm-lh-lg">
-                  Site institucional da própria DevBatista, construído em HTML, CSS e
-                  JavaScript puro com foco em performance e SEO técnico.
-                </p>
+                <h3 class="project-title">Guia da Copa 2026</h3>
+                <p class="u-text-slate-400-sm-lh-lg">Jogos da Copa do Mundo 2026 com horário de Brasília e onde assistir no Brasil, classificação, mata-mata e placar ao vivo. Deploy automático via GitHub Actions.</p>
                 <div class="u-flex-wrap-gap-2-mb-6">
-                  <span class="tag slate">HTML</span>
-                  <span class="tag slate">CSS</span>
                   <span class="tag slate">JavaScript</span>
-                  <span class="tag slate">SEO</span>
+                  <span class="tag slate">PHP</span>
+                  <span class="tag slate">GitHub Actions</span>
                 </div>
               </div>
               <div class="u-flex-gap-4">
-                <a href="https://www.devbatista.com/" target="_blank" rel="noopener noreferrer" class="u-inline-link-cyan">Visitar <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></a>
+                <a href="https://github.com/devbatista/guia-da-copa" target="_blank" rel="noopener noreferrer" class="u-inline-link-cyan">Ver no GitHub <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></a>
+                <a href="https://devbatista.online/guiadacopa/" target="_blank" rel="noopener noreferrer" class="u-inline-link-cyan">Visitar <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></a>
               </div>
             </div>
           </article>
@@ -408,10 +574,7 @@
                   <span class="project-meta-type">Institucional</span>
                 </div>
                 <h3 class="project-title">Batista Sound</h3>
-                <p class="u-text-slate-400-sm-lh-lg">
-                  Site institucional para empresa de sonorização, com foco em apresentação
-                  de serviços, presença digital e contato comercial para eventos.
-                </p>
+                <p class="u-text-slate-400-sm-lh-lg">Site institucional para empresa de sonorização, com foco em apresentação de serviços, presença digital e contato comercial para eventos.</p>
                 <div class="u-flex-wrap-gap-2-mb-6">
                   <span class="tag slate">HTML</span>
                   <span class="tag slate">CSS</span>
@@ -419,7 +582,38 @@
                 </div>
               </div>
               <div class="u-flex-gap-4">
+                <a href="https://github.com/devbatista/batistasound" target="_blank" rel="noopener noreferrer" class="u-inline-link-cyan">Ver no GitHub <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></a>
                 <a href="https://www.batistasound.com.br/" target="_blank" rel="noopener noreferrer" class="u-inline-link-cyan">Visitar <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></a>
+              </div>
+            </div>
+          </article>
+
+          <article class="project-card" data-project-category="institucional">
+            <div class="project-visual">
+              <div class="grid-bg"></div>
+              <div class="project-image-slot">
+                <img src="/images/projeto-1.webp" alt="Site institucional da DevBatista" loading="lazy" decoding="async" width="1600" height="968">
+              </div>
+              <span class="tag emerald u-status-badge">Online</span>
+            </div>
+            <div class="project-info">
+              <div>
+                <div class="project-meta-inline">
+                  <span class="project-initial">D</span>
+                  <span class="project-meta-type">Institucional</span>
+                </div>
+                <h3 class="project-title">DevBatista</h3>
+                <p class="u-text-slate-400-sm-lh-lg">Site institucional da própria DevBatista, construído em HTML, CSS e JavaScript puro com foco em performance e SEO técnico.</p>
+                <div class="u-flex-wrap-gap-2-mb-6">
+                  <span class="tag slate">HTML</span>
+                  <span class="tag slate">CSS</span>
+                  <span class="tag slate">JavaScript</span>
+                  <span class="tag slate">SEO</span>
+                </div>
+              </div>
+              <div class="u-flex-gap-4">
+                <a href="https://github.com/devbatista/devbatista_site" target="_blank" rel="noopener noreferrer" class="u-inline-link-cyan">Ver no GitHub <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></a>
+                <a href="https://www.devbatista.com/" target="_blank" rel="noopener noreferrer" class="u-inline-link-cyan">Visitar <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></a>
               </div>
             </div>
           </article>
@@ -439,10 +633,7 @@
                   <span class="project-meta-type">Portfólio</span>
                 </div>
                 <h3 class="project-title">rbatista.dev</h3>
-                <p class="u-text-slate-400-sm-lh-lg">
-                  Portfólio profissional do fundador, com apresentação de experiências,
-                  tecnologias e projetos desenvolvidos.
-                </p>
+                <p class="u-text-slate-400-sm-lh-lg">Portfólio profissional do fundador, com apresentação de experiências, tecnologias e projetos desenvolvidos.</p>
                 <div class="u-flex-wrap-gap-2-mb-6">
                   <span class="tag slate">HTML</span>
                   <span class="tag slate">CSS</span>
@@ -450,6 +641,7 @@
                 </div>
               </div>
               <div class="u-flex-gap-4">
+                <a href="https://github.com/devbatista/rbatista_dev" target="_blank" rel="noopener noreferrer" class="u-inline-link-cyan">Ver no GitHub <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></a>
                 <a href="https://www.rbatista.dev/" target="_blank" rel="noopener noreferrer" class="u-inline-link-cyan">Visitar <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></a>
               </div>
             </div>
