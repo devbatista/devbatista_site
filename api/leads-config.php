@@ -28,20 +28,11 @@ function lead_config(): array
         'rate_limit_max' => 5,          // envios por IP
         'rate_limit_window' => 600,     // em 10 minutos
         'health_token' => '',           // vazio = /api/health.php responde 404
-        'hubspot_enabled' => false,
-        'hubspot_token' => '',
-        'hubspot_portal_id' => '',
-        'hubspot_create_note' => true,  // anexa o diagnóstico como nota no contato e no negócio
-        'hubspot_create_deal' => true,  // cria negócio no pipeline comercial
-        'hubspot_pipeline' => 'default',              // "Novos negócios"
-        'hubspot_deal_stage' => 'appointmentscheduled', // "Oportunidade identificada"
-        'hubspot_properties' => [],     // ['diagnostic_score' => 'nome_da_prop_no_portal']
-        // Landing page do e-book (api/ebook.php). Topo de funil: cria o
-        // contato como subscriber e abre o negócio na etapa do e-book.
-        'ebook_hubspot_enabled' => false,
-        'ebook_hubspot_note' => true,   // registra a origem/UTM como nota no contato
-        'ebook_pipeline' => 'default',  // "Novos negócios"
-        'ebook_deal_stage' => '',       // ID da etapa "E-book"; vazio = não abre negócio
+        // CRM próprio (Admin DevBatista): o diagnóstico e o e-book viram
+        // lead lá. O token é o SITE_LEADS_TOKEN do Admin.
+        'crm_enabled' => false,
+        'crm_url' => 'https://admin.devbatista.com/webhooks/site-leads',
+        'crm_token' => '',
         // Entrega do material. O PDF vai como link, não como anexo: 326 KB
         // saindo de um domínio novo é convite para o filtro de spam.
         'ebook_email_enabled' => false,
@@ -203,4 +194,32 @@ function http_json(string $method, string $url, $payload = null, array $headers 
     $message = $ok ? '' : (string) ($decoded['message'] ?? ('HTTP ' . $status));
 
     return ['ok' => $ok, 'http_code' => $status, 'body' => $decoded, 'message' => $message];
+}
+
+// ============================================================
+// CRM (Admin DevBatista)
+// ============================================================
+
+/**
+ * Envia um lead ao webhook do Admin (POST /webhooks/site-leads).
+ *
+ * O Admin cria o lead, ou completa o lead em aberto com o mesmo e-mail —
+ * reenviar não duplica. Responde 201 (criado), 200 (completado) ou 422 com
+ * a lista em 'errors'. Nunca lança: devolve o resultado normalizado.
+ */
+function crm_request(array $payload): array
+{
+    $config = lead_config();
+
+    $response = http_json('POST', (string) $config['crm_url'], $payload, [
+        'Authorization: Bearer ' . $config['crm_token'],
+    ]);
+
+    // O Admin explica a recusa em 'errors', não em 'message'.
+    $errors = (array) ($response['body']['errors'] ?? []);
+    if (!$response['ok'] && $errors !== []) {
+        $response['message'] = implode('; ', array_map('strval', $errors));
+    }
+
+    return $response;
 }

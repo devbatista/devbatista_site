@@ -252,13 +252,15 @@ O campo `warnings` é o que importa. O mais grave:
 Esse caso é invisível de fora — o endpoint de leads continua respondendo `201`
 e o visitante vê o resultado normalmente, mas nada é gravado.
 
-Duas verificações sob demanda, ambas read-only (não criam contato nem enviam
-e-mail):
+Duas verificações sob demanda, nenhuma cria lead nem envia e-mail:
 
 ```bash
-curl -s ".../api/health.php?token=SEU_TOKEN&check=hubspot" | jq .data.integrations.hubspot
-curl -s ".../api/health.php?token=SEU_TOKEN&check=ses"     | jq .data.integrations.email
+curl -s ".../api/health.php?token=SEU_TOKEN&check=crm" | jq .data.integrations.crm
+curl -s ".../api/health.php?token=SEU_TOKEN&check=ses" | jq .data.integrations.email
 ```
+
+`check=crm` manda um lead vazio ao Admin: ele confere o token antes dos dados,
+então a resposta `422` prova conexão e token válidos. `401` é token divergente.
 
 `check=ses` valida a assinatura SigV4 e informa `production_access` — se vier
 `false`, a conta ainda está no sandbox do SES.
@@ -274,7 +276,7 @@ bloqueada em hospedagem compartilhada). A assinatura é conferível contra os
 vetores oficiais da AWS via `aws_sigv4_headers()`.
 
 Só as faixas em `email_tiers` são notificadas — por padrão `morno` e `quente`.
-Lead frio continua gravado no JSONL e criado no HubSpot; apenas não interrompe
+Lead frio continua gravado no JSONL e criado no CRM; apenas não interrompe
 ninguém. Lista vazia notifica todos.
 
 Pré-requisitos na AWS:
@@ -310,19 +312,10 @@ falhar, o endpoint responde `502` e o visitante vê a mensagem, em vez de ficar
 esperando um e-mail que nunca sairia. O lead já foi gravado antes disso, então
 nada se perde.
 
-No HubSpot o contato entra como `subscriber` e abre negócio na etapa
-`ebook_deal_stage`, que é a coluna de topo de funil do board. Quem depois
-preenche o diagnóstico **não ganha um segundo negócio**: o existente é movido
-para `hubspot_deal_stage` por [`hubspot_ensure_deal()`](api/leads.php#L788).
-Sem esse avanço o lead ficaria parado na coluna do e-book para sempre.
-
-Os IDs das etapas saem de:
-
-```bash
-curl -s https://api.hubapi.com/crm/v3/pipelines/deals \
-  -H "Authorization: Bearer $HUBSPOT_TOKEN" | jq -r \
-  '.results[] | .label, (.stages[] | "   \(.id)  \(.label)")'
-```
+No CRM o e-book abre um lead "Novo Lead" com origem **Site** e o próprio
+e-mail como nome provisório. Quem depois preenche o diagnóstico **não ganha um
+segundo lead**: o lead em aberto com o mesmo e-mail é completado com nome,
+empresa, WhatsApp e o diagnóstico (ver a seção CRM abaixo).
 
 ### Configuração e integrações
 
@@ -339,16 +332,50 @@ padrões e as integrações desligadas.
 
 **Produção:** os secrets do GitHub geram o `api/config.php` durante o deploy —
 ver a seção Deploy. Se a hospedagem permitir variáveis de ambiente no painel
-(PHP-FPM), prefira `DEVBATISTA_HUBSPOT_TOKEN` etc. e dispense o arquivo: aí o
+(PHP-FPM), prefira `DEVBATISTA_CRM_TOKEN` etc. e dispense o arquivo: aí o
 segredo não existe em disco nem passa pelo CI. Aceita `int`, `bool` (`true`/`1`)
 e listas separadas por vírgula. **Não** use `SetEnv` no `.htaccess` — ele é
 versionado.
 
 As integrações ficam desligadas por padrão, cada uma em sua função:
-`sendToHubSpot()` e `sendEmailNotification()` (implementadas) e
+`sendToCrm()` e `sendEmailNotification()` (implementadas) e
 `sendWhatsAppNotification()` (ainda um stub). Todas rodam **depois** de o
 visitante já ter recebido a resposta e nenhuma derruba o formulário; o
 resultado de cada uma fica em `api/storage/integrations/AAAA-MM.jsonl`.
+
+### CRM (Admin DevBatista)
+
+O diagnóstico e o e-book viram lead no CRM próprio, servidor a servidor:
+`crm_request()` (em `api/leads-config.php`) faz `POST` em
+`https://admin.devbatista.com/webhooks/site-leads` com
+`Authorization: Bearer <crm_token>`. O token é o `SITE_LEADS_TOKEN` do Admin;
+os dois lados precisam ter o mesmo valor (`openssl rand -hex 32`).
+
+```json
+{
+  "source": "diagnosis",            // ou "ebook" (só email, site_id e summary)
+  "site_id": "a1b2c3d4e5f60718",    // id do envio no JSONL
+  "name": "...", "company": "...", "email": "...", "phone": "11987654321",
+  "tier": "quente",                 // potencial comercial
+  "summary": "uma linha, vai para a timeline do lead",
+  "details": "o diagnóstico completo, vai para as observações"
+}
+```
+
+O Admin não conhece as tabelas do quiz: recebe os textos prontos de
+`crm_summary()` e `crm_details()`. Do lado de lá:
+
+- o lead em aberto com o mesmo e-mail é **completado**, não duplicado. Só os
+  campos vazios são preenchidos e o diagnóstico novo se soma às observações.
+  Lead perdido ou convertido não é reaberto: um envio novo abre outro lead;
+- o responsável é o administrador ativo mais antigo;
+- cada envio vira uma interação (nota) na timeline;
+- o diagnóstico avisa o responsável no sino. Esse aviso não manda e-mail,
+  porque o e-mail dos mornos e quentes já sai daqui, pelo SES;
+- o WhatsApp informado vincula sozinho a conversa que já existir com o número.
+
+Respostas: `201` criado, `200` completado, `401` token, `422` dados inválidos
+(com `errors`). O resultado fica em `api/storage/integrations/` como `crm`.
 
 > `css/lead-quiz.css` e `js/lead-quiz.js` são servidos com cache `immutable` de
 > 1 ano. Ao editá-los, **incremente o `?v=` nos 9 HTMLs**, senão ninguém verá a
@@ -424,8 +451,7 @@ gerado que sobe por FTP.
 
 | Secret | Liga |
 |---|---|
-| `HUBSPOT_TOKEN` | HubSpot (junto com `HUBSPOT_PORTAL_ID`) — liga o diagnóstico **e** a landing page do e-book |
-| `HUBSPOT_EBOOK_STAGE` | ID da etapa onde o e-book abre negócio. Sem ele o contato é criado, mas nada aparece no board |
+| `CRM_TOKEN` | CRM próprio (Admin DevBatista) — liga o diagnóstico **e** a landing page do e-book. Mesmo valor do `SITE_LEADS_TOKEN` do Admin |
 | `LEADS_EMAIL_TO` + `AWS_SES_KEY` | Notificação por e-mail — precisa também de `AWS_SES_SECRET`, `AWS_SES_REGION` e `LEADS_EMAIL_FROM`. Opcional: `LEADS_EMAIL_TIERS` (`morno,quente` por padrão; `todos` inclui os frios) |
 | `WHATSAPP_TOKEN` | Notificação por WhatsApp (`WHATSAPP_ENDPOINT`, `WHATSAPP_TO`) |
 

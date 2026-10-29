@@ -240,8 +240,8 @@
   /**
    * Envia o lead ao endpoint configurado.
    *
-   * Isolada de propósito: para trocar o destino (backend próprio, HubSpot
-   * Forms API via proxy, outro CRM) basta mudar esta função e CONFIG.endpoint.
+   * Isolada de propósito: para trocar o destino basta mudar esta função e
+   * CONFIG.endpoint. O envio ao CRM é feito pelo servidor (api/ebook.php).
    *
    * @param {string} email
    * @returns {Promise<object>} corpo da resposta em caso de sucesso

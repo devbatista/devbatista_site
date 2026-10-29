@@ -9,7 +9,7 @@ declare(strict_types=1);
  * servidor (nunca confia no que vem do navegador), grava o lead e devolve
  * JSON.
  *
- * As integrações externas (HubSpot, e-mail, WhatsApp) ficam desacopladas em
+ * As integrações externas (CRM, e-mail, WhatsApp) ficam desacopladas em
  * funções próprias e desligadas por padrão — ver config.example.php.
  */
 
@@ -121,7 +121,7 @@ const MAIN_PROBLEMS = [
 ];
 
 /**
- * Rótulos legíveis das respostas — usados nas notificações (HubSpot,
+ * Rótulos legíveis das respostas — usados nas notificações (CRM,
  * e-mail, WhatsApp). Quem lê o lead precisa de "Grande parte da operação",
  * não de "maioria". Espelham as opções de js/lead-quiz.js.
  */
@@ -238,7 +238,7 @@ function respond(int $status, array $payload): void
 /**
  * Entrega a resposta ao visitante e segue processando em segundo plano.
  *
- * Sem isso, uma chamada HTTP ao HubSpot fica na frente do spinner do
+ * Sem isso, uma chamada HTTP ao CRM fica na frente do spinner do
  * formulário. O lead já está gravado quando esta função é chamada, então
  * nada do que rodar depois pode custar a conversão.
  *
@@ -258,7 +258,7 @@ function respond_and_continue(int $status, array $payload): bool
 
     // PHP-FPM e LiteSpeed (LSAPI) têm funções próprias para encerrar a
     // resposta e continuar executando. Sem uma delas, um simples flush()
-    // não libera a conexão nesses SAPIs — o visitante esperaria o HubSpot.
+    // não libera a conexão nesses SAPIs — o visitante esperaria o CRM.
     foreach (['fastcgi_finish_request', 'litespeed_finish_request'] as $finish) {
         if (function_exists($finish)) {
             $finish();
@@ -538,8 +538,8 @@ function commercialTier(int $score): string
 // Armazenamento
 // ============================================================
 /**
- * Grava o lead em JSONL enquanto o HubSpot não está ligado.
- * Nenhum lead se perde por causa de integração pendente.
+ * Grava o lead em JSONL antes de qualquer integração.
+ * Nenhum lead se perde por causa de integração pendente ou fora do ar.
  */
 function storeLead(array $record): bool
 {
@@ -671,184 +671,43 @@ function logIntegrations(string $leadId, array $results): void
 }
 
 /**
- * Cria ou atualiza o contato no HubSpot e anexa o diagnóstico como nota.
+ * Cria o lead no CRM próprio (Admin DevBatista), ou completa o lead em
+ * aberto com o mesmo e-mail — quem baixou o e-book e depois fez o
+ * diagnóstico continua sendo um lead só.
  *
- * Usa apenas propriedades padrão: uma propriedade customizada inexistente
- * faz o HubSpot devolver 400 e a requisição inteira falha. O diagnóstico
- * completo vai na nota, que funciona sem configurar nada no portal.
- *
- * Para mandar as respostas em propriedades próprias, preencha
- * 'hubspot_properties' no config: ['diagnostic_score' => 'nome_da_prop'].
+ * O Admin não conhece as tabelas do quiz: recebe os textos prontos. O
+ * resumo de uma linha vai para a timeline; o diagnóstico completo, para as
+ * observações do lead.
  */
-function sendToHubSpot(array $lead): array
+function sendToCrm(array $lead): array
 {
     $config = lead_config();
-    if (!$config['hubspot_enabled'] || $config['hubspot_token'] === '') {
+    if (!$config['crm_enabled'] || $config['crm_token'] === '') {
         return ['status' => 'disabled'];
     }
 
-    [$firstName, $lastName] = split_name($lead['name']);
-
-    $properties = [
-        'email' => $lead['email'],
-        'firstname' => $firstName,
-        'lastname' => $lastName,
-        'phone' => $lead['phone_e164'],
+    $response = crm_request([
+        'source' => 'diagnosis',
+        'site_id' => $lead['id'],
+        'name' => $lead['name'],
         'company' => $lead['company'],
-        'lifecyclestage' => 'lead',
-        'hs_lead_status' => 'NEW',
-    ];
-
-    // Propriedades customizadas só entram se o portal já as tiver,
-    // declaradas explicitamente no config.
-    foreach ((array) ($config['hubspot_properties'] ?? []) as $leadKey => $hubspotProperty) {
-        $value = $lead[$leadKey] ?? ($lead['answers'][$leadKey] ?? null);
-        if ($value !== null && $value !== '') {
-            $properties[(string) $hubspotProperty] = is_scalar($value) ? (string) $value : json_encode($value);
-        }
-    }
-
-    $properties = array_filter($properties, static fn($v): bool => $v !== '' && $v !== null);
-
-    // Upsert por e-mail: reenviar o mesmo lead atualiza em vez de duplicar.
-    $upsert = hubspot_request('POST', '/crm/v3/objects/contacts/batch/upsert', [
-        'inputs' => [[
-            'idProperty' => 'email',
-            'id' => $lead['email'],
-            'properties' => $properties,
-        ]],
+        'email' => $lead['email'],
+        'phone' => $lead['phone'],
+        'tier' => $lead['commercial_tier'],
+        'summary' => crm_summary($lead),
+        'details' => crm_details($lead),
     ]);
 
-    if (!$upsert['ok']) {
-        return [
-            'status' => 'error',
-            'http_code' => $upsert['http_code'],
-            'message' => $upsert['message'],
-        ];
+    if (!$response['ok']) {
+        return ['status' => 'error', 'http_code' => $response['http_code'], 'message' => $response['message']];
     }
 
-    $contactId = (string) ($upsert['body']['results'][0]['id'] ?? '');
-    $result = [
+    return [
         'status' => 'ok',
-        'contact_id' => $contactId,
-        'http_code' => $upsert['http_code'],
+        'http_code' => $response['http_code'],
+        'crm_lead_id' => (string) ($response['body']['id'] ?? ''),
+        'created' => (bool) ($response['body']['created'] ?? false),
     ];
-
-    if ($contactId === '') {
-        return $result;
-    }
-
-    // Negócio no pipeline comercial.
-    $dealId = '';
-    if (($config['hubspot_create_deal'] ?? true) !== false) {
-        [$dealId, $result['deal']] = hubspot_ensure_deal($lead, $contactId);
-        if ($dealId !== '') {
-            $result['deal_id'] = $dealId;
-        }
-    }
-
-    // A nota carrega o diagnóstico completo sem exigir propriedade
-    // customizada, e fica visível na timeline do contato e do negócio.
-    if (($config['hubspot_create_note'] ?? true) !== false) {
-        $associations = [[
-            'to' => ['id' => $contactId],
-            // 202 = note_to_contact (associação padrão do HubSpot)
-            'types' => [['associationCategory' => 'HUBSPOT_DEFINED', 'associationTypeId' => 202]],
-        ]];
-
-        if ($dealId !== '') {
-            $associations[] = [
-                'to' => ['id' => $dealId],
-                // 214 = note_to_deal
-                'types' => [['associationCategory' => 'HUBSPOT_DEFINED', 'associationTypeId' => 214]],
-            ];
-        }
-
-        $note = hubspot_request('POST', '/crm/v3/objects/notes', [
-            'properties' => [
-                'hs_timestamp' => round(microtime(true) * 1000),
-                'hs_note_body' => hubspot_note_body($lead),
-            ],
-            'associations' => $associations,
-        ]);
-
-        $result['note'] = $note['ok'] ? 'ok' : ('falhou: ' . $note['message']);
-    }
-
-    return $result;
-}
-
-/**
- * Cria o negócio, a menos que o contato já tenha um negócio aberto.
- *
- * Sem essa verificação, quem refizesse o diagnóstico geraria um negócio
- * duplicado no pipeline a cada envio.
- *
- * @return array{0:string,1:string} [dealId, status legível]
- */
-function hubspot_ensure_deal(array $lead, string $contactId): array
-{
-    $config = lead_config();
-
-    $existing = hubspot_request('GET', '/crm/v4/objects/contacts/' . $contactId . '/associations/deals');
-    foreach ($existing['body']['results'] ?? [] as $association) {
-        $dealId = (string) ($association['toObjectId'] ?? '');
-        if ($dealId === '') {
-            continue;
-        }
-
-        $deal = hubspot_request('GET', '/crm/v3/objects/deals/' . $dealId . '?properties=dealstage');
-        $stage = (string) ($deal['body']['properties']['dealstage'] ?? '');
-        if ($stage === '' || strpos($stage, 'closed') === 0) {
-            continue;
-        }
-
-        // Quem baixou o e-book e agora fez o diagnóstico não pode ficar
-        // parado na coluna do topo de funil: o negócio já existe, então
-        // ninguém o criaria de novo e o board mentiria.
-        $ebookStage = (string) ($config['ebook_deal_stage'] ?? '');
-        $diagnosticStage = (string) ($config['hubspot_deal_stage'] ?? 'appointmentscheduled');
-
-        if ($ebookStage !== '' && $stage === $ebookStage && $diagnosticStage !== $ebookStage) {
-            $moved = hubspot_request('PATCH', '/crm/v3/objects/deals/' . $dealId, [
-                'properties' => ['dealstage' => $diagnosticStage],
-            ]);
-
-            return [$dealId, $moved['ok'] ? 'avançado do e-book' : ('avanço falhou: ' . $moved['message'])];
-        }
-
-        return [$dealId, 'negócio aberto já existia'];
-    }
-
-    $company = $lead['company'] !== '' ? $lead['company'] : $lead['name'];
-    $problem = MAIN_PROBLEM_LABELS[$lead['main_problem']] ?? 'Diagnóstico Tecnológico';
-
-    $created = hubspot_request('POST', '/crm/v3/objects/deals', [
-        'properties' => [
-            'dealname' => $company . ' — ' . $problem,
-            'pipeline' => (string) ($config['hubspot_pipeline'] ?? 'default'),
-            'dealstage' => (string) ($config['hubspot_deal_stage'] ?? 'appointmentscheduled'),
-        ],
-        'associations' => [[
-            'to' => ['id' => $contactId],
-            // 3 = deal_to_contact
-            'types' => [['associationCategory' => 'HUBSPOT_DEFINED', 'associationTypeId' => 3]],
-        ]],
-    ]);
-
-    if (!$created['ok']) {
-        return ['', 'falhou: ' . $created['message']];
-    }
-
-    return [(string) ($created['body']['id'] ?? ''), 'criado'];
-}
-
-/** Divide o nome informado em firstname / lastname. */
-function split_name(string $name): array
-{
-    $parts = preg_split('/\s+/', trim($name)) ?: [];
-    $first = (string) array_shift($parts);
-    return [$first, implode(' ', $parts)];
 }
 
 /** Traduz o valor cru de uma resposta para o rótulo legível. */
@@ -857,58 +716,51 @@ function answer_label(string $question, string $value): string
     return ANSWER_LABELS[$question]['options'][$value] ?? ($value !== '' ? $value : '—');
 }
 
-/** Corpo da nota: o diagnóstico legível dentro do HubSpot. */
-function hubspot_note_body(array $lead): string
+/** Uma linha para a timeline do lead no CRM. */
+function crm_summary(array $lead): string
 {
-    $escape = static fn(string $text): string => htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
-
-    $lines = ['<b>Diagnóstico Tecnológico</b>', ''];
-    $lines[] = sprintf(
-        'Resultado: <b>%s</b> (%d pontos)<br>Potencial comercial: <b>%s</b>',
-        $escape(DIAGNOSTIC_LEVEL_LABELS[$lead['diagnostic_level']] ?? $lead['diagnostic_level']),
+    return sprintf(
+        'Diagnóstico pelo site: %s (%d pontos) · potencial %s · %s',
+        DIAGNOSTIC_LEVEL_LABELS[$lead['diagnostic_level']] ?? $lead['diagnostic_level'],
         $lead['diagnostic_score'],
-        $escape(ucfirst((string) $lead['commercial_tier']))
+        strtolower(commercial_tier_label((string) $lead['commercial_tier'])),
+        MAIN_PROBLEM_LABELS[$lead['main_problem']] ?? $lead['main_problem']
     );
-    $lines[] = '';
-    $lines[] = '<b>Principal desafio:</b> '
-        . $escape(MAIN_PROBLEM_LABELS[$lead['main_problem']] ?? $lead['main_problem']);
+}
+
+/** O diagnóstico completo, em texto, para as observações do lead no CRM. */
+function crm_details(array $lead): string
+{
+    $lines = [
+        'Diagnóstico Tecnológico — ' . lead_local_time((string) ($lead['created_at'] ?? '')),
+        sprintf(
+            'Resultado: %s (%d pontos) · potencial comercial %s (%d pontos)',
+            DIAGNOSTIC_LEVEL_LABELS[$lead['diagnostic_level']] ?? $lead['diagnostic_level'],
+            $lead['diagnostic_score'],
+            strtolower(commercial_tier_label((string) $lead['commercial_tier'])),
+            $lead['commercial_score']
+        ),
+        'Principal desafio: ' . (MAIN_PROBLEM_LABELS[$lead['main_problem']] ?? $lead['main_problem']),
+    ];
 
     if ($lead['main_problem_other'] !== '') {
-        $lines[] = '<i>' . $escape($lead['main_problem_other']) . '</i>';
+        $lines[] = $lead['main_problem_other'];
     }
 
     $lines[] = '';
-    $lines[] = '<b>Respostas</b>';
     foreach (ANSWER_LABELS as $key => $meta) {
-        $lines[] = $meta['label'] . ': ' . $escape(answer_label($key, (string) ($lead['answers'][$key] ?? '')));
+        $lines[] = $meta['label'] . ': ' . answer_label($key, (string) ($lead['answers'][$key] ?? ''));
     }
 
     $tracking = (array) $lead['tracking'];
     if ($tracking !== []) {
         $lines[] = '';
-        $lines[] = '<b>Origem</b>';
         foreach ($tracking as $key => $value) {
-            $lines[] = $key . ': ' . $escape((string) $value);
+            $lines[] = $key . ': ' . $value;
         }
     }
 
-    return implode('<br>', $lines);
-}
-
-/**
- * Chamada à API do HubSpot com orçamento de tempo curto.
- * Nunca lança: devolve sempre o resultado normalizado.
- */
-function hubspot_request(string $method, string $path, ?array $payload = null): array
-{
-    $config = lead_config();
-
-    return http_json(
-        $method,
-        'https://api.hubapi.com' . $path,
-        $payload,
-        ['Authorization: Bearer ' . $config['hubspot_token']]
-    );
+    return implode("\n", $lines);
 }
 
 /**
@@ -916,7 +768,7 @@ function hubspot_request(string $method, string $path, ?array $payload = null): 
  *
  * Só as faixas listadas em 'email_tiers' viram notificação — a caixa de
  * entrada é para agir, não para arquivar. O lead frio continua gravado no
- * JSONL e criado no HubSpot; apenas não interrompe ninguém.
+ * JSONL e criado no CRM; apenas não interrompe ninguém.
  */
 function sendEmailNotification(array $lead): array
 {
@@ -1223,7 +1075,7 @@ try {
     respond_and_continue(201, ['ok' => true, 'data' => $response]);
 
     logIntegrations($record['id'], [
-        'hubspot' => runIntegration('sendToHubSpot', $record),
+        'crm' => runIntegration('sendToCrm', $record),
         'email' => runIntegration('sendEmailNotification', $record),
         'whatsapp' => runIntegration('sendWhatsAppNotification', $record),
     ]);

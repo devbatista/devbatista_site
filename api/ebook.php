@@ -9,7 +9,7 @@ declare(strict_types=1);
  * JSON. O front (js/ebook.js) libera o PDF assim que a resposta chega.
  *
  * Compartilha configuração, armazenamento e cliente HTTP com o endpoint
- * do diagnóstico (leads-config.php). O HubSpot fica desligado por padrão —
+ * do diagnóstico (leads-config.php). O CRM fica desligado por padrão —
  * ver api/config.example.php.
  */
 
@@ -59,7 +59,7 @@ function ebook_fail(int $status, string $code, string $message): void
  * Entrega a resposta e segue processando em segundo plano.
  *
  * O lead já está gravado quando esta função é chamada: nada do que rodar
- * depois (HubSpot) pode segurar o download do visitante.
+ * depois (CRM) pode segurar o download do visitante.
  */
 function ebook_respond_and_continue(int $status, array $payload): void
 {
@@ -319,156 +319,43 @@ function ebook_email_html(string $url): string
 }
 
 // ============================================================
-// HubSpot — desligado por padrão.
-// Topo de funil: cria/atualiza o contato como subscriber. Não abre
-// negócio (isso é papel do diagnóstico, em leads.php).
+// CRM (Admin DevBatista) — desligado por padrão.
+// Topo de funil: o lead nasce só com o e-mail, que o Admin usa de nome
+// provisório. Se a pessoa depois fizer o diagnóstico, o mesmo lead é
+// completado (ver sendToCrm() em leads.php).
 // ============================================================
-function ebook_send_to_hubspot(array $lead): array
+function ebook_send_to_crm(array $lead): array
 {
     $config = lead_config();
-
-    $enabled = (bool) ($config['ebook_hubspot_enabled'] ?? false);
-    if (!$enabled || (string) $config['hubspot_token'] === '') {
+    if (!$config['crm_enabled'] || (string) $config['crm_token'] === '') {
         return ['status' => 'disabled'];
     }
 
-    $properties = array_filter([
+    $response = crm_request([
+        'source' => 'ebook',
+        'site_id' => $lead['id'],
         'email' => $lead['email'],
-        'lifecyclestage' => 'subscriber',
-        'hs_lead_status' => 'NEW',
-        'hs_analytics_source' => 'OFFLINE',
-    ], static fn($value): bool => $value !== '' && $value !== null);
-
-    // Upsert por e-mail: reenviar o mesmo e-mail atualiza em vez de duplicar.
-    $upsert = ebook_hubspot_request('POST', '/crm/v3/objects/contacts/batch/upsert', [
-        'inputs' => [[
-            'idProperty' => 'email',
-            'id' => $lead['email'],
-            'properties' => $properties,
-        ]],
+        'summary' => ebook_crm_summary($lead),
     ]);
 
-    if (!$upsert['ok']) {
-        return ['status' => 'error', 'http_code' => $upsert['http_code'], 'message' => $upsert['message']];
+    if (!$response['ok']) {
+        return ['status' => 'error', 'http_code' => $response['http_code'], 'message' => $response['message']];
     }
 
-    $contactId = (string) ($upsert['body']['results'][0]['id'] ?? '');
-    $result = ['status' => 'ok', 'contact_id' => $contactId, 'http_code' => $upsert['http_code']];
-
-    if ($contactId === '') {
-        return $result;
-    }
-
-    // Negócio na etapa do e-book: o board mostra o topo do funil.
-    $dealId = '';
-    if ((string) ($config['ebook_deal_stage'] ?? '') !== '') {
-        [$dealId, $result['deal']] = ebook_ensure_deal($lead, $contactId);
-        if ($dealId !== '') {
-            $result['deal_id'] = $dealId;
-        }
-    }
-
-    if (($config['ebook_hubspot_note'] ?? true) === false) {
-        return $result;
-    }
-
-    // A nota registra a origem sem exigir propriedade customizada no portal.
-    $associations = [[
-        'to' => ['id' => $contactId],
-        // 202 = note_to_contact (associação padrão do HubSpot)
-        'types' => [['associationCategory' => 'HUBSPOT_DEFINED', 'associationTypeId' => 202]],
-    ]];
-
-    if ($dealId !== '') {
-        $associations[] = [
-            'to' => ['id' => $dealId],
-            // 214 = note_to_deal
-            'types' => [['associationCategory' => 'HUBSPOT_DEFINED', 'associationTypeId' => 214]],
-        ];
-    }
-
-    $note = ebook_hubspot_request('POST', '/crm/v3/objects/notes', [
-        'properties' => [
-            'hs_timestamp' => round(microtime(true) * 1000),
-            'hs_note_body' => ebook_hubspot_note_body($lead),
-        ],
-        'associations' => $associations,
-    ]);
-
-    $result['note'] = $note['ok'] ? 'ok' : ('falhou: ' . $note['message']);
-
-    return $result;
+    return ['status' => 'ok', 'crm_lead_id' => (string) ($response['body']['id'] ?? '')];
 }
 
-/**
- * Abre o negócio na etapa do e-book, a menos que o contato já tenha um
- * negócio aberto.
- *
- * Sem essa checagem, quem baixasse o material duas vezes — ou já estivesse
- * em negociação — ganharia um negócio duplicado no pipeline. E um lead que
- * já fez o diagnóstico NÃO pode ser puxado de volta para o topo do funil.
- *
- * @return array{0:string,1:string} [dealId, status legível]
- */
-function ebook_ensure_deal(array $lead, string $contactId): array
+/** Uma linha para a timeline do lead: o material e, se houver, a campanha. */
+function ebook_crm_summary(array $lead): string
 {
-    $config = lead_config();
+    $campaign = array_filter([
+        $lead['tracking']['utm_source'] ?? '',
+        $lead['tracking']['utm_medium'] ?? '',
+        $lead['tracking']['utm_campaign'] ?? '',
+    ], static fn($value): bool => $value !== '');
 
-    $existing = ebook_hubspot_request('GET', '/crm/v4/objects/contacts/' . $contactId . '/associations/deals');
-    foreach ($existing['body']['results'] ?? [] as $association) {
-        $dealId = (string) ($association['toObjectId'] ?? '');
-        if ($dealId === '') {
-            continue;
-        }
-
-        $deal = ebook_hubspot_request('GET', '/crm/v3/objects/deals/' . $dealId . '?properties=dealstage');
-        $stage = (string) ($deal['body']['properties']['dealstage'] ?? '');
-        if ($stage !== '' && strpos($stage, 'closed') !== 0) {
-            return [$dealId, 'negócio aberto já existia'];
-        }
-    }
-
-    $created = ebook_hubspot_request('POST', '/crm/v3/objects/deals', [
-        'properties' => [
-            'dealname' => 'E-book · ' . $lead['email'],
-            'pipeline' => (string) ($config['ebook_pipeline'] ?? 'default'),
-            'dealstage' => (string) $config['ebook_deal_stage'],
-        ],
-        'associations' => [[
-            'to' => ['id' => $contactId],
-            // 3 = deal_to_contact
-            'types' => [['associationCategory' => 'HUBSPOT_DEFINED', 'associationTypeId' => 3]],
-        ]],
-    ]);
-
-    if (!$created['ok']) {
-        return ['', 'falhou: ' . $created['message']];
-    }
-
-    return [(string) ($created['body']['id'] ?? ''), 'criado'];
-}
-
-function ebook_hubspot_request(string $method, string $path, ?array $payload = null): array
-{
-    $config = lead_config();
-
-    return http_json(
-        $method,
-        'https://api.hubapi.com' . $path,
-        $payload,
-        ['Authorization: Bearer ' . $config['hubspot_token']]
-    );
-}
-
-function ebook_hubspot_note_body(array $lead): string
-{
-    $lines = ['<strong>Download do e-book</strong>', 'Material: ' . $lead['source']];
-
-    foreach ($lead['tracking'] as $key => $value) {
-        $lines[] = htmlspecialchars($key, ENT_QUOTES, 'UTF-8') . ': ' . htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
-    }
-
-    return implode('<br>', $lines);
+    return 'Baixou o e-book pelo site (' . $lead['source'] . ')'
+        . ($campaign !== [] ? ' · ' . implode(' / ', $campaign) : '');
 }
 
 // ============================================================
@@ -549,18 +436,18 @@ try {
         );
     }
 
-    // Responde antes de falar com o HubSpot: o CRM não segura o visitante.
+    // Responde antes de falar com o CRM: ele não segura o visitante.
     ebook_respond_and_continue(201, ['ok' => true, 'data' => ['lead_id' => $record['id']]]);
 
     // A partir daqui o visitante já recebeu a resposta: uma falha de
     // integração vira log, nunca uma tentativa de responder de novo.
     try {
-        $integration = ebook_send_to_hubspot($record);
+        $integration = ebook_send_to_crm($record);
         if (($integration['status'] ?? '') === 'error') {
-            error_log('[ebook] hubspot ' . $record['id'] . ': ' . ($integration['message'] ?? ''));
+            error_log('[ebook] crm ' . $record['id'] . ': ' . ($integration['message'] ?? ''));
         }
     } catch (Throwable $integrationError) {
-        error_log('[ebook] hubspot ' . $record['id'] . ': ' . $integrationError->getMessage());
+        error_log('[ebook] crm ' . $record['id'] . ': ' . $integrationError->getMessage());
     }
 
     exit;

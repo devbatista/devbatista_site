@@ -10,7 +10,7 @@ declare(strict_types=1);
  * você não possa rotacionar.
  *
  * Alternativa: definir variáveis de ambiente DEVBATISTA_<CHAVE_EM_MAIÚSCULAS>
- * (ex.: DEVBATISTA_HUBSPOT_TOKEN). O ambiente tem precedência sobre este arquivo.
+ * (ex.: DEVBATISTA_CRM_TOKEN). O ambiente tem precedência sobre este arquivo.
  */
 
 return [
@@ -31,24 +31,12 @@ return [
     // Token do /api/health.php. Vazio = endpoint responde 404.
     'health_token' => '',
 
-    // HubSpot — Private App token
-    'hubspot_enabled' => false,
-    'hubspot_token' => '',
-    'hubspot_portal_id' => '',
-    'hubspot_create_note' => true,
-    'hubspot_create_deal' => true,
-    // IDs vêm de GET /crm/v3/pipelines/deals
-    'hubspot_pipeline' => 'default',
-    'hubspot_deal_stage' => 'appointmentscheduled',
-
-    // Landing page do e-book (api/ebook.php) — usa o mesmo hubspot_token.
-    // Cria o contato como subscriber e abre o negócio na etapa do e-book.
-    'ebook_hubspot_enabled' => false,
-    'ebook_hubspot_note' => true,
-    'ebook_pipeline' => 'default',
-    // ID da etapa "E-book". Vazio = não abre negócio (o contato ainda é
-    // criado). Os IDs saem de GET /crm/v3/pipelines/deals.
-    'ebook_deal_stage' => '',
+    // CRM próprio (Admin DevBatista) — recebe o diagnóstico e o e-book.
+    // O token é o mesmo SITE_LEADS_TOKEN configurado no Admin. Para testar
+    // contra o Admin local: 'http://localhost:3847/webhooks/site-leads'.
+    'crm_enabled' => false,
+    'crm_url' => 'https://admin.devbatista.com/webhooks/site-leads',
+    'crm_token' => '',
 
     // Entrega do material. A página não baixa mais o PDF: quem informa um
     // e-mail falso não recebe nada.

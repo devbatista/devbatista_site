@@ -15,7 +15,7 @@ declare(strict_types=1);
  *
  *   GET /api/health.php?token=...
  *   GET /api/health.php   (com header X-Health-Token)
- *   GET /api/health.php?token=...&check=hubspot   (ping read-only)
+ *   GET /api/health.php?token=...&check=crm       (não cria lead)
  *   GET /api/health.php?token=...&check=ses       (ping read-only)
  */
 
@@ -31,19 +31,17 @@ header('X-Robots-Tag: noindex, nofollow');
 require_once __DIR__ . '/leads-config.php';
 require_once __DIR__ . '/mailer.php';
 
-/** Traduz a falha do HubSpot em algo acionável, sem repetir o corpo cru. */
-function hubspot_hint(array $ping): string
+/** Traduz a falha do CRM em algo acionável, sem repetir o corpo cru. */
+function crm_hint(array $ping): string
 {
     switch ($ping['http_code']) {
         case 0:
-            return 'não foi possível conectar à api.hubapi.com: ' . $ping['message']
+            return 'não foi possível conectar ao Admin: ' . $ping['message']
                 . ' (a hospedagem pode estar bloqueando conexões de saída)';
         case 401:
-            return 'token inválido ou revogado';
-        case 403:
-            return 'token válido, mas sem o escopo crm.objects.contacts.read/write no Private App';
-        case 429:
-            return 'limite de requisições do HubSpot atingido';
+            return 'token recusado: crm_token diferente do SITE_LEADS_TOKEN do Admin, ou SITE_LEADS_TOKEN não configurado lá';
+        case 404:
+            return 'webhook não encontrado — confira crm_url e se o deploy do Admin já tem /webhooks/site-leads';
         default:
             return $ping['message'] !== '' ? $ping['message'] : ('HTTP ' . $ping['http_code']);
     }
@@ -123,12 +121,11 @@ try {
     $secretSet = static fn(string $key): bool => ((string) ($config[$key] ?? '')) !== '';
 
     $integrations = [
-        'hubspot' => [
-            'enabled' => (bool) $config['hubspot_enabled'],
-            'token_set' => $secretSet('hubspot_token'),
-            'portal_id_set' => $secretSet('hubspot_portal_id'),
+        'crm' => [
+            'enabled' => (bool) $config['crm_enabled'],
+            'token_set' => $secretSet('crm_token'),
+            'url' => (string) $config['crm_url'],
             'implemented' => true,
-            'creates_note' => (bool) ($config['hubspot_create_note'] ?? true),
         ],
         'email' => [
             'enabled' => (bool) $config['email_enabled'],
@@ -149,20 +146,19 @@ try {
     ];
 
     // ------------------------------------------------------------
-    // Teste de conectividade real, sob demanda: ?check=hubspot
-    // Read-only — não cria contato nem nota.
+    // Teste de conectividade real, sob demanda: ?check=crm
+    // Envia um lead vazio: o Admin confere o token antes dos dados, então
+    // 422 prova conexão e token válidos sem criar lead nenhum.
     // ------------------------------------------------------------
-    if (($_GET['check'] ?? '') === 'hubspot') {
-        if (!$integrations['hubspot']['enabled']) {
-            $integrations['hubspot']['live_check'] = ['status' => 'skipped', 'reason' => 'integração desligada'];
+    if (($_GET['check'] ?? '') === 'crm') {
+        if (!$integrations['crm']['enabled']) {
+            $integrations['crm']['live_check'] = ['status' => 'skipped', 'reason' => 'integração desligada'];
         } else {
-            $ping = http_json('GET', 'https://api.hubapi.com/crm/v3/objects/contacts?limit=1', null, [
-                'Authorization: Bearer ' . $config['hubspot_token'],
-            ]);
+            $ping = crm_request([]);
 
-            $integrations['hubspot']['live_check'] = $ping['ok']
-                ? ['status' => 'ok', 'http_code' => $ping['http_code'], 'detail' => 'token válido e com acesso a contatos']
-                : ['status' => 'failed', 'http_code' => $ping['http_code'], 'detail' => hubspot_hint($ping)];
+            $integrations['crm']['live_check'] = $ping['http_code'] === 422
+                ? ['status' => 'ok', 'http_code' => $ping['http_code'], 'detail' => 'Admin alcançável e token aceito']
+                : ['status' => 'failed', 'http_code' => $ping['http_code'], 'detail' => crm_hint($ping)];
         }
     }
 
