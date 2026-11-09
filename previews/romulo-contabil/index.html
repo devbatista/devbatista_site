@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Romulo · Serviços Contábeis</title>
+<meta name="description" content="Contabilidade para pessoas físicas, MEI e pequenas empresas. Imposto de renda, abertura, troca de contador e regularização. Orçamento sem compromisso pelo WhatsApp.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/app.css">
+</head>
+<body>
+<div class="progress" id="progress"></div>
+
+<!-- HEADER -->
+<header class="header" id="topo">
+  <div class="container header-inner">
+    <a href="#topo" class="logo">
+      <span class="logo-mark">R</span>
+      <span class="logo-text">Romulo<small>Serviços Contábeis</small></span>
+    </a>
+    <nav class="menu" id="menu">
+      <a href="#diferenciais">Por que eu</a>
+      <a href="#como-funciona">Como funciona</a>
+      <a href="#servicos">Serviços</a>
+      <a href="#orcamento">Orçamento</a>
+      <a href="#duvidas">Dúvidas</a>
+      <a href="#" class="btn btn-primary btn-sm js-wa" data-msg="Olá Romulo! Vim pelo site e gostaria de um orçamento.">Pedir orçamento</a>
+    </nav>
+    <button class="burger" id="burger" aria-label="Abrir menu" aria-expanded="false"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container hero-grid">
+      <div class="hero-copy">
+        <p class="hello">Seja bem-vindo(a)!</p>
+        <h1>Contabilidade <span class="mark">descomplicada</span> para você e para a sua empresa.</h1>
+        <p class="sub">Da declaração do imposto de renda à contabilidade completa da sua empresa, com atendimento direto pelo WhatsApp.</p>
+        <ul class="benefits">
+          <li><svg class="i" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg><span><strong>Empresa regularizada</strong> e sem multas por atraso</span></li>
+          <li><svg class="i" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg><span><strong>Planejamento tributário</strong> para pagar só o necessário</span></li>
+          <li><svg class="i" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg><span><strong>Atendimento direto</strong> com o contador</span></li>
+          <li><svg class="i" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg><span><strong>100% online</strong>, de onde você estiver</span></li>
+        </ul>
+        <div class="hero-cta">
+          <a href="#" class="btn btn-primary btn-lg js-wa" data-msg="Olá Romulo! Quero abrir minha empresa.">Abrir minha empresa</a>
+          <a href="#" class="btn btn-outline btn-lg js-wa" data-msg="Olá Romulo! Quero trocar de contador.">Trocar de contador</a>
+        </div>
+        <p class="note">Orçamento sem compromisso. Resposta direto no seu WhatsApp.</p>
+      </div>
+
+      <!-- Mockup de celular com conversa -->
+      <div class="hero-visual" aria-hidden="true">
+        <div class="blob"></div>
+        <div class="phone">
+          <div class="phone-top">
+            <span class="ph-avatar">R</span>
+            <div><b>Romulo · Contabilidade</b><small>online</small></div>
+          </div>
+          <div class="chat">
+            <div class="msg in seq">Oi, Romulo! Preciso declarar meu imposto de renda, consegue me ajudar?</div>
+            <div class="msg out seq">Consigo sim! Me manda seus informes de rendimento que eu já te passo o orçamento 😉</div>
+            <div class="msg in seq">Perfeito, te mando agora.</div>
+            <div class="typing" id="typing"><i></i><i></i><i></i></div>
+            <div class="doc-card seq">
+              <span class="doc-ico"><svg viewBox="0 0 24 24"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/></svg></span>
+              <div><b>Declaração IRPF</b><small>Enviada à Receita ✓</small></div>
+            </div>
+          </div>
+        </div>
+        <div class="float-card fc-1">
+          <span class="fc-dot"></span>
+          <div><b>Guia do mês</b><small>Paga no prazo</small></div>
+        </div>
+        <div class="float-card fc-2">
+          <span class="fc-ico"><svg viewBox="0 0 24 24"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6"/></svg></span>
+          <div><b>CNPJ aberto</b><small>Empresa pronta para faturar</small></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAIXA DE SERVIÇOS EM MOVIMENTO -->
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee-track">
+      <span>Imposto de Renda</span><span>Abertura de empresa</span><span>MEI</span><span>Troca de contador</span><span>Regularização de CPF</span><span>Planejamento tributário</span><span>Notas fiscais</span><span>Parcelamentos</span><span>Rede Sim</span><span>Encerramento de empresa</span>
+      <span>Imposto de Renda</span><span>Abertura de empresa</span><span>MEI</span><span>Troca de contador</span><span>Regularização de CPF</span><span>Planejamento tributário</span><span>Notas fiscais</span><span>Parcelamentos</span><span>Rede Sim</span><span>Encerramento de empresa</span>
+    </div>
+  </div>
+
+  <!-- DIFERENCIAIS -->
+  <section class="section" id="diferenciais">
+    <div class="container">
+      <div class="head-center reveal">
+        <span class="tag">Por que contratar</span>
+        <h2>Atendimento de escritório pequeno, organização de escritório grande</h2>
+        <p>Você tem um contador que conhece o seu caso e responde quando você precisa.</p>
+      </div>
+      <div class="feat-grid">
+        <article class="feat reveal">
+          <span class="feat-ico"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
+          <h3>Atendimento direto</h3>
+          <p>Sem central e sem robô. Quem responde é o contador que cuida do seu caso.</p>
+        </article>
+        <article class="feat reveal">
+          <span class="feat-ico"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="14" rx="2"/><path d="M8 22h8M12 18v4"/></svg></span>
+          <h3>Totalmente online</h3>
+          <p>Documentos, orçamento e acompanhamento sem sair de casa.</p>
+        </article>
+        <article class="feat reveal">
+          <span class="feat-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
+          <h3>Prazos em dia</h3>
+          <p>Obrigações, guias e declarações entregues antes do vencimento.</p>
+        </article>
+        <article class="feat reveal">
+          <span class="feat-ico"><svg viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></span>
+          <h3>Preço justo</h3>
+          <p>Orçamento claro, por escrito e sem compromisso. Você decide depois.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAIXA ORÇAMENTO -->
+  <section class="band">
+    <div class="container band-inner reveal">
+      <h2>Faça agora seu orçamento!</h2>
+      <div class="band-cta">
+        <a href="#" class="btn btn-yellow js-wa" data-msg="Olá Romulo! Quero trocar de contador.">Trocar de contador</a>
+        <a href="#" class="btn btn-ghost-light js-wa" data-msg="Olá Romulo! Quero abrir minha empresa.">Abrir empresa</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- PARA QUEM -->
+  <section class="section">
+    <div class="container">
+      <div class="head-center reveal">
+        <span class="tag">Para quem</span>
+        <h2>Contabilidade do jeito certo para cada perfil</h2>
+      </div>
+      <div class="seg-grid">
+        <a href="#" class="seg reveal js-wa" data-msg="Olá Romulo! Sou pessoa física e preciso de ajuda.">
+          <span class="seg-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span>
+          <h3>Pessoa física</h3>
+          <p>Imposto de renda, valores a receber, Registrato e regularização de CPF.</p>
+          <span class="more">Saiba mais →</span>
+        </a>
+        <a href="#" class="seg reveal js-wa" data-msg="Olá Romulo! Sou MEI e preciso de ajuda.">
+          <span class="seg-ico"><svg viewBox="0 0 24 24"><path d="M3 9h18l-1.5-5h-15z"/><path d="M5 9v11h14V9M10 20v-6h4v6"/></svg></span>
+          <h3>MEI</h3>
+          <p>Abertura, declaração anual, notas fiscais e parcelamento de débitos.</p>
+          <span class="more">Saiba mais →</span>
+        </a>
+        <a href="#" class="seg reveal js-wa" data-msg="Olá Romulo! Tenho uma pequena empresa e preciso de contador.">
+          <span class="seg-ico"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 13h18"/></svg></span>
+          <h3>Micro e pequenas empresas</h3>
+          <p>Contabilidade mensal, obrigações, planejamento tributário e financeiro.</p>
+          <span class="more">Saiba mais →</span>
+        </a>
+        <a href="#" class="seg reveal js-wa" data-msg="Olá Romulo! Minha empresa tem pendências e preciso regularizar.">
+          <span class="seg-ico"><svg viewBox="0 0 24 24"><path d="M12 2 4 5v6c0 5 3.5 9.5 8 11 4.5-1.5 8-6 8-11V5z"/><path d="m9 12 2 2 4-4"/></svg></span>
+          <h3>Empresas com pendências</h3>
+          <p>Regularização, processos na Rede Sim, parcelamentos e encerramento.</p>
+          <span class="more">Saiba mais →</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMO FUNCIONA: SCROLLYTELLING -->
+  <section class="journey" id="como-funciona">
+    <div class="container">
+      <div class="head-center reveal">
+        <span class="tag">Como funciona</span>
+        <h2>Do primeiro “oi” até a contabilidade em dia</h2>
+        <p>Role a página e acompanhe como é ser atendido por mim.</p>
+      </div>
+    </div>
+    <div class="container journey-grid">
+      <div class="journey-steps">
+        <div class="jstep" data-step="0">
+          <span class="jnum">01</span>
+          <h3>Você me chama no WhatsApp</h3>
+          <p>Sem formulário e sem central. Conta o que precisa do seu jeito, que eu entendo o seu caso e faço as perguntas certas.</p>
+        </div>
+        <div class="jstep" data-step="1">
+          <span class="jnum">02</span>
+          <h3>Recebe o orçamento por escrito</h3>
+          <p>Você vê exatamente o que está incluso antes de decidir. Sem letras miúdas e sem compromisso.</p>
+        </div>
+        <div class="jstep" data-step="2">
+          <span class="jnum">03</span>
+          <h3>Envia os documentos pelo celular</h3>
+          <p>Foto, PDF ou print, do jeito que tiver. Eu organizo tudo e te aviso se faltar alguma coisa.</p>
+        </div>
+        <div class="jstep" data-step="3">
+          <span class="jnum">04</span>
+          <h3>E acompanha tudo em dia</h3>
+          <p>Prazos, guias e declarações acompanhados de perto. Você só recebe o aviso de que está tudo certo.</p>
+          <a href="#" class="btn btn-primary js-wa" data-msg="Olá Romulo! Quero começar.">Quero começar</a>
+        </div>
+      </div>
+
+      <div class="journey-stage" aria-hidden="true">
+        <div class="rail"><span class="rail-fill" id="railFill"></span>
+          <i class="rail-dot" data-dot="0"></i><i class="rail-dot" data-dot="1"></i><i class="rail-dot" data-dot="2"></i><i class="rail-dot" data-dot="3"></i>
+        </div>
+        <div class="phone phone-j">
+          <div class="phone-top">
+            <span class="ph-avatar">R</span>
+            <div><b>Romulo · Contabilidade</b><small id="jStatus">online</small></div>
+          </div>
+          <div class="screens">
+            <!-- 0: conversa -->
+            <div class="screen active" data-screen="0">
+              <div class="msg in">Oi, Romulo! Quero abrir um MEI, mas não sei por onde começar.</div>
+              <div class="msg out">Oi! Te ajudo sim 🙂 Qual é a sua atividade?</div>
+              <div class="msg in">Faço bolos e doces sob encomenda.</div>
+              <div class="msg out">Perfeito, dá pra ser MEI. Já te mando o orçamento!</div>
+            </div>
+            <!-- 1: orçamento -->
+            <div class="screen" data-screen="1">
+              <div class="quote-card">
+                <span class="qc-tag">Orçamento</span>
+                <h4>Abertura de MEI</h4>
+                <ul>
+                  <li>Análise da atividade</li>
+                  <li>Abertura via Rede Sim</li>
+                  <li>Orientação para emitir nota</li>
+                  <li>Lembrete do DAS mensal</li>
+                </ul>
+                <div class="qc-actions"><span class="qc-btn">Aceitar orçamento</span></div>
+              </div>
+              <div class="msg in">Ficou claro, pode seguir!</div>
+            </div>
+            <!-- 2: documentos -->
+            <div class="screen" data-screen="2">
+              <div class="msg out">Me manda estes documentos 👇</div>
+              <div class="file"><span class="f-ico">PDF</span><div><b>RG e CPF</b><div class="bar"><span></span></div></div></div>
+              <div class="file"><span class="f-ico">JPG</span><div><b>Comprovante de endereço</b><div class="bar"><span></span></div></div></div>
+              <div class="file"><span class="f-ico">PDF</span><div><b>Título de eleitor</b><div class="bar"><span></span></div></div></div>
+              <div class="msg out small-ok">Recebi tudo ✔</div>
+            </div>
+            <!-- 3: em dia -->
+            <div class="screen" data-screen="3">
+              <div class="status-card">
+                <div class="sc-check"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></div>
+                <h4>Tudo em dia</h4>
+                <p>CNPJ aberto e pronto para faturar</p>
+              </div>
+              <ul class="checklist">
+                <li><span>CNPJ ativo</span><b>✓</b></li>
+                <li><span>Emissão de notas</span><b>✓</b></li>
+                <li><span>DAS do mês</span><b>✓</b></li>
+                <li><span>Declaração anual</span><b class="soon">em maio</b></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PASSO A PASSO POR SERVIÇO (abas) -->
+  <section class="section section-soft" id="passo-a-passo">
+    <div class="container">
+      <div class="head-center reveal">
+        <span class="tag">Passo a passo</span>
+        <h2>Como funciona em cada serviço</h2>
+      </div>
+
+      <div class="tabs reveal" role="tablist">
+        <button class="tab active" data-tab="abrir" role="tab">Abrir empresa</button>
+        <button class="tab" data-tab="trocar" role="tab">Trocar de contador</button>
+        <button class="tab" data-tab="ir" role="tab">Imposto de renda</button>
+      </div>
+
+      <div class="panel active" id="p-abrir">
+        <ol class="steps">
+          <li><span class="n">1</span><h3>Conversa inicial</h3><p>Você me conta sua atividade e eu indico o melhor enquadramento: MEI, ME ou outro regime.</p></li>
+          <li><span class="n">2</span><h3>Abertura</h3><p>Cuido do processo na Rede Sim, das inscrições e da documentação.</p></li>
+          <li><span class="n">3</span><h3>CNPJ pronto</h3><p>Sua empresa sai regular e pronta para emitir nota e faturar.</p></li>
+        </ol>
+      </div>
+      <div class="panel" id="p-trocar">
+        <ol class="steps">
+          <li><span class="n">1</span><h3>Orçamento</h3><p>Você me diz como está a empresa hoje e recebe o valor por escrito.</p></li>
+          <li><span class="n">2</span><h3>Transição</h3><p>Eu falo com o contador atual e recebo os documentos. Você não precisa se preocupar.</p></li>
+          <li><span class="n">3</span><h3>Tudo em dia</h3><p>A partir daí, obrigações e guias seguem no prazo, mês a mês.</p></li>
+        </ol>
+      </div>
+      <div class="panel" id="p-ir">
+        <ol class="steps">
+          <li><span class="n">1</span><h3>Simulação</h3><p>Vejo se você vai pagar ou restituir e qual modelo é melhor no seu caso.</p></li>
+          <li><span class="n">2</span><h3>Documentos</h3><p>Você me envia informes e recibos pelo WhatsApp, do jeito que tiver.</p></li>
+          <li><span class="n">3</span><h3>Declaração enviada</h3><p>Declaro com cuidado para evitar malha fina e te mando o recibo.</p></li>
+        </ol>
+      </div>
+
+      <div class="center reveal"><a href="#" class="btn btn-primary js-wa" data-msg="Olá Romulo! Quero saber como funciona no meu caso.">Falar com o Romulo</a></div>
+    </div>
+  </section>
+
+  <!-- TODOS OS SERVIÇOS -->
+  <section class="section" id="servicos">
+    <div class="container services-grid">
+      <div class="services-copy reveal">
+        <span class="tag">Serviços</span>
+        <h2>Tudo o que você precisa em um só contador</h2>
+        <p>Não achou o seu caso na lista? Me chama que eu te digo se consigo ajudar.</p>
+        <a href="#" class="btn btn-primary js-wa" data-msg="Olá Romulo! Tenho uma dúvida sobre um serviço.">Tirar uma dúvida</a>
+      </div>
+      <ul class="svc-list reveal">
+        <li>Declaração de IR de MEI ou pessoa física</li>
+        <li>Consulta de valores a receber na Receita</li>
+        <li>Simulação de declaração de IR</li>
+        <li>Registrato Bacen</li>
+        <li>Processos via Rede Sim</li>
+        <li>Entrega de obrigações contábeis</li>
+        <li>Abertura de empresa ou MEI</li>
+        <li>Encerramento de empresa</li>
+        <li>Regularização de empresa</li>
+        <li>Regularização de CPF</li>
+        <li>Contabilidade mensal da empresa ou MEI</li>
+        <li>Parcelamentos PF e PJ</li>
+        <li>Emissão de notas fiscais</li>
+        <li>Financeiro</li>
+        <li>Planejamento tributário</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- QUEM CUIDA -->
+  <section class="section section-soft">
+    <div class="container about-grid">
+      <div class="about-photo reveal" aria-hidden="true">
+        <div class="portrait"><span>R</span></div>
+        <div class="about-badge"><b>Atendimento</b><small>pessoal e direto</small></div>
+      </div>
+      <div class="about-copy reveal">
+        <span class="tag">Quem vai cuidar de você</span>
+        <h2>Prazer, eu sou o Romulo.</h2>
+        <p>Atendo pessoas físicas, MEIs e micro e pequenas empresas que querem a contabilidade em dia sem complicação. Explico tudo em linguagem simples e você sempre sabe em que pé está o seu caso.</p>
+        <ul class="about-points">
+          <li><strong>Transparência:</strong> você sabe o que está incluso antes de fechar.</li>
+          <li><strong>Proximidade:</strong> fala direto comigo pelo WhatsApp.</li>
+          <li><strong>Cuidado:</strong> prazos acompanhados para você não pagar multa.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- MONTE SEU ORÇAMENTO -->
+  <section class="section section-soft" id="orcamento">
+    <div class="container quiz-grid">
+      <div class="quiz-copy reveal">
+        <span class="tag">Orçamento rápido</span>
+        <h2>Monte seu pedido em 2 cliques</h2>
+        <p>Escolha as opções e a mensagem já sai pronta para o WhatsApp. Você não precisa explicar tudo do zero.</p>
+      </div>
+      <div class="quiz reveal">
+        <div class="q-block">
+          <p class="q-label"><span>1</span> Você é:</p>
+          <div class="chips" data-group="perfil">
+            <button class="chip" data-value="pessoa física">Pessoa física</button>
+            <button class="chip" data-value="MEI">MEI</button>
+            <button class="chip" data-value="empresa">Empresa</button>
+            <button class="chip" data-value="ainda não tenho empresa">Ainda não tenho empresa</button>
+          </div>
+        </div>
+        <div class="q-block">
+          <p class="q-label"><span>2</span> Precisa de:</p>
+          <div class="chips" data-group="servico">
+            <button class="chip" data-value="declarar o imposto de renda">Imposto de renda</button>
+            <button class="chip" data-value="abrir uma empresa">Abrir empresa</button>
+            <button class="chip" data-value="trocar de contador">Trocar de contador</button>
+            <button class="chip" data-value="regularizar pendências">Regularizar pendências</button>
+            <button class="chip" data-value="contabilidade mensal">Contabilidade mensal</button>
+            <button class="chip" data-value="tirar uma dúvida">Outra coisa</button>
+          </div>
+        </div>
+        <div class="q-preview">
+          <span class="q-prev-label">Sua mensagem</span>
+          <p id="quizMsg">Escolha as opções acima 👆</p>
+        </div>
+        <a href="#" class="btn btn-primary btn-lg q-send is-disabled" id="quizSend" target="_blank" rel="noopener">Enviar pelo WhatsApp</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section" id="duvidas">
+    <div class="container narrow">
+      <div class="head-center reveal">
+        <span class="tag">Perguntas frequentes</span>
+        <h2>Ficou alguma dúvida?</h2>
+      </div>
+      <div class="faq">
+        <details class="reveal"><summary>O orçamento tem algum custo?</summary><p>Não. O orçamento é gratuito e sem compromisso: você só decide depois de saber o valor e o que está incluso.</p></details>
+        <details class="reveal"><summary>Já tenho contador. Como funciona a troca?</summary><p>É um processo comum. Eu entro em contato com o contador atual, recebo a documentação e assumo a partir daí.</p></details>
+        <details class="reveal"><summary>Sou MEI. Preciso de contador?</summary><p>Não é obrigatório, mas ajuda a evitar erros na declaração anual, nas notas fiscais e na hora de crescer para ME.</p></details>
+        <details class="reveal"><summary>Atende fora de São Paulo?</summary><p>Sim. O atendimento é 100% online, então dá para atender de qualquer lugar do Brasil.</p></details>
+        <details class="reveal"><summary>Como envio meus documentos?</summary><p>Pelo WhatsApp mesmo: foto, PDF ou print. Eu organizo e te aviso se faltar alguma coisa.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA FINAL -->
+  <section class="final">
+    <div class="container final-box reveal">
+      <div>
+        <p class="final-kicker">Descomplique sua contabilidade</p>
+        <h2>Não tem contador ou quer trocar o seu?</h2>
+        <p>Faça um orçamento sem compromisso. Me chame no particular.</p>
+      </div>
+      <a href="#" class="btn btn-yellow btn-lg js-wa" data-msg="Olá Romulo! Gostaria de um orçamento sem compromisso.">Chamar no WhatsApp</a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="container footer-grid">
+    <div>
+      <a href="#topo" class="logo logo-light">
+        <span class="logo-mark">R</span>
+        <span class="logo-text">Romulo<small>Serviços Contábeis</small></span>
+      </a>
+      <p class="footer-about">Contabilidade para pessoas físicas, MEIs e pequenas empresas, com atendimento direto e 100% online.</p>
+    </div>
+    <div>
+      <h4>Serviços</h4>
+      <a href="#servicos">Imposto de renda</a>
+      <a href="#como-funciona">Abertura de empresa</a>
+      <a href="#como-funciona">Troca de contador</a>
+      <a href="#servicos">Regularização</a>
+    </div>
+    <div>
+      <h4>Contato</h4>
+      <a href="#" class="js-wa" data-msg="Olá Romulo!">WhatsApp (11) 97495-2730</a>
+      <span>Atendimento online</span>
+    </div>
+  </div>
+  <div class="container footer-bottom">
+    <span>© <span id="ano"></span> Romulo · Serviços Contábeis</span>
+    <span>Prévia desenvolvida por <a href="https://www.devbatista.com" target="_blank" rel="noopener">DevBatista</a></span>
+  </div>
+</footer>
+
+<div class="mobile-cta" id="mobileCta">
+  <a href="#" class="btn btn-primary js-wa" data-msg="Olá Romulo! Vim pelo site e gostaria de um orçamento.">Pedir orçamento no WhatsApp</a>
+</div>
+
+<a href="#" class="wa-float js-wa" data-msg="Olá Romulo! Vim pelo site e gostaria de um orçamento." aria-label="Falar no WhatsApp">
+  <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2.1 1-2.4c.3-.3.6-.3.8-.3h.6c.2 0 .4 0 .6.5l.9 2.1c.1.2.1.4 0 .6l-.4.6-.4.5c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1.1c.2-.3.4-.2.7-.1l2 1c.3.1.5.2.5.3.1.2.1.7-.1 1.3Z"/></svg>
+</a>
+
+<script src="assets/app.js"></script>
+</body>
+</html>

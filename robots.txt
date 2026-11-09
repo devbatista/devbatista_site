@@ -1,4 +1,27 @@
+# Robôs de treino de IA: sem acesso ao site
+User-agent: GPTBot
+User-agent: ClaudeBot
+User-agent: Google-Extended
+User-agent: Applebot-Extended
+User-agent: CCBot
+User-agent: Bytespider
+User-agent: Amazonbot
+User-agent: meta-externalagent
+User-agent: cohere-ai
+User-agent: Diffbot
+Disallow: /
+
+# Robôs de busca por IA: liberados, exceto a área de previews
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: Claude-SearchBot
+User-agent: Claude-User
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+Disallow: /previews/
+
+# Demais robôs (Google, Bing etc.): liberados, exceto a área de previews
 User-agent: *
-Allow: /
+Disallow: /previews/
 
 Sitemap: https://www.devbatista.com/sitemap.xml

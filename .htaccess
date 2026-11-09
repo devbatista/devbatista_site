@@ -11,6 +11,20 @@ DirectoryIndex index.html
   RewriteBase /
 
   # ----------------------------------------------------------------------
+  # 0. Bloqueio de robôs de IA
+  #    a) Robôs de TREINO de IA: bloqueados no site inteiro.
+  #       (Os de BUSCA por IA continuam liberados no site principal,
+  #        para a DevBatista aparecer em respostas do ChatGPT, Claude etc.)
+  # ----------------------------------------------------------------------
+  RewriteCond %{HTTP_USER_AGENT} (GPTBot|ClaudeBot|anthropic-ai|CCBot|Bytespider|Amazonbot|meta-externalagent|meta-externalfetcher|FacebookBot|cohere-ai|cohere-training-data-crawler|Diffbot|ImagesiftBot|Omgilibot|Timpibot|AI2Bot|PanguBot) [NC]
+  RewriteRule ^ - [F,L]
+
+  #    b) Área de previews: bloqueada também para robôs de BUSCA e para
+  #       acessos de assistentes de IA feitos a pedido do usuário.
+  RewriteCond %{HTTP_USER_AGENT} (OAI-SearchBot|ChatGPT-User|Claude-SearchBot|Claude-User|Claude-Web|PerplexityBot|Perplexity-User|Applebot|Google-CloudVertexBot|GoogleOther|YouBot|DuckAssistBot|MistralAI-User|Bingbot|Googlebot) [NC]
+  RewriteRule ^previews/ - [F,L]
+
+  # ----------------------------------------------------------------------
   # 1. Força HTTPS + domínio canônico (www)
   #    Hoje devbatista.com e www.devbatista.com respondem 200 nos dois,
   #    o que gera conteúdo duplicado para o Google.
