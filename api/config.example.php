@@ -38,6 +38,14 @@ return [
     'crm_url' => 'https://admin.devbatista.com/webhooks/site-leads',
     'crm_token' => '',
 
+    // Visitas do site (Admin → Marketing → Visitas do site): as páginas
+    // vistas (js/visitas.js → api/v.php) e os acessos de IA (api/agente.php).
+    // O token é o SITE_VISITS_TOKEN do Admin, separado do de leads. Para
+    // testar contra o Admin local: 'http://localhost:3847/webhooks/site-visits'.
+    'visits_enabled' => false,
+    'visits_url' => 'https://admin.devbatista.com/webhooks/site-visits',
+    'visits_token' => '',
+
     // Entrega do material. A página não baixa mais o PDF: quem informa um
     // e-mail falso não recebe nada.
     'ebook_email_enabled' => false,

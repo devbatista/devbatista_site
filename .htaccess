@@ -16,7 +16,23 @@ DirectoryIndex index.html
   #       (Os de BUSCA por IA continuam liberados no site principal,
   #        para a DevBatista aparecer em respostas do ChatGPT, Claude etc.)
   # ----------------------------------------------------------------------
+  #       As páginas bloqueadas passam pelo api/agente.php, que responde o
+  #       mesmo 403 e só conta a tentativa no Admin (Acessos de IA →
+  #       bloqueado). O resto (imagens, CSS, arquivos) é barrado direto.
+  #       REDIRECT_STATUS vazio: só na requisição original, senão o próprio
+  #       api/agente.php cairia no 403 do Apache.
+  RewriteCond %{ENV:REDIRECT_STATUS} ^$
   RewriteCond %{HTTP_USER_AGENT} (GPTBot|ClaudeBot|anthropic-ai|CCBot|Bytespider|Amazonbot|meta-externalagent|meta-externalfetcher|FacebookBot|cohere-ai|cohere-training-data-crawler|Diffbot|ImagesiftBot|Omgilibot|Timpibot|AI2Bot|PanguBot) [NC]
+  RewriteRule ^ - [E=DEVBATISTA_BLOQUEADO:1]
+
+  RewriteCond %{ENV:DEVBATISTA_BLOQUEADO} =1
+  RewriteRule ^$ api/agente.php?pagina=&bloqueado=1 [L]
+
+  RewriteCond %{ENV:DEVBATISTA_BLOQUEADO} =1
+  RewriteCond %{REQUEST_FILENAME}.html -f
+  RewriteRule ^([a-z0-9-]+)$ api/agente.php?pagina=$1&bloqueado=1 [L]
+
+  RewriteCond %{ENV:DEVBATISTA_BLOQUEADO} =1
   RewriteRule ^ - [F,L]
 
   #    b) Área de previews: bloqueada também para robôs de BUSCA e para
@@ -45,6 +61,28 @@ DirectoryIndex index.html
   # ----------------------------------------------------------------------
   RewriteCond %{ENV:REDIRECT_STATUS} ^$
   RewriteRule ^index$ / [R=301,L]
+
+  # ----------------------------------------------------------------------
+  # 3b. Robôs e agentes de IA: a página passa pelo api/agente.php, que
+  #     entrega o mesmo HTML e avisa o Admin (Visitas do site → Acessos de
+  #     IA). Robô não roda JavaScript, então o js/visitas.js não o vê.
+  #     Pessoas não passam por aqui: recebem o HTML estático, como sempre.
+  #     A peneira é larga de propósito (quem classifica é o Admin), mas os
+  #     buscadores comuns ficam de fora, para o SEO nunca depender do PHP.
+  # ----------------------------------------------------------------------
+  RewriteCond %{ENV:REDIRECT_STATUS} ^$
+  RewriteCond %{REQUEST_METHOD} ^(GET|HEAD)$
+  RewriteCond %{HTTP_USER_AGENT} !(Googlebot|bingbot|YandexBot|Baiduspider|DuckDuckBot) [NC]
+  RewriteCond %{HTTP:Signature-Agent} . [OR]
+  RewriteCond %{HTTP_USER_AGENT} (bot|crawl|spider|-User|GPT|Claude|Perplexity|anthropic|openai|meta-external|MistralAI) [NC]
+  RewriteRule ^ - [E=DEVBATISTA_AGENTE:1]
+
+  RewriteCond %{ENV:DEVBATISTA_AGENTE} =1
+  RewriteRule ^$ api/agente.php?pagina= [L]
+
+  RewriteCond %{ENV:DEVBATISTA_AGENTE} =1
+  RewriteCond %{REQUEST_FILENAME}.html -f
+  RewriteRule ^([a-z0-9-]+)$ api/agente.php?pagina=$1 [L]
 
   # ----------------------------------------------------------------------
   # 4. Serve /pagina a partir de pagina.html (rewrite interno, sem redirect)

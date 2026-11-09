@@ -22,6 +22,7 @@ jobs:
       env:
         HEALTH_TOKEN: ${{ secrets.HEALTH_TOKEN }}
         CRM_TOKEN: ${{ secrets.CRM_TOKEN }}
+        SITE_VISITS_TOKEN: ${{ secrets.SITE_VISITS_TOKEN }}
         LEADS_EMAIL_TO: ${{ secrets.LEADS_EMAIL_TO }}
         LEADS_EMAIL_FROM: ${{ secrets.LEADS_EMAIL_FROM }}
         LEADS_EMAIL_TIERS: ${{ secrets.LEADS_EMAIL_TIERS }}
@@ -38,6 +39,7 @@ jobs:
           $env = static fn(string $k): string => (string) (getenv($k) ?: "");
 
           $crm     = $env("CRM_TOKEN");
+          $visits  = $env("SITE_VISITS_TOKEN");
           $emailTo = $env("LEADS_EMAIL_TO");
           $sesKey  = $env("AWS_SES_KEY");
           $waToken = $env("WHATSAPP_TOKEN");
@@ -60,6 +62,12 @@ jobs:
               // lead lá. CRM_TOKEN é o mesmo SITE_LEADS_TOKEN do Admin.
               "crm_enabled" => $crm !== "",
               "crm_token"   => $crm,
+
+              // Visitas do site (Admin → Marketing → Visitas do site): as
+              // páginas vistas e os acessos de IA. Mesmo valor do
+              // SITE_VISITS_TOKEN do Admin, separado do de leads.
+              "visits_enabled" => $visits !== "",
+              "visits_token"   => $visits,
 
               // O material só chega por e-mail: sem SES, não há entrega.
               // Sai do endereço pessoal — o e-book é assinado pelo Rafael e
