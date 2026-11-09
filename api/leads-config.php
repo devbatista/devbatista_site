@@ -33,6 +33,12 @@ function lead_config(): array
         'crm_enabled' => false,
         'crm_url' => 'https://admin.devbatista.com/webhooks/site-leads',
         'crm_token' => '',
+        // Visitas do site (api/visitas.php): as páginas vistas e os acessos
+        // de IA vão para o Admin. O token é o SITE_VISITS_TOKEN do Admin,
+        // separado do de leads.
+        'visits_enabled' => false,
+        'visits_url' => 'https://admin.devbatista.com/webhooks/site-visits',
+        'visits_token' => '',
         // Entrega do material. O PDF vai como link, não como anexo: 326 KB
         // saindo de um domínio novo é convite para o filtro de spam.
         'ebook_email_enabled' => false,

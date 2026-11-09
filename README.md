@@ -72,8 +72,12 @@ Preços não são exibidos em nenhuma página.
 ├── css/lead-quiz.css     # Modal do Diagnóstico Tecnológico
 ├── js/main.js            # Interações (vanilla JS, sem dependências)
 ├── js/lead-quiz.js       # Diagnóstico Tecnológico (modal, scoring, envio)
+├── js/visitas.js         # Medição de visitas (beacon para api/v.php)
 ├── api/leads.php         # Endpoint de recebimento dos leads
-├── api/leads-config.php  # Configuração compartilhada (leads + health)
+├── api/leads-config.php  # Configuração compartilhada (leads, health e visitas)
+├── api/visitas.php       # Repasse das visitas ao Admin (funções)
+├── api/v.php             # Beacon das visitas (pageview e leave)
+├── api/agente.php        # Páginas para robôs e agentes de IA (conta os acessos)
 ├── api/mailer.php        # Envio pela API do Amazon SES (SigV4 assinado à mão)
 ├── api/health.php        # Diagnóstico do ambiente (protegido por token)
 ├── api/config.example.php# Modelo de configuração (copie para config.php)
@@ -383,6 +387,41 @@ Respostas: `201` criado, `200` completado, `401` token, `422` dados inválidos
 
 ---
 
+## Visitas do site (Admin DevBatista)
+
+As visitas e os acessos de IA vão para o Admin (Marketing → Visitas do site),
+que guarda, classifica e mostra. O site não grava nada. Spec completa no Admin:
+`docs/specs/visitas-do-site/README.md`.
+
+```
+pessoa  → página estática → js/visitas.js → POST /api/v.php ──┐
+robô/IA → .htaccess → api/agente.php (mesmo HTML, ou 403) ────┴→ Admin /webhooks/site-visits
+```
+
+- **Pessoas.** `js/visitas.js` (em todas as páginas, menos `servicos.html`)
+  manda a página vista e, na saída, o tempo visível. Sem cookie: o Admin
+  calcula um visitante anônimo que muda todo dia e não guarda IP.
+- **Robôs e agentes de IA** não rodam JavaScript. A regra **3b** do `.htaccess`
+  manda as páginas pedidas por eles (user agent de bot/IA ou header
+  `Signature-Agent`) ao `api/agente.php`, que entrega o mesmo HTML e avisa o
+  Admin. Googlebot, Bingbot e os outros buscadores comuns ficam de fora.
+- **Robôs de treino bloqueados** (regra **0a**) continuam levando 403, mas as
+  páginas passam pelo `api/agente.php`, que conta a tentativa como bloqueada.
+  Imagens, CSS e arquivos são barrados direto, sem contar.
+- O PHP não classifica nada: quem decide o que é IA é o catálogo do Admin
+  (`config/ai_agents.yml`). Um robô novo só precisa entrar na peneira da regra
+  3b se o user agent dele não tiver `bot`, `crawl`, `spider`, `-User`, `GPT`,
+  `Claude`, `Perplexity`, `anthropic`, `openai`, `meta-external` ou `MistralAI`.
+- **Não contar as próprias visitas:** abra qualquer página com `?nao-contar=1`
+  (vale para aquele navegador; `?nao-contar=0` volta a contar).
+- O IP repassado é só o `REMOTE_ADDR`: o site não está atrás da Cloudflare, e
+  um `CF-Connecting-IP` viria do cliente. **Se um dia entrar um proxy na
+  frente, ajuste `visit_client_ip()` em `api/visitas.php`.**
+- Liga com o secret `SITE_VISITS_TOKEN` (seção Deploy). Sem ele, o script
+  continua mandando para `/api/v.php`, que responde 204 e descarta.
+
+---
+
 ## Imagens
 
 As imagens de conteúdo são servidas em **WebP**. Os `.png` originais permanecem
@@ -452,6 +491,7 @@ gerado que sobe por FTP.
 | Secret | Liga |
 |---|---|
 | `CRM_TOKEN` | CRM próprio (Admin DevBatista) — liga o diagnóstico **e** a landing page do e-book. Mesmo valor do `SITE_LEADS_TOKEN` do Admin |
+| `SITE_VISITS_TOKEN` | Visitas do site e acessos de IA (Admin → Marketing → Visitas do site). Mesmo valor do `SITE_VISITS_TOKEN` do Admin, separado do de leads |
 | `LEADS_EMAIL_TO` + `AWS_SES_KEY` | Notificação por e-mail — precisa também de `AWS_SES_SECRET`, `AWS_SES_REGION` e `LEADS_EMAIL_FROM`. Opcional: `LEADS_EMAIL_TIERS` (`morno,quente` por padrão; `todos` inclui os frios) |
 | `WHATSAPP_TOKEN` | Notificação por WhatsApp (`WHATSAPP_ENDPOINT`, `WHATSAPP_TO`) |
 
