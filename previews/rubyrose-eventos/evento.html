@@ -1,0 +1,2269 @@
+<!doctype html>
+<html lang="pt-BR" data-pv-part="evento">
+
+  <head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Página de exemplo, não é conteúdo público: não deve ser indexada
+         enquanto serve só para aprovar layout. -->
+    <meta name="robots" content="noindex, nofollow">
+
+    <title>Beauty Fair 2026 &middot; Ruby Rose Eventos &middot; Preview</title>
+    <meta http-equiv="Content-Security-Policy" content="connect-src 'self' blob: data:">
+    <meta name="description" content="Ruby Rose e Melu na Beauty Fair 2026 — estande exclusivo, lançamentos, ativações e kit exclusivo. Inscrição gratuita.">
+
+    <link rel="icon" href="assets/evento/favicon.svg?v=202611101951" type="image/svg+xml">
+
+    <!-- ==================================================================
+         Espera de carregamento
+         ==================================================================
+
+         A classe entra por JavaScript, e não escrita no <html>, de propósito:
+         é ela que esconde a página, e se estivesse no HTML um navegador com o
+         JavaScript desligado ficaria com a tela em branco para sempre — sem
+         ninguém para tirá-la. Do jeito que está, sem JavaScript a classe nunca
+         é posta e a página aparece na hora, como sempre apareceu.
+
+         Fica aqui no <head> porque precisa valer antes da primeira pintura.
+         Um pouco mais abaixo, no <body>, já seria tarde: a tela teria piscado
+         montada antes de ser escondida. -->
+
+    <script>document.documentElement.classList.add("rr-loading");</script>
+
+    <style>
+
+      /* Página de exemplo da Beauty Fair 2026 — arquivo único.
+       *
+       * O CSS mora aqui dentro, e não no styles.css, de propósito: aquele
+       * arquivo é a página de manutenção, que está no ar agora, e esta é uma
+       * peça de aprovação que ainda vai mudar de forma. Enquanto forem duas
+       * coisas separadas, mexer numa não pode arriscar a outra.
+       *
+       * O preço disso são os tokens repetidos logo abaixo. Quando esta página
+       * virar definitiva, o :root e os @font-face saem daqui e voltam a sair de
+       * um arquivo só. */
+
+      /* ------------------------------------------------------------------
+         Tokens da marca
+         ------------------------------------------------------------------
+
+         Vieram do :root de styles.css, que por sua vez transcreve
+         app/assets/stylesheets/_brand.scss do rubyrose_eventos. Nenhum hex deve
+         aparecer fora deste bloco.
+
+         O rosa é a exceção e diverge de propósito: esta página usa o #e95374,
+         que é o mesmo do widget de credenciamento, e não o #f03a77 que a página
+         de manutenção usa. As duas peças aparecem lado a lado — o formulário
+         dentro desta página —, e é aqui que elas passam a falar a mesma cor. */
+
+      :root {
+        /* Paleta institucional */
+        --rr-pink: #e95374;          /* a cor da marca nesta página */
+        --rr-pink-ink: #c64763;      /* mesmo rosa mais escuro: 4,7:1, serve texto */
+        --rr-wine: #842046;          /* Pantone 7641 C */
+
+        /* Neutros */
+        --rr-ink: #2b2228;
+        --rr-surface: #ffffff;
+        --rr-canvas: #faf6f7;
+        --rr-line: #ece2e6;
+        --rr-muted: #6b5e64;
+
+        /* Tipografia */
+        --rr-font-display: "Rubik", system-ui, sans-serif;
+        --rr-font-text: "Montserrat", system-ui, sans-serif;
+
+        /* O manual usa retângulo de canto vivo como forma da marca. */
+        --rr-radius: 0.375rem;
+        --rr-radius-lg: 0.5rem;
+
+        /* Largura da caixa de conteúdo — decisão de layout desta página, não
+         * token de marca, e por isso não existe no styles.css.
+         *
+         * Vale um número só porque três blocos dependem dele: as duas colunas
+         * de texto, o formulário e o rodapé. Alinhados pela mesma medida, eles
+         * formam uma coluna vertical; cada um com a sua, o olho vê três
+         * larguras diferentes descendo a página. É aqui que se aperta ou se
+         * abre a margem lateral inteira. */
+        --rr-content: 96rem;
+      }
+
+      /* Fontes servidas pela própria página, nunca por CDN — mesma decisão do
+       * rubyrose_eventos. Só os pesos usados e só o subset latino. */
+      @font-face {
+        font-family: "Montserrat";
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: url("assets/fonts/montserrat-latin-400-normal.woff2") format("woff2");
+      }
+
+      @font-face {
+        font-family: "Montserrat";
+        font-style: normal;
+        font-weight: 500;
+        font-display: swap;
+        src: url("assets/fonts/montserrat-latin-500-normal.woff2") format("woff2");
+      }
+
+      @font-face {
+        font-family: "Montserrat";
+        font-style: normal;
+        font-weight: 600;
+        font-display: swap;
+        src: url("assets/fonts/montserrat-latin-600-normal.woff2") format("woff2");
+      }
+
+      /* O 700 é o que faz os títulos saírem realmente em bold. Sem este
+       * arquivo o navegador não desiste do `font-weight: 700` — ele resolve
+       * para o peso mais próximo que tem, que era o 600, e o título ficava
+       * quase igual ao texto ao lado. */
+      @font-face {
+        font-family: "Montserrat";
+        font-style: normal;
+        font-weight: 700;
+        font-display: swap;
+        src: url("assets/fonts/montserrat-latin-700-normal.woff2") format("woff2");
+      }
+
+      @font-face {
+        font-family: "Rubik";
+        font-style: normal;
+        font-weight: 700;
+        font-display: swap;
+        src: url("assets/fonts/rubik-latin-700-normal.woff2") format("woff2");
+      }
+
+      /* ------------------------------------------------------------------
+         Base
+         ------------------------------------------------------------------ */
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      body,
+      h1,
+      h2,
+      p {
+        margin: 0;
+      }
+
+      body {
+        background: var(--rr-surface);
+        color: var(--rr-ink);
+        font-family: var(--rr-font-text);
+
+        /* 16px — o mesmo corpo que o formulário usa. Antes a página estava em
+         * 14 e o formulário em 16, e a diferença aparecia no ponto em que os
+         * dois se encostam. */
+        font-size: 1rem;
+
+        /* Montserrat tem desenho mais largo que a Helvetica que a maioria dos
+         * resets assume, e isso aperta a entrelinha. */
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      /* ------------------------------------------------------------------
+         Espera de carregamento
+         ------------------------------------------------------------------
+
+         Enquanto a classe está no <html>, a página inteira fica invisível e
+         no lugar dela aparece a tela de espera. O JavaScript no fim do <body>
+         tira a classe quando tudo terminou de carregar.
+
+         `visibility: hidden` no body, e não `display: none`: assim o conteúdo
+         continua ocupando espaço e sendo medido pelo navegador, que já resolve
+         a diagramação por trás da tela de espera. Com `display: none` ele só
+         começaria a calcular tudo depois de aparecer, e a página surgiria
+         montando-se na frente de quem olha. */
+
+      .rr-loading body {
+        visibility: hidden;
+      }
+
+      /* O fundo da espera. Vive no <html> justamente para não ser afetado pelo
+       * `visibility: hidden` que está no <body>. */
+      .rr-loading::after {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: 9998;
+        background: var(--rr-surface);
+      }
+
+      /* O giro, desenhado só com borda: um círculo cinza com um quarto em rosa,
+       * que só se percebe girando. Sem imagem, porque a tela de espera não pode
+       * depender de um arquivo que ainda está carregando. */
+      .rr-loading::before {
+        content: "";
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        z-index: 9999;
+        width: 2.5rem;
+        height: 2.5rem;
+        margin: -1.25rem 0 0 -1.25rem;
+        border: 3px solid var(--rr-line);
+        border-top-color: var(--rr-pink);
+        border-radius: 50%;
+        animation: rr-spin 0.8s linear infinite;
+      }
+
+      @keyframes rr-spin {
+        to { transform: rotate(1turn); }
+      }
+
+      /* A revelação é um fade curto, para a página não estalar na tela. */
+      body {
+        animation: rr-fade-in 0.28s ease-out both;
+      }
+
+      .rr-loading body {
+        animation: none;
+      }
+
+      @keyframes rr-fade-in {
+        from { opacity: 0; }
+        to   { opacity: 1; }
+      }
+
+      /* Quem pediu menos movimento fica com a espera parada e sem o fade — o
+       * giro é decorativo, e a informação (“ainda carregando”) continua sendo
+       * dada pela própria tela cobrindo o conteúdo. */
+      @media (prefers-reduced-motion: reduce) {
+        .rr-loading::before {
+          animation: none;
+        }
+
+        body {
+          animation: none;
+        }
+      }
+
+      /* Duas listas aparecem em três lugares desta página, com marcador ou sem
+       * ele. Vale defini-las uma vez. */
+      .plain,
+      .dashed {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .dashed li {
+        position: relative;
+        padding-left: 0.875rem;
+        margin-bottom: 0.5rem;
+      }
+
+      /* Traço no lugar do bullet — é o que a peça original usa. Como
+       * pseudo-elemento ele não entra no texto que o leitor de tela anuncia. */
+      .dashed li::before {
+        content: "–";
+        position: absolute;
+        left: 0;
+      }
+
+      /* ------------------------------------------------------------------
+         Topo
+         ------------------------------------------------------------------ */
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 2.25rem clamp(1.25rem, 5vw, 3rem);
+        background: var(--rr-pink);
+        color: var(--rr-surface);
+      }
+
+      /* O SVG da marca é rosa — é a única versão no repositório. Sobre a barra
+       * rosa ele desapareceria, então o filtro o achata em branco:
+       * brightness(0) leva qualquer cor a preto, invert(1) devolve branco.
+       * Quando existir o arquivo da versão negativa, troca-se a imagem e some o
+       * filtro. */
+      .topbar__brand img {
+        display: block;
+        width: clamp(8rem, 18vw, 11rem);
+        height: auto;
+        filter: brightness(0) invert(1);
+      }
+
+      .topbar__bag {
+        display: grid;
+        place-items: center;
+        width: 2.75rem;
+        height: 2.75rem;
+      }
+
+      /* O PNG já vem branco com fundo transparente, então vai direto sobre o
+       * rosa — ao contrário do logotipo ao lado, que só existe em rosa e
+       * precisa do filtro para aparecer aqui. */
+      .topbar__bag img {
+        display: block;
+        width: 1.75rem;
+        height: auto;
+      }
+
+      /* ------------------------------------------------------------------
+         Banner do topo
+         ------------------------------------------------------------------ */
+
+      /* A arte chegou pronta e traz tudo dentro dela: a marca d'água de "RR",
+       * o cartão com a foto do estande e o botão. Não sobrou o que o CSS
+       * desenhar, então a seção é a imagem sangrando de ponta a ponta — a
+       * remontagem em HTML e a máscara do "RR" que viviam aqui saíram junto.
+       *
+       * O elemento é um link porque o "Garantir Vaga" agora está pintado na
+       * imagem: sem isto o botão viraria enfeite, e é ele que leva ao
+       * formulário. */
+      .hero {
+        display: block;
+        padding: clamp(1.5rem, 4vw, 2.5rem) clamp(1.25rem, 5vw, 3rem);
+      }
+
+      /* A imagem fica no tamanho em que foi exportada — 1280×650 — em vez de
+       * esticar até a largura da janela. Ampliar um PNG acima do tamanho de
+       * origem não inventa detalhe nenhum: só borra o texto que está pintado
+       * dentro dele.
+       *
+       * O `max-width` é o único desvio disso, e só para baixo: numa janela mais
+       * estreita que 1280 a imagem encolhe em vez de furar a página. */
+      .hero__image {
+        display: block;
+        width: auto;
+        max-width: 100%;
+        height: auto;
+        margin: 0 auto;
+      }
+
+      /* ------------------------------------------------------------------
+         Informações do evento
+         ------------------------------------------------------------------ */
+
+      .info {
+        display: grid;
+
+        /* Duas colunas quando cabem 22rem em cada uma; uma só quando não cabem.
+         * Sem media query: a quebra depende da largura disponível, não da do
+         * aparelho. */
+        grid-template-columns: repeat(auto-fit, minmax(22rem, 1fr));
+        gap: clamp(1.5rem, 4vw, 3rem);
+
+        max-width: var(--rr-content);
+        margin: 0 auto;
+        padding: 0 clamp(1.25rem, 5vw, 3rem);
+      }
+
+      .info p {
+        margin-top: 0.875rem;
+      }
+
+      .info a {
+        color: var(--rr-pink-ink);
+        font-weight: 600;
+      }
+
+      /* O título da página e os rótulos das seções são a mesma coisa
+       * visualmente, e é o rosa que os marca. A diferença entre eles é só
+       * hierárquica — h1 e h2 —, e é o leitor de tela que a usa. */
+      /* Um degrau acima do texto: 18px contra os 16px do corpo, em bold. É
+       * pouco de propósito — o suficiente para o olho separar título de
+       * parágrafo, sem transformar cada rótulo numa manchete. */
+      .info__title,
+      .info__subtitle {
+        color: var(--rr-pink);
+        font-family: var(--rr-font-text);
+        font-weight: 700;
+        font-size: 1.125rem;
+        line-height: 1.4;
+        letter-spacing: normal;
+      }
+
+      .info__title {
+        text-transform: uppercase;
+      }
+
+      .info__subtitle {
+        margin-top: 1.5rem;
+        margin-bottom: 0.5rem;
+      }
+
+      /* O recuo acima serve para afastar o subtítulo do parágrafo anterior.
+       * Quando ele abre a coluna — o "Local:" — não há parágrafo nenhum acima,
+       * e o recuo só empurra a coluna da direita para baixo, desalinhando-a do
+       * título da esquerda. */
+      .info__subtitle:first-child {
+        margin-top: 0;
+      }
+
+      .info__address {
+        margin-top: 0;
+      }
+
+      /* ------------------------------------------------------------------
+         Formulário
+         ------------------------------------------------------------------ */
+
+      /* A caixa da seção, e só ela. O formulário em si traz o próprio CSS, mais
+       * abaixo — aqui é apenas a mesma largura e o mesmo recuo das duas colunas
+       * acima, para que os campos nasçam na linha vertical do texto. */
+      .signup {
+        max-width: var(--rr-content);
+        margin: clamp(2rem, 5vw, 3rem) auto;
+        padding: 0 clamp(1.25rem, 5vw, 3rem);
+      }
+
+      /* Este abre uma seção inteira, e não um parágrafo: fica um degrau acima
+       * dos títulos da .info — 20px contra 18px — para a hierarquia da página
+       * ler de cima para baixo. */
+      .signup__title {
+        color: var(--rr-pink);
+        font-family: var(--rr-font-text);
+        font-weight: 700;
+        font-size: 1.5rem;
+        line-height: 1.3;
+        letter-spacing: normal;
+
+        /* Folga generosa antes do primeiro campo: é ela que faz o título ler
+         * como abertura da seção, e não como rótulo do campo logo abaixo. */
+        margin-bottom: 2.5rem;
+      }
+
+      /* Formulário à esquerda, banner à direita. Empilhado por padrão: no
+       * celular quem manda é o formulário, e o banner some. */
+      .signup__grid {
+        display: grid;
+        gap: clamp(1.5rem, 4vw, 3rem);
+      }
+
+      /* O banner é peça de desktop, como pedido. Abaixo dos 60rem ele fica em
+       * display:none — que, além de escondê-lo, evita que o celular baixe uma
+       * imagem grande que ninguém vai ver. */
+      .signup__aside {
+        display: none;
+      }
+
+      @media (min-width: 60rem) {
+        /* Duas colunas iguais, com o mesmo gap da .info logo acima. É isso que
+         * põe a borda esquerda do banner exatamente sobre a borda esquerda da
+         * coluna "Local:" — as duas seções passam a dividir a página no mesmo
+         * ponto, em vez de cada uma no seu. */
+        .signup__grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+
+          /* `stretch` (o padrão) é o que iguala as alturas: a linha do grid
+           * fica com a altura do formulário, que é o mais alto, e a coluna do
+           * banner acompanha. */
+          align-items: stretch;
+        }
+
+        /* Flex sem `align-items`: o padrão é `stretch`, e é ele que faz a
+         * imagem ocupar toda a altura da coluna. Preso no topo, como estava,
+         * ela terminava antes do botão e as duas colunas não fechavam juntas. */
+        .signup__aside {
+          display: flex;
+        }
+      }
+
+      .signup__banner {
+        display: block;
+
+        /* 80% da coluna, e não os 100% de antes. Como o `contain` logo abaixo
+         * encaixa a arte pela largura, estreitar a caixa é o mesmo que reduzir
+         * a peça: ela sai a 80% do tamanho anterior.
+         *
+         * A sobra fica toda à direita, de propósito — é a borda esquerda que
+         * precisa continuar caindo sobre a coluna "Local:" lá em cima. */
+        width: 80%;
+        border-radius: var(--rr-radius);
+
+        /* A coluna continua com a altura do formulário, do primeiro campo ao
+         * botão. O que muda é como a arte ocupa essa coluna.
+         *
+         * Com `cover` ela preenchia tudo, e para isso era ampliada cerca de
+         * 18% — o cartão rosa crescia até quase encostar nas bordas e a trama
+         * de "RubyRose melu" em volta era aparada. `contain` desiste de
+         * preencher: a arte entra inteira, no tamanho natural para a largura da
+         * coluna, e é isso que a deixa menor.
+         *
+         * A sobra que aparece em cima e embaixo é a diferença entre as duas
+         * proporções, e fica dividida igualmente pelo `center`. */
+        height: 100%;
+        min-height: 0;
+        object-fit: contain;
+        object-position: center;
+      }
+
+      /* ------------------------------------------------------------------
+         Rodapé
+         ------------------------------------------------------------------ */
+
+      /* A faixa do Instagram que existia entre o formulário e o rodapé saiu, e
+       * com ela o filete branco que havia aqui: ele marcava a divisa entre as
+       * duas áreas rosa e, sem a de cima, separava o rodapé do branco da
+       * página — uma linha branca sobre fundo branco. */
+      .sitefooter {
+        padding: clamp(2rem, 5vw, 3rem) clamp(1.25rem, 5vw, 3rem);
+        background: var(--rr-pink);
+        color: var(--rr-surface);
+      }
+
+      /* Duas metades: as redes de um lado, a assinatura do outro. Empilhado
+       * por padrão, lado a lado a partir de 48rem — no celular as metades
+       * ficariam estreitas demais para valer o corte. */
+      .sitefooter__inner {
+        display: grid;
+        gap: 1.75rem;
+        max-width: var(--rr-content);
+        margin: 0 auto;
+      }
+
+      @media (min-width: 48rem) {
+        .sitefooter__inner {
+          grid-template-columns: 1fr 1fr;
+
+          /* Sem o filete no meio, as colunas não precisam mais ter a mesma
+           * altura — o que interessa agora é o logotipo ficar na linha dos
+           * ícones, e é o `center` que faz isso. */
+          align-items: center;
+          gap: 0;
+        }
+      }
+
+      /* Acompanha a escala do resto da página: 16px, o mesmo do corpo. Em 12px
+       * ele ficava menor que qualquer texto da página e não parecia mais um
+       * título. A caixa alta e o tracking é que o mantêm como rótulo, e não
+       * como manchete — não o tamanho miúdo. */
+      .sitefooter__title {
+        font-family: var(--rr-font-text);
+        font-weight: 700;
+        font-size: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin-bottom: 0.875rem;
+      }
+
+      .sitefooter__social {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .sitefooter__social a {
+        display: grid;
+        place-items: center;
+        width: 2.25rem;
+        height: 2.25rem;
+        border-radius: 50%;
+        background: var(--rr-surface);
+        color: var(--rr-pink);
+      }
+
+      .sitefooter__social a:hover,
+      .sitefooter__social a:focus-visible {
+        color: var(--rr-pink-ink);
+      }
+
+      .sitefooter__social svg {
+        width: 1.125rem;
+        height: 1.125rem;
+        fill: currentColor;
+      }
+
+      .sitefooter__brand {
+        display: flex;
+        align-items: center;
+      }
+
+      @media (min-width: 48rem) {
+        .sitefooter__brand {
+          justify-content: flex-end;
+
+          /* O recuo fica mesmo sem o filete: é ele que impede o logotipo de
+           * encostar nos ícones quando a janela aperta. */
+          padding-left: clamp(1.5rem, 4vw, 3rem);
+        }
+      }
+
+      /* Mesmo caso do topo: o SVG da marca só existe em rosa, e sobre o rosa
+       * ele sumiria. */
+      .sitefooter__brand img {
+        display: block;
+        width: clamp(9rem, 16vw, 13rem);
+        height: auto;
+        filter: brightness(0) invert(1);
+      }
+
+    </style>
+
+    <!-- ==================================================================
+         Widget de credenciamento — CSS
+         ==================================================================
+
+         Cópia do widget que roda no Elementor, mantida em bloco próprio para
+         continuar comparável com o original. A única alteração é a ausência do
+         `@import` do Google Fonts que abria o arquivo lá: esta página já serve
+         Montserrat de assets/, e trocar isso por uma requisição a um CDN seria
+         andar para trás. O que esta página precisa mudar no widget está no
+         terceiro bloco, depois deste, e não aqui dentro. -->
+
+    <style>
+
+      #rr-accreditation {
+        --rr-border: #ece2e6;
+        --rr-muted: #6b5e64;
+        --rr-danger: #b3261e;
+        --rr-surface: #ffffff;
+        --rr-text: #2b2228;
+        --rr-brand: #e95374;
+        --rr-brand-ink: #c64763;
+
+        display: block;
+        width: 100%;
+        max-width: 34rem;
+        margin: 0;
+        padding: 0;
+
+        color: var(--rr-text);
+        font-family: "Montserrat", sans-serif;
+        font-size: 16px;
+        line-height: 1.6;
+        letter-spacing: normal;
+        text-align: left;
+        text-transform: none;
+        overflow-wrap: break-word;
+      }
+
+      /* A seção deste widget é full width, então recriamos aqui a caixa de
+         conteúdo do tema para o formulário nascer na mesma linha vertical do
+         texto das outras seções. Ajuste --rr-content-width se a largura de
+         conteúdo do tema não for os 1140px padrão do Elementor. */
+      #rr-accreditation-wrap {
+        --rr-content-width: 1140px;
+
+        width: 100%;
+        max-width: var(--rr-content-width);
+        margin: 0 auto;
+      }
+
+      @media (max-width: 767px) {
+        #rr-accreditation-wrap { padding: 0 1rem; }
+      }
+
+      #rr-accreditation *,
+      #rr-accreditation *::before,
+      #rr-accreditation *::after { box-sizing: border-box; }
+
+      #rr-accreditation .rr-form { margin: 0; }
+
+      #rr-accreditation .rr-form[hidden] { display: none; }
+
+      #rr-accreditation .rr-form[hidden] + .rr-feedback { margin-top: 0; }
+
+      #rr-accreditation .rr-fieldset {
+        border: 0;
+        margin: 0;
+        padding: 0;
+        min-width: 0;
+      }
+
+      #rr-accreditation .rr-field { margin: 0 0 1.25rem; }
+
+      #rr-accreditation .rr-label {
+        display: block;
+        color: var(--rr-text);
+        font-size: .9rem;
+        font-weight: 600;
+        line-height: 1.6;
+        margin: 0 0 .35rem;
+        text-transform: none;
+      }
+
+      #rr-accreditation .rr-optional { font-weight: 400; color: var(--rr-muted); }
+
+      #rr-accreditation .rr-input,
+      #rr-accreditation .rr-select {
+        width: 100%;
+        height: auto;
+        min-height: 0;
+        margin: 0;
+        padding: .6rem .7rem;
+        border: 1px solid var(--rr-border);
+        border-radius: .375rem;
+        background: transparent;
+        box-shadow: none;
+        color: inherit;
+        font: inherit;
+        line-height: 1.6;
+      }
+
+      #rr-accreditation .rr-select option {
+        background: var(--rr-surface);
+        color: var(--rr-text);
+      }
+
+      #rr-accreditation .rr-input:focus-visible,
+      #rr-accreditation .rr-select:focus-visible {
+        outline: 2px solid var(--rr-brand);
+        outline-offset: 1px;
+      }
+
+      #rr-accreditation .rr-input[aria-invalid="true"],
+      #rr-accreditation .rr-select[aria-invalid="true"] { border-color: var(--rr-danger); }
+
+      #rr-accreditation .rr-select:disabled {
+        color: var(--rr-muted);
+        opacity: 1;
+      }
+
+      #rr-accreditation .rr-hint {
+        display: block;
+        color: var(--rr-muted);
+        font-size: .8rem;
+        margin-top: .3rem;
+      }
+
+      #rr-accreditation .rr-error {
+        display: block;
+        color: var(--rr-danger);
+        font-size: .8rem;
+        margin-top: .3rem;
+      }
+
+      #rr-accreditation .rr-error:empty { display: none; }
+
+      #rr-accreditation .rr-submit {
+        display: block;
+        width: 100%;
+        height: auto;
+        margin: 0;
+        padding: .7rem;
+        border: 0;
+        border-radius: .375rem;
+        background: var(--rr-brand);
+        box-shadow: none;
+        color: #fff;
+        font: inherit;
+        font-weight: 600;
+        letter-spacing: normal;
+        text-transform: none;
+        cursor: pointer;
+      }
+
+      #rr-accreditation .rr-submit:hover { background: var(--rr-brand-ink); }
+
+      #rr-accreditation .rr-submit[disabled] { opacity: .6; cursor: progress; }
+
+      #rr-accreditation .rr-feedback {
+        margin-top: 1.5rem;
+        padding: 1rem;
+        border: 1px solid var(--rr-border);
+        border-radius: .375rem;
+        font-size: .9rem;
+      }
+
+      #rr-accreditation .rr-feedback:empty { display: none; }
+
+      #rr-accreditation .rr-feedback.is-error { border-color: var(--rr-danger); color: var(--rr-danger); }
+
+      #rr-accreditation .rr-feedback.is-success {
+        border-color: var(--rr-brand);
+        border-width: 2px;
+        padding: 1.5rem;
+        color: var(--rr-text);
+      }
+
+      #rr-accreditation .rr-feedback.is-success .rr-feedback-title {
+        color: var(--rr-brand-ink);
+        font-size: 1.15rem;
+        margin-bottom: 1.25rem;
+        text-align: center;
+      }
+
+      #rr-accreditation .rr-feedback-title {
+        color: inherit;
+        font-family: inherit;
+        font-size: 1rem;
+        font-weight: 600;
+        line-height: 1.6;
+        margin: 0 0 .75rem;
+        padding: 0;
+      }
+
+      #rr-accreditation .rr-payload {
+        margin: 0;
+        padding: 0;
+        background: transparent;
+        white-space: pre-wrap;
+        word-break: break-word;
+        font-family: ui-monospace, "SF Mono", monospace;
+        font-size: .8rem;
+      }
+
+      #rr-accreditation .rr-credential {
+        margin: 0 0 1.25rem;
+        padding: 1rem .75rem;
+        background: #ffffff;
+        border: 1px solid var(--rr-border);
+        border-radius: .375rem;
+        text-align: center;
+      }
+
+      #rr-accreditation .rr-credential svg {
+        display: block;
+        width: min(100%, 16rem);
+        height: auto;
+        margin: 0 auto;
+      }
+
+      #rr-accreditation .rr-credential-caption {
+        margin-top: .75rem;
+        color: #1a1c1e;
+        font-size: .85rem;
+        font-style: normal;
+        line-height: 1.6;
+      }
+
+      #rr-accreditation .rr-credential-date {
+        color: var(--rr-brand-ink);
+        font-weight: 600;
+        white-space: nowrap;
+      }
+
+      #rr-accreditation .rr-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: .5rem;
+        margin-bottom: 1rem;
+      }
+
+      #rr-accreditation .rr-action {
+        width: auto;
+        flex: 1 1 8rem;
+        height: auto;
+        margin: 0;
+        padding: .5rem .75rem;
+        border: 1px solid var(--rr-brand);
+        border-radius: .375rem;
+        background: transparent;
+        box-shadow: none;
+        color: var(--rr-brand-ink);
+        font: inherit;
+        font-size: .85rem;
+        font-weight: 600;
+        letter-spacing: normal;
+        text-transform: none;
+        cursor: pointer;
+      }
+
+      #rr-accreditation .rr-action:hover {
+        background: var(--rr-brand-ink);
+        border-color: var(--rr-brand-ink);
+        color: #fff;
+      }
+
+      #rr-accreditation .rr-details {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: .35rem .75rem;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      #rr-accreditation .rr-details-term {
+        margin: 0;
+        color: var(--rr-muted);
+        font-size: .8rem;
+        font-weight: 600;
+      }
+
+      #rr-accreditation .rr-details-value {
+        margin: 0;
+        word-break: break-all;
+        font-family: ui-monospace, "SF Mono", monospace;
+        font-size: .8rem;
+      }
+
+    </style>
+
+    <!-- ==================================================================
+         Widget de credenciamento — encaixe nesta página
+         ==================================================================
+
+         Vem depois do bloco do widget porque é ele que precisa vencer: mesma
+         especificidade, ganha quem é declarado por último. Tudo o que esta
+         página muda no widget está aqui, e apagar este bloco devolve o widget
+         ao comportamento que ele tem no Elementor. -->
+
+    <style>
+
+      /* O widget nasceu com a própria paleta. Ela e a da página coincidem hoje
+       * — foi o #e95374 dele que a página adotou —, então este bloco não muda
+       * mais nenhuma cor de lugar: ele existe para que a coincidência não
+       * dependa de sorte. Com os tokens apontando para o :root, mexer no rosa
+       * lá em cima leva junto o botão, o foco dos campos e a borda da
+       * credencial, em vez de deixá-los para trás. */
+      #rr-accreditation {
+        --rr-brand: var(--rr-pink);
+        --rr-brand-ink: var(--rr-pink-ink);
+        --rr-border: var(--rr-line);
+        --rr-text: var(--rr-ink);
+      }
+
+      /* Quem limita a largura aqui é a .signup, com o mesmo recuo das colunas de
+       * texto. A caixa de conteúdo que o widget recria para o tema do WordPress
+       * ficaria mais larga que o resto da página e desalinharia o formulário. */
+      #rr-accreditation-wrap { --rr-content-width: 100%; }
+
+      /* E, pela mesma razão, o recuo lateral que o widget aplica no celular
+       * somaria ao da .signup e empurraria só o formulário para dentro. */
+      @media (max-width: 767px) {
+        #rr-accreditation-wrap { padding: 0; }
+      }
+
+      /* Campos maiores no celular.
+       *
+       * No desktop o alvo é o ponteiro do mouse, que acerta um campo de 47px
+       * sem esforço. No celular o alvo é o dedo, e as recomendações de toque
+       * pedem 44px como mínimo — 47px passa raspando, com o texto colado nas
+       * bordas. Aqui eles vão a ~57px, que é onde o campo deixa de ser um alvo
+       * apertado e passa a ser confortável.
+       *
+       * O corpo do texto não muda: já são os 16px que o widget define, e é
+       * abaixo disso que o iOS dá aquele zoom automático ao focar um campo. O
+       * que cresce é o espaço em volta.
+       *
+       * Mesma quebra de 767px que o widget usa logo acima, para o formulário
+       * não ter duas noções diferentes de "celular". */
+      @media (max-width: 767px) {
+        #rr-accreditation .rr-input,
+        #rr-accreditation .rr-select {
+          padding: 0.85rem 0.9rem;
+        }
+
+        #rr-accreditation .rr-submit {
+          padding: 0.95rem;
+        }
+
+        #rr-accreditation .rr-label {
+          font-size: 1rem;
+        }
+
+        /* A folga entre os campos acompanha: campos maiores e colados ficariam
+         * mais difíceis de distinguir, não menos. */
+        #rr-accreditation .rr-field {
+          margin-bottom: 1.5rem;
+        }
+      }
+
+    </style>
+
+    <link rel="stylesheet" href="assets/kit.css?v=202611101951">
+    <script src="assets/demo-data.js?v=202611101951"></script>
+    <script src="assets/demo-api.js?v=202611101951"></script>
+  </head>
+
+  <body>
+
+    <!-- ------------------------------------------------------------------
+         Topo
+         ------------------------------------------------------------------ -->
+
+    <header class="topbar">
+
+      <a class="topbar__brand" href="evento.html" aria-label="Ruby Rose — página inicial">
+        <img src="assets/evento/ruby-rose-logo.svg?v=202611101951" alt="Ruby Rose" width="1103" height="237">
+      </a>
+
+      <a class="topbar__bag" href="https://www.rubyrosemaquiagem.com.br/" rel="noopener" aria-label="Loja Ruby Rose">
+        <!-- O ícone é o arquivo da marca, não um desenho aproximado. Sem alt:
+             o rótulo do link já está no aria-label do <a>, e repetir aqui faria
+             o leitor de tela anunciar a mesma coisa duas vezes. -->
+        <img src="assets/evento/bag.png?v=202611101951" alt="" width="663" height="632">
+      </a>
+
+    </header>
+
+    <main>
+
+      <!-- --------------------------------------------------------------
+           Banner
+           -------------------------------------------------------------- -->
+
+      <a class="hero" href="#inscricao">
+        <img class="hero__image" src="assets/evento/banner-topo.webp?v=202611101951"
+             alt="Viva a experiência Ruby Rose e Melu na Beauty Fair 2026 — lançamentos, ativações, influenciadores e um kit exclusivo esperam por você. Garantir vaga."
+             width="1280" height="650">
+      </a>
+
+      <!-- --------------------------------------------------------------
+           Informações do evento
+           -------------------------------------------------------------- -->
+
+      <section class="info">
+
+        <div class="info__col">
+
+          <h1 class="info__title">Convidados Ruby Rose &mdash; Beauty Fair 2026</h1>
+
+          <p>
+            A Ruby Rose e a Melu estarão juntas em um estande exclusivo na Beauty
+            Fair 2026, que acontece de 5 a 8 de setembro, com lançamentos,
+            influenciadores, ativações especiais e muitas novidades.
+          </p>
+
+          <p>
+            Para participar, basta fazer sua inscrição gratuita
+            <a href="#inscricao">neste link</a>. As vagas são limitadas a 1
+            inscrição por CPF, por isso é importante comparecer no dia agendado.
+          </p>
+
+          <h2 class="info__subtitle">Horário de acesso ao estande da Ruby Rose:</h2>
+
+          <ul class="plain">
+            <li>Sábado: a partir das 13h;</li>
+            <li>Domingo, segunda e terça: a partir das 11h.</li>
+          </ul>
+
+          <p>
+            Quem realizar o agendamento poderá retirar um kit exclusivo (sujeito
+            à disponibilidade), conhecer os lançamentos das marcas e aproveitar
+            todas as ativações e experiências preparadas para o evento.
+          </p>
+
+        </div>
+
+        <div class="info__col">
+
+          <h2 class="info__subtitle">Local:</h2>
+
+          <p class="info__address">
+            Expo Center Norte<br>
+            Rua José Bernardo Pinto, 333 &mdash; Vila Guilherme<br>
+            São Paulo &mdash; SP
+          </p>
+
+          <h2 class="info__subtitle">Importante:</h2>
+
+          <ul class="dashed">
+            <li>A entrada será permitida mediante apresentação do ingresso;</li>
+            <li>
+              Será entregue 1 kit por CPF durante todo o evento. O nome da
+              credencial da feira será conferido com o CPF vinculado ao QR Code;
+            </li>
+            <li>
+              Cadastros duplicados no mesmo CPF serão cancelados, sendo válida
+              apenas a primeira inscrição;
+            </li>
+          </ul>
+
+          <p>
+            Recomendamos chegar com antecedência para garantir uma experiência
+            mais tranquila.
+          </p>
+
+        </div>
+
+      </section>
+
+      <!-- --------------------------------------------------------------
+           Formulário
+           --------------------------------------------------------------
+
+           O widget de credenciamento, o mesmo que roda no Elementor. A marcação
+           está como veio; o que muda para caber aqui está no CSS, no terceiro
+           bloco do <head>. -->
+
+      <section class="signup" id="inscricao" aria-labelledby="inscricao-titulo">
+
+        <h2 class="signup__title" id="inscricao-titulo">Preencha o formulário</h2>
+
+        <div class="signup__grid">
+
+        <div class="signup__form">
+
+        <div id="rr-accreditation-wrap">
+        <div id="rr-accreditation">
+          <form class="rr-form" novalidate>
+            <fieldset class="rr-fieldset">
+              <div class="rr-field">
+                <label class="rr-label" for="rr-name">Nome completo</label>
+                <input class="rr-input" id="rr-name" name="name" type="text" autocomplete="name">
+                <span class="rr-error" data-error="name" role="alert"></span>
+              </div>
+
+              <div class="rr-field">
+                <label class="rr-label" for="rr-email">E-mail</label>
+                <input class="rr-input" id="rr-email" name="email" type="email" autocomplete="email">
+                <span class="rr-error" data-error="email" role="alert"></span>
+              </div>
+
+              <div class="rr-field">
+                <label class="rr-label" for="rr-confirm_email">Confirmação de e-mail</label>
+                <input class="rr-input" id="rr-confirm_email" name="confirm_email" type="email" autocomplete="off">
+                <span class="rr-hint">Repita o e-mail para conferirmos se não há erro de digitação.</span>
+                <span class="rr-error" data-error="confirm_email" role="alert"></span>
+              </div>
+
+              <div class="rr-field">
+                <label class="rr-label" for="rr-cpf">CPF</label>
+                <input class="rr-input" id="rr-cpf" name="cpf" type="text" inputmode="numeric" autocomplete="off" maxlength="14">
+                <span class="rr-hint">A pontuação é preenchida automaticamente.</span>
+                <span class="rr-error" data-error="cpf" role="alert"></span>
+              </div>
+
+              <div class="rr-field">
+                <label class="rr-label" for="rr-whatsapp">WhatsApp</label>
+                <input class="rr-input" id="rr-whatsapp" name="whatsapp" type="tel" inputmode="tel" autocomplete="tel" maxlength="15">
+                <span class="rr-hint">Com DDD. Exemplo: (11) 99999-9999.</span>
+                <span class="rr-error" data-error="whatsapp" role="alert"></span>
+              </div>
+
+              <div class="rr-field">
+                <label class="rr-label" for="rr-instagram">Instagram <span class="rr-optional">(opcional)</span></label>
+                <input class="rr-input" id="rr-instagram" name="instagram" type="text" autocomplete="off" placeholder="@usuario">
+                <span class="rr-error" data-error="instagram" role="alert"></span>
+              </div>
+
+              <div class="rr-field">
+                <label class="rr-label" for="rr-attends_on">Dia que você vai ao evento</label>
+                <select class="rr-select" id="rr-attends_on" name="attends_on" disabled>
+                  <option value="">Carregando as datas…</option>
+                </select>
+                <span class="rr-hint">A credencial vale apenas no dia escolhido.</span>
+                <span class="rr-error" data-error="attends_on" role="alert"></span>
+              </div>
+            </fieldset>
+
+            <button class="rr-submit" type="submit">Credenciar</button>
+          </form>
+
+          <div class="rr-feedback" aria-live="polite"></div>
+        </div>
+        </div>
+
+        </div>
+
+        <!-- Peça de apoio: repete a chamada e as regras do kit ao lado de quem
+             está preenchendo. Não carrega informação que só exista aqui — quem
+             não a vê, no celular, não perde nada. Daí o alt curto e o
+             aria-hidden ficarem de fora: a imagem tem conteúdo, mas ele já foi
+             dito no texto acima. -->
+        <aside class="signup__aside">
+          <img class="signup__banner" src="assets/evento/banner-formulario.webp?v=202611101951"
+               alt="Vem para a Beauty Fair 2026. Faça seu credenciamento e retire seu kit exclusivo no estande. 1 kit por CPF, sujeito à disponibilidade. Ruby Rose e Melu.">
+        </aside>
+
+        </div>
+
+      </section>
+
+    </main>
+
+    <!-- ------------------------------------------------------------------
+         Rodapé
+         ------------------------------------------------------------------ -->
+
+    <footer class="sitefooter">
+
+      <div class="sitefooter__inner">
+
+        <nav aria-labelledby="rodape-redes">
+          <h2 class="sitefooter__title" id="rodape-redes">Siga nossas redes</h2>
+
+          <!-- Círculos brancos com o símbolo da rede, como na prévia. Os
+               símbolos são SVG inline e não arquivos: são quatro desenhos
+               pequenos, e assim eles herdam a cor do link e mudam junto no
+               hover, sem quatro requisições a mais. -->
+          <ul class="sitefooter__social">
+            <li>
+              <a href="https://www.facebook.com/rubyrosebrasil/" rel="noopener" aria-label="Facebook">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 12a10 10 0 1 0-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.5h-1.3c-1.2 0-1.6.8-1.6 1.6V12h2.8l-.4 2.9h-2.4v7A10 10 0 0 0 22 12z"/></svg>
+              </a>
+            </li>
+            <li>
+              <a href="https://www.instagram.com/rubyrosebrasil/" rel="noopener" aria-label="Instagram">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.2c3.2 0 3.6 0 4.9.07 1.2.06 1.8.25 2.2.42.6.22 1 .48 1.4.9.4.4.7.8.9 1.4.2.4.4 1 .4 2.2.1 1.3.1 1.7.1 4.9s0 3.6-.1 4.9c0 1.2-.2 1.8-.4 2.2-.2.6-.5 1-.9 1.4-.4.4-.8.7-1.4.9-.4.2-1 .4-2.2.4-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.2 0-1.8-.2-2.2-.4-.6-.2-1-.5-1.4-.9-.4-.4-.7-.8-.9-1.4-.2-.4-.4-1-.4-2.2-.1-1.3-.1-1.7-.1-4.9s0-3.6.1-4.9c0-1.2.2-1.8.4-2.2.2-.6.5-1 .9-1.4.4-.4.8-.7 1.4-.9.4-.2 1-.4 2.2-.4 1.3-.07 1.7-.07 4.9-.07zm0 3.1A6.7 6.7 0 1 0 18.7 12 6.7 6.7 0 0 0 12 5.3zm0 11A4.3 4.3 0 1 1 16.3 12 4.3 4.3 0 0 1 12 16.3zm6.9-11.2a1.6 1.6 0 1 1-1.6-1.6 1.6 1.6 0 0 1 1.6 1.6z"/></svg>
+              </a>
+            </li>
+            <li>
+              <a href="https://www.youtube.com/channel/UCayFqs933CpZtCHtTSiB2SA" rel="noopener" aria-label="YouTube">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.6 7.2a2.5 2.5 0 0 0-1.8-1.8C18.2 5 12 5 12 5s-6.2 0-7.8.4a2.5 2.5 0 0 0-1.8 1.8A26 26 0 0 0 2 12a26 26 0 0 0 .4 4.8 2.5 2.5 0 0 0 1.8 1.8C5.8 19 12 19 12 19s6.2 0 7.8-.4a2.5 2.5 0 0 0 1.8-1.8A26 26 0 0 0 22 12a26 26 0 0 0-.4-4.8zM10 15V9l5.2 3z"/></svg>
+              </a>
+            </li>
+            <li>
+              <a href="https://www.tiktok.com/@rubyrose_brasil" rel="noopener" aria-label="TikTok">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16.6 5.8a4.3 4.3 0 0 1-1-2.8h-3.1v12.3a2.6 2.6 0 1 1-1.8-2.5V9.6a5.7 5.7 0 1 0 4.9 5.7V9.7a7.3 7.3 0 0 0 4.3 1.4V8a4.3 4.3 0 0 1-3.3-2.2z"/></svg>
+              </a>
+            </li>
+          </ul>
+        </nav>
+
+        <div class="sitefooter__brand">
+          <img src="assets/evento/ruby-rose-logo.svg?v=202611101951" alt="Ruby Rose" width="1103" height="237">
+        </div>
+
+      </div>
+
+    </footer>
+
+    <!-- ==================================================================
+         Espera de carregamento — JS
+         ==================================================================
+
+         Tira a classe posta lá no <head> e com isso revela a página. Espera
+         por duas coisas, e não uma só:
+
+         - o evento `load`, que só dispara depois de imagens, fontes e demais
+           arquivos terminarem — é o que garante que nenhum banner entra
+           aparecendo pela metade;
+         - `document.fonts.ready`, porque as fontes podem terminar depois e o
+           texto trocaria de desenho na frente de quem olha.
+
+         Os dois `requestAnimationFrame` encadeados compram um quadro inteiro:
+         o primeiro entra no quadro em curso, o segundo só roda depois que ele
+         foi pintado. É a diferença entre revelar a página montada e revelá-la
+         no instante em que o navegador ainda está montando. -->
+
+    <script>
+    (() => {
+      "use strict";
+
+      const root = document.documentElement;
+      let revealed = false;
+
+      function reveal() {
+        if (revealed) return;
+        revealed = true;
+        root.classList.remove("rr-loading");
+      }
+
+      const loaded = new Promise((resolve) => {
+        if (document.readyState === "complete") resolve();
+        else window.addEventListener("load", resolve, { once: true });
+      });
+
+      const fonts = document.fonts ? document.fonts.ready : Promise.resolve();
+
+      Promise.all([loaded, fonts])
+        .then(() => new Promise((frame) => {
+          requestAnimationFrame(() => requestAnimationFrame(frame));
+        }))
+        .then(reveal)
+        .catch(reveal);
+
+      // Rede de segurança. Um arquivo que nunca responde seguraria o `load`
+      // para sempre, e a espera deixaria de ser espera para virar tela branca
+      // permanente. Passados oito segundos a página aparece do jeito que
+      // estiver — melhor meio montada do que nenhuma.
+      setTimeout(reveal, 8000);
+    })();
+    </script>
+
+    <!-- ==================================================================
+         Widget de credenciamento — JS
+         ==================================================================
+
+         Cópia do widget que roda no Elementor, sem alteração. Fica no fim do
+         <body> porque procura os elementos do formulário assim que executa: no
+         <head> ele rodaria antes de eles existirem e sairia calado, pelo
+         `if (!root) return` da primeira linha.
+
+         API_ORIGIN e EVENT_ID são a configuração: apontam para a API que
+         devolve as datas do evento e recebe o credenciamento. Como esta página
+         é servida de outra origem, o domínio dela precisa constar em
+         CORS_ORIGINS na aplicação — inclusive o localhost de quando se testa
+         aqui, senão o select das datas falha ao carregar. -->
+
+    <script>
+    (() => {
+      "use strict";
+
+      const API_ORIGIN = "https://api.demonstracao.invalid/"; // preview: API simulada (assets/demo-api.js)
+      const EVENT_ID = "1";
+
+      const root = document.getElementById("rr-accreditation");
+      if (!root || root.dataset.rrMounted === "true") return;
+      root.dataset.rrMounted = "true";
+
+      const origin = API_ORIGIN.replace(/\/+$/, "");
+      const ACCREDITATION_ENDPOINT = EVENT_ID === "" ? "" : `${origin}/events/${EVENT_ID}/accreditations`;
+      const EVENT_ENDPOINT = EVENT_ID === "" ? "" : `${origin}/events/${EVENT_ID}`;
+
+      const ACCREDITATION_FIELDS = ["name", "email", "cpf", "whatsapp", "instagram", "attends_on"];
+
+      // A confirmação de e-mail existe só para pegar erro de digitação: ela é
+      // validada aqui, mas não entra no corpo enviado para a API.
+      const FORM_FIELDS = ["name", "email", "confirm_email", "cpf", "whatsapp", "instagram", "attends_on"];
+
+      const form = root.querySelector(".rr-form");
+      const submit = root.querySelector(".rr-submit");
+      const feedback = root.querySelector(".rr-feedback");
+      const attendsOn = form.elements.attends_on;
+
+      const VALIDATORS = {
+        name(value) {
+          if (value === "") return "Informe o nome.";
+          if (value.length < 3) return "Nome muito curto.";
+          if (!/\s/.test(value)) return "Informe o nome completo, com sobrenome.";
+          if (!/^[\p{L}\p{M}'’.\- ]+$/u.test(value)) return "O nome tem caracteres inválidos.";
+          return null;
+        },
+
+        email(value) {
+          if (value === "") return "Informe o e-mail.";
+          if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value)) return "E-mail inválido.";
+          return null;
+        },
+
+        confirm_email(value) {
+          if (value === "") return "Confirme o e-mail.";
+          if (value.toLowerCase() !== form.elements.email.value.trim().toLowerCase()) {
+            return "Os e-mails não conferem.";
+          }
+          return null;
+        },
+
+        cpf(value) {
+          if (value === "") return "Informe o CPF.";
+
+          const digits = onlyDigits(value);
+
+          if (digits.length !== 11) return "O CPF deve ter 11 dígitos.";
+          if (/^(\d)\1{10}$/.test(digits)) return "CPF inválido.";
+          if (!hasValidCpfCheckDigits(digits)) return "CPF inválido.";
+          return null;
+        },
+
+        whatsapp(value) {
+          if (value === "") return "Informe o WhatsApp.";
+
+          const digits = stripCountryCode(onlyDigits(value));
+
+          if (digits.length < 10 || digits.length > 11) return "Informe DDD e número.";
+          if (Number(digits.slice(0, 2)) < 11) return "DDD inválido.";
+          if (digits.length === 11 && digits[2] !== "9") return "Número de celular inválido.";
+          if (digits.length === 10) return "Informe um celular, não um telefone fixo.";
+          return null;
+        },
+
+        instagram(value) {
+          if (value === "") return null;
+
+          const handle = value.replace(/^@/, "");
+
+          if (handle.length > 30) return "O perfil tem no máximo 30 caracteres.";
+          if (!/^[a-zA-Z0-9._]+$/.test(handle)) return "Use apenas letras, números, ponto e underline.";
+          if (/^\.|\.$/.test(handle)) return "O perfil não pode começar nem terminar com ponto.";
+          return null;
+        },
+
+        attends_on(value) {
+          if (value === "") return "Escolha o dia em que você vai ao evento.";
+          return null;
+        }
+      };
+
+      function onlyDigits(value) {
+        return value.replace(/\D/g, "");
+      }
+
+      function formatCpf(digits) {
+        let formatted = digits.slice(0, 3);
+
+        if (digits.length > 3) formatted += `.${digits.slice(3, 6)}`;
+        if (digits.length > 6) formatted += `.${digits.slice(6, 9)}`;
+        if (digits.length > 9) formatted += `-${digits.slice(9, 11)}`;
+
+        return formatted;
+      }
+
+      function formatPhone(digits) {
+        if (digits.length <= 2) return digits === "" ? "" : `(${digits}`;
+
+        const subscriber = digits.slice(2);
+        const split = digits.length > 10 ? 5 : 4;
+
+        if (subscriber.length <= split) return `(${digits.slice(0, 2)}) ${subscriber}`;
+
+        return `(${digits.slice(0, 2)}) ${subscriber.slice(0, split)}-${subscriber.slice(split)}`;
+      }
+
+      function digitsBefore(value, position) {
+        return onlyDigits(value.slice(0, position)).length;
+      }
+
+      function caretAfterDigits(formatted, count) {
+        if (count === 0) return 0;
+
+        let seen = 0;
+
+        for (let index = 0; index < formatted.length; index++) {
+          if (/\d/.test(formatted[index]) && ++seen === count) return index + 1;
+        }
+
+        return formatted.length;
+      }
+
+      function stripCountryCode(digits) {
+        return digits.startsWith("55") && digits.length > 11 ? digits.slice(2) : digits;
+      }
+
+      function hasValidCpfCheckDigits(digits) {
+        const numbers = [...digits].map(Number);
+
+        return numbers[9] === verifierDigit(numbers.slice(0, 9), 10) &&
+               numbers[10] === verifierDigit(numbers.slice(0, 10), 11);
+      }
+
+      function verifierDigit(numbers, weight) {
+        const sum = numbers.reduce((total, digit, index) => total + digit * (weight - index), 0);
+        const remainder = (sum * 10) % 11;
+
+        return remainder === 10 ? 0 : remainder;
+      }
+
+      const DAY_OPTION_FORMAT = new Intl.DateTimeFormat("pt-BR", {
+        weekday: "long", day: "2-digit", month: "long", timeZone: "UTC"
+      });
+
+      const DAY_LONG_FORMAT = new Intl.DateTimeFormat("pt-BR", { dateStyle: "long", timeZone: "UTC" });
+
+      function formatDay(iso, formatter = DAY_LONG_FORMAT) {
+        return formatter.format(new Date(`${iso}T00:00:00Z`));
+      }
+
+      function dayOption(iso, selected = false) {
+        const option = document.createElement("option");
+
+        option.value = iso;
+        option.textContent = formatDay(iso, DAY_OPTION_FORMAT);
+        option.defaultSelected = selected;
+        return option;
+      }
+
+      function placeholderOption(label) {
+        const option = document.createElement("option");
+
+        option.value = "";
+        option.textContent = label;
+        return option;
+      }
+
+      async function loadEventDays() {
+        try {
+          if (EVENT_ENDPOINT === "") throw new Error("esta cópia do formulário está sem evento configurado");
+
+          const response = await fetch(EVENT_ENDPOINT, { headers: { "Accept": "application/json" } });
+          const body = await response.json().catch(() => null);
+
+          if (!response.ok || !Array.isArray(body?.days) || body.days.length === 0) {
+            throw new Error(body?.message ?? `o servidor respondeu HTTP ${response.status}`);
+          }
+
+          const days = body.open_days ?? body.days;
+
+          if (days.length === 0) {
+            attendsOn.replaceChildren(placeholderOption("Sem vagas"));
+            showFieldError("attends_on", "Todos os dias deste evento atingiram a lotação máxima.");
+            return;
+          }
+
+          attendsOn.replaceChildren(
+            ...(days.length === 1 ? [] : [ placeholderOption("Selecione uma data") ]),
+            ...days.map((day, index) => dayOption(day, days.length === 1 && index === 0))
+          );
+
+          attendsOn.disabled = false;
+        } catch (error) {
+          attendsOn.replaceChildren(placeholderOption("Datas indisponíveis"));
+          showFieldError("attends_on", `Não foi possível carregar as datas do evento (${error.message}). Recarregue a página.`);
+        }
+      }
+
+      loadEventDays();
+
+      const MASKS = {
+        cpf: { format: formatCpf, digitsOf: (value) => onlyDigits(value).slice(0, 11) },
+        whatsapp: { format: formatPhone, digitsOf: (value) => stripCountryCode(onlyDigits(value)).slice(0, 11) }
+      };
+
+      for (const [field, mask] of Object.entries(MASKS)) {
+        const input = form.elements[field];
+        let previousDigits = "";
+
+        input.addEventListener("input", (event) => {
+          let digits = mask.digitsOf(input.value);
+
+          if (event.inputType === "deleteContentBackward" && digits === previousDigits) {
+            digits = digits.slice(0, -1);
+          }
+
+          const caret = Math.min(digitsBefore(input.value, input.selectionStart), digits.length);
+          const formatted = mask.format(digits);
+          const position = caretAfterDigits(formatted, caret);
+
+          input.value = formatted;
+          input.setSelectionRange(position, position);
+          previousDigits = digits;
+        });
+      }
+
+      for (const field of FORM_FIELDS) {
+        const input = form.elements[field];
+
+        input.addEventListener("blur", () => validateField(field));
+
+        input.addEventListener("input", () => {
+          if (input.getAttribute("aria-invalid") === "true") validateField(field);
+        });
+      }
+
+      // Corrigir o e-mail depois de confirmá-lo tem que refletir na confirmação.
+      form.elements.email.addEventListener("input", () => {
+        const confirmation = form.elements.confirm_email;
+
+        if (confirmation.value.trim() !== "" || confirmation.getAttribute("aria-invalid") === "true") {
+          validateField("confirm_email");
+        }
+      });
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        clearErrors();
+
+        if (!validateAll()) {
+          renderFailure("Corrija os campos destacados.");
+          focusFirstInvalid();
+          return;
+        }
+
+        const payload = { accreditation: readFields() };
+
+        if (ACCREDITATION_ENDPOINT === "") {
+          renderPayload(payload);
+          return;
+        }
+
+        lock(true);
+
+        try {
+          const response = await fetch(ACCREDITATION_ENDPOINT, {
+            method: "POST",
+            headers: { "Accept": "application/json", "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          });
+
+          const body = await response.json().catch(() => null);
+
+          if (response.status === 201 && body) {
+            renderSuccess(body);
+            form.reset();
+            form.hidden = true;
+            feedback.scrollIntoView({ behavior: "smooth", block: "center" });
+          } else if (response.status === 422 && body?.errors) {
+            renderValidationErrors(body.errors);
+          } else if (body?.message) {
+            renderFailure(body.message);
+          } else {
+            renderFailure(`O servidor respondeu HTTP ${response.status} sem JSON. Veja a resposta na aba Network.`);
+          }
+        } catch (error) {
+          renderFailure(`Não foi possível enviar a requisição (${error.message}). O envio saiu de ${location.origin} para ${ACCREDITATION_ENDPOINT}. Sendo origens diferentes, o domínio desta página precisa constar em CORS_ORIGINS na aplicação.`);
+        } finally {
+          lock(false);
+        }
+      });
+
+      function readFields() {
+        return Object.fromEntries(
+          ACCREDITATION_FIELDS.map((field) => [field, form.elements[field].value.trim()])
+        );
+      }
+
+      function lock(locked) {
+        submit.disabled = locked;
+        submit.textContent = locked ? "Enviando…" : "Credenciar";
+      }
+
+      function errorFor(field) {
+        return root.querySelector(`[data-error="${field}"]`);
+      }
+
+      function clearErrors() {
+        feedback.textContent = "";
+        feedback.className = "rr-feedback";
+
+        FORM_FIELDS.forEach(clearFieldError);
+      }
+
+      function showFieldError(field, message) {
+        const target = errorFor(field);
+        if (!target) return false;
+
+        target.textContent = message;
+        form.elements[field].setAttribute("aria-invalid", "true");
+        return true;
+      }
+
+      function clearFieldError(field) {
+        errorFor(field).textContent = "";
+        form.elements[field].removeAttribute("aria-invalid");
+      }
+
+      function validateField(field) {
+        const message = VALIDATORS[field](form.elements[field].value.trim());
+
+        if (message) {
+          showFieldError(field, message);
+          return false;
+        }
+
+        clearFieldError(field);
+        return true;
+      }
+
+      function validateAll() {
+        return FORM_FIELDS.reduce(
+          (valid, field) => validateField(field) && valid,
+          true
+        );
+      }
+
+      function focusFirstInvalid() {
+        form.querySelector('[aria-invalid="true"]')?.focus();
+      }
+
+      function renderValidationErrors(errors) {
+        const orphans = [];
+
+        for (const [field, messages] of Object.entries(errors || {})) {
+          const message = [].concat(messages).join(", ");
+
+          if (!showFieldError(field, message)) {
+            orphans.push(`${field}: ${message}`);
+          }
+        }
+
+        focusFirstInvalid();
+
+        renderFailure(
+          orphans.length > 0
+            ? `Corrija os campos destacados. ${orphans.join(" — ")}`
+            : "Corrija os campos destacados."
+        );
+      }
+
+      function renderFailure(message) {
+        feedback.className = "rr-feedback is-error";
+        feedback.textContent = message;
+      }
+
+      function renderPayload(payload) {
+        feedback.className = "rr-feedback is-success";
+        feedback.replaceChildren();
+
+        const title = document.createElement("h2");
+        title.className = "rr-feedback-title";
+        title.textContent = "Dados válidos. Corpo que seria enviado:";
+
+        const body = document.createElement("pre");
+        body.className = "rr-payload";
+        body.textContent = JSON.stringify(payload, null, 2);
+
+        feedback.append(title, body);
+      }
+
+      function renderSuccess({ message, accreditation }) {
+        const { token, validation_url: validationUrl } = accreditation.qr_code;
+        const content = accreditation.qr_code_content;
+        const matrix = encodeQr(content).modules;
+
+        feedback.className = "rr-feedback is-success";
+        feedback.replaceChildren();
+
+        const title = document.createElement("h2");
+        title.className = "rr-feedback-title";
+        title.textContent = message;
+
+        const figure = document.createElement("figure");
+        figure.className = "rr-credential";
+        figure.innerHTML = qrCodeSvg(matrix, 8);
+
+        const caption = document.createElement("figcaption");
+        caption.className = "rr-credential-caption";
+
+        const day = document.createElement("strong");
+        day.className = "rr-credential-date";
+        day.textContent = formatDay(accreditation.attends_on);
+
+        caption.append(`${accreditation.name} — apresente este código na entrada em `, day, ".");
+
+        const actions = document.createElement("div");
+        actions.className = "rr-actions";
+
+        const basename = `credencial-${token.slice(0, 8)}`;
+
+        for (const [label, handler] of [
+          ["Baixar PDF", () => downloadBlob(buildPdf(matrix, accreditation), `${basename}.pdf`, "application/pdf")],
+          ["Baixar SVG", () => downloadBlob(qrCodeSvg(matrix, 8), `${basename}.svg`, "image/svg+xml")],
+          ["Baixar PNG", () => qrCodePng(matrix, 8).then((blob) => downloadBlob(blob, `${basename}.png`, "image/png"))]
+        ]) {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "rr-action";
+          button.textContent = label;
+          button.addEventListener("click", handler);
+          actions.append(button);
+        }
+
+        const list = document.createElement("dl");
+        list.className = "rr-details";
+
+        for (const [label, value] of [
+          ["Data", formatDay(accreditation.attends_on)],
+          ["Token", token],
+          ["URL", validationUrl]
+        ]) {
+          const term = document.createElement("dt");
+          term.className = "rr-details-term";
+          term.textContent = label;
+
+          const definition = document.createElement("dd");
+          definition.className = "rr-details-value";
+          definition.textContent = value;
+
+          list.append(term, definition);
+        }
+
+        figure.append(caption);
+        feedback.append(title, figure, actions, list);
+      }
+
+      const QR_QUIET_ZONE = 4;
+
+      function darkRuns(matrix) {
+        const runs = [];
+
+        matrix.forEach((row, y) => {
+          let start = null;
+
+          row.forEach((dark, x) => {
+            if (dark && start === null) start = x;
+            if (!dark && start !== null) {
+              runs.push({ x: start, y, width: x - start });
+              start = null;
+            }
+          });
+
+          if (start !== null) runs.push({ x: start, y, width: row.length - start });
+        });
+
+        return runs;
+      }
+
+      function qrCodeSvg(matrix, scale) {
+        const size = matrix.length + QR_QUIET_ZONE * 2;
+        const rects = darkRuns(matrix)
+          .map((run) => `<rect x="${run.x + QR_QUIET_ZONE}" y="${run.y + QR_QUIET_ZONE}" width="${run.width}" height="1"/>`)
+          .join("");
+
+        return `<svg xmlns="http://www.w3.org/2000/svg" width="${size * scale}" height="${size * scale}" ` +
+               `viewBox="0 0 ${size} ${size}" shape-rendering="crispEdges" role="img" ` +
+               `aria-label="QR Code do credenciamento">` +
+               `<rect width="${size}" height="${size}" fill="#ffffff"/>` +
+               `<g fill="#000000">${rects}</g></svg>`;
+      }
+
+      function qrCodePng(matrix, scale) {
+        const size = matrix.length + QR_QUIET_ZONE * 2;
+        const canvas = document.createElement("canvas");
+        canvas.width = canvas.height = size * scale;
+
+        const context = canvas.getContext("2d");
+        context.fillStyle = "#ffffff";
+        context.fillRect(0, 0, canvas.width, canvas.height);
+        context.fillStyle = "#000000";
+
+        for (const run of darkRuns(matrix)) {
+          context.fillRect((run.x + QR_QUIET_ZONE) * scale, (run.y + QR_QUIET_ZONE) * scale, run.width * scale, scale);
+        }
+
+        return new Promise((resolve) => canvas.toBlob(resolve, "image/png"));
+      }
+
+      const QR_RS_BLOCKS = [[1,26,19],[1,26,16],[1,26,13],[1,26,9],[1,44,34],[1,44,28],[1,44,22],[1,44,16],[1,70,55],[1,70,44],[2,35,17],[2,35,13],[1,100,80],[2,50,32],[2,50,24],[4,25,9],[1,134,108],[2,67,43],[2,33,15,2,34,16],[2,33,11,2,34,12],[2,86,68],[4,43,27],[4,43,19],[4,43,15],[2,98,78],[4,49,31],[2,32,14,4,33,15],[4,39,13,1,40,14],[2,121,97],[2,60,38,2,61,39],[4,40,18,2,41,19],[4,40,14,2,41,15],[2,146,116],[3,58,36,2,59,37],[4,36,16,4,37,17],[4,36,12,4,37,13],[2,86,68,2,87,69],[4,69,43,1,70,44],[6,43,19,2,44,20],[6,43,15,2,44,16],[4,101,81],[1,80,50,4,81,51],[4,50,22,4,51,23],[3,36,12,8,37,13],[2,116,92,2,117,93],[6,58,36,2,59,37],[4,46,20,6,47,21],[7,42,14,4,43,15],[4,133,107],[8,59,37,1,60,38],[8,44,20,4,45,21],[12,33,11,4,34,12],[3,145,115,1,146,116],[4,64,40,5,65,41],[11,36,16,5,37,17],[11,36,12,5,37,13],[5,109,87,1,110,88],[5,65,41,5,66,42],[5,54,24,7,55,25],[11,36,12,7,37,13],[5,122,98,1,123,99],[7,73,45,3,74,46],[15,43,19,2,44,20],[3,45,15,13,46,16],[1,135,107,5,136,108],[10,74,46,1,75,47],[1,50,22,15,51,23],[2,42,14,17,43,15],[5,150,120,1,151,121],[9,69,43,4,70,44],[17,50,22,1,51,23],[2,42,14,19,43,15],[3,141,113,4,142,114],[3,70,44,11,71,45],[17,47,21,4,48,22],[9,39,13,16,40,14],[3,135,107,5,136,108],[3,67,41,13,68,42],[15,54,24,5,55,25],[15,43,15,10,44,16],[4,144,116,4,145,117],[17,68,42],[17,50,22,6,51,23],[19,46,16,6,47,17],[2,139,111,7,140,112],[17,74,46],[7,54,24,16,55,25],[34,37,13],[4,151,121,5,152,122],[4,75,47,14,76,48],[11,54,24,14,55,25],[16,45,15,14,46,16],[6,147,117,4,148,118],[6,73,45,14,74,46],[11,54,24,16,55,25],[30,46,16,2,47,17],[8,132,106,4,133,107],[8,75,47,13,76,48],[7,54,24,22,55,25],[22,45,15,13,46,16],[10,142,114,2,143,115],[19,74,46,4,75,47],[28,50,22,6,51,23],[33,46,16,4,47,17],[8,152,122,4,153,123],[22,73,45,3,74,46],[8,53,23,26,54,24],[12,45,15,28,46,16],[3,147,117,10,148,118],[3,73,45,23,74,46],[4,54,24,31,55,25],[11,45,15,31,46,16],[7,146,116,7,147,117],[21,73,45,7,74,46],[1,53,23,37,54,24],[19,45,15,26,46,16],[5,145,115,10,146,116],[19,75,47,10,76,48],[15,54,24,25,55,25],[23,45,15,25,46,16],[13,145,115,3,146,116],[2,74,46,29,75,47],[42,54,24,1,55,25],[23,45,15,28,46,16],[17,145,115],[10,74,46,23,75,47],[10,54,24,35,55,25],[19,45,15,35,46,16],[17,145,115,1,146,116],[14,74,46,21,75,47],[29,54,24,19,55,25],[11,45,15,46,46,16],[13,145,115,6,146,116],[14,74,46,23,75,47],[44,54,24,7,55,25],[59,46,16,1,47,17],[12,151,121,7,152,122],[12,75,47,26,76,48],[39,54,24,14,55,25],[22,45,15,41,46,16],[6,151,121,14,152,122],[6,75,47,34,76,48],[46,54,24,10,55,25],[2,45,15,64,46,16],[17,152,122,4,153,123],[29,74,46,14,75,47],[49,54,24,10,55,25],[24,45,15,46,46,16],[4,152,122,18,153,123],[13,74,46,32,75,47],[48,54,24,14,55,25],[42,45,15,32,46,16],[20,147,117,4,148,118],[40,75,47,7,76,48],[43,54,24,22,55,25],[10,45,15,67,46,16],[19,148,118,6,149,119],[18,75,47,31,76,48],[34,54,24,34,55,25],[20,45,15,61,46,16]];
+
+      const QR_ALIGNMENT = [[],[6,18],[6,22],[6,26],[6,30],[6,34],[6,22,38],[6,24,42],[6,26,46],[6,28,50],[6,30,54],[6,32,58],[6,34,62],[6,26,46,66],[6,26,48,70],[6,26,50,74],[6,30,54,78],[6,30,56,82],[6,30,58,86],[6,34,62,90],[6,28,50,72,94],[6,26,50,74,98],[6,30,54,78,102],[6,28,54,80,106],[6,32,58,84,110],[6,30,58,86,114],[6,34,62,90,118],[6,26,50,74,98,122],[6,30,54,78,102,126],[6,26,52,78,104,130],[6,30,56,82,108,134],[6,34,60,86,112,138],[6,30,58,86,114,142],[6,34,62,90,118,146],[6,30,54,78,102,126,150],[6,24,50,76,102,128,154],[6,28,54,80,106,132,158],[6,32,58,84,110,136,162],[6,26,54,82,110,138,166],[6,30,58,86,114,142,170]];
+
+      const QR_LEVEL_INDEX = { L: 0, M: 1, Q: 2, H: 3 };
+      const QR_LEVEL_BITS = { L: 1, M: 0, Q: 3, H: 2 };
+
+      const GF_EXP = new Uint8Array(512);
+      const GF_LOG = new Uint8Array(256);
+
+      for (let i = 0, x = 1; i < 255; i++) {
+        GF_EXP[i] = x;
+        GF_LOG[x] = i;
+        x <<= 1;
+        if (x & 0x100) x ^= 0x11d;
+      }
+      for (let i = 255; i < 512; i++) GF_EXP[i] = GF_EXP[i - 255];
+
+      function gfMultiply(a, b) {
+        if (a === 0 || b === 0) return 0;
+        return GF_EXP[GF_LOG[a] + GF_LOG[b]];
+      }
+
+      function rsGenerator(count) {
+        let poly = [1];
+
+        for (let i = 0; i < count; i++) {
+          const next = new Array(poly.length + 1).fill(0);
+
+          for (let j = 0; j < poly.length; j++) {
+            next[j] ^= poly[j];
+            next[j + 1] ^= gfMultiply(poly[j], GF_EXP[i]);
+          }
+
+          poly = next;
+        }
+
+        return poly;
+      }
+
+      function rsRemainder(data, eccCount) {
+        const generator = rsGenerator(eccCount);
+        const remainder = new Array(eccCount).fill(0);
+
+        for (const byte of data) {
+          const factor = byte ^ remainder[0];
+          remainder.shift();
+          remainder.push(0);
+
+          for (let i = 0; i < eccCount; i++) {
+            remainder[i] ^= gfMultiply(generator[i + 1], factor);
+          }
+        }
+
+        return remainder;
+      }
+
+      function rsBlocksFor(version, level) {
+        const entry = QR_RS_BLOCKS[(version - 1) * 4 + QR_LEVEL_INDEX[level]];
+        const blocks = [];
+
+        for (let i = 0; i < entry.length; i += 3) {
+          const [count, total, dataCount] = [entry[i], entry[i + 1], entry[i + 2]];
+          for (let n = 0; n < count; n++) blocks.push({ total, dataCount });
+        }
+
+        return blocks;
+      }
+
+      function lengthBits(version) {
+        return version < 10 ? 8 : 16;
+      }
+
+      function capacityInBytes(version, level) {
+        return rsBlocksFor(version, level).reduce((sum, block) => sum + block.dataCount, 0);
+      }
+
+      function smallestVersion(byteLength, level) {
+        for (let version = 1; version <= 40; version++) {
+          const needed = 4 + lengthBits(version) + byteLength * 8;
+          if (needed <= capacityInBytes(version, level) * 8) return version;
+        }
+
+        throw new Error("conteúdo longo demais para um QR Code");
+      }
+
+      class BitBuffer {
+        constructor() {
+          this.bytes = [];
+          this.length = 0;
+        }
+
+        put(value, bits) {
+          for (let i = bits - 1; i >= 0; i--) this.putBit(((value >>> i) & 1) === 1);
+        }
+
+        putBit(bit) {
+          const index = Math.floor(this.length / 8);
+          if (this.bytes.length <= index) this.bytes.push(0);
+          if (bit) this.bytes[index] |= 0x80 >>> (this.length % 8);
+          this.length++;
+        }
+      }
+
+      function encodeData(bytes, version, level) {
+        const totalData = capacityInBytes(version, level);
+        const buffer = new BitBuffer();
+
+        buffer.put(4, 4);
+        buffer.put(bytes.length, lengthBits(version));
+        for (const byte of bytes) buffer.put(byte, 8);
+
+        if (buffer.length + 4 <= totalData * 8) buffer.put(0, 4);
+        while (buffer.length % 8 !== 0) buffer.putBit(false);
+
+        while (buffer.bytes.length < totalData) {
+          buffer.bytes.push(0xec);
+          if (buffer.bytes.length < totalData) buffer.bytes.push(0x11);
+        }
+
+        return buffer.bytes;
+      }
+
+      function interleave(dataBytes, version, level) {
+        const blocks = rsBlocksFor(version, level);
+        const data = [];
+        const ecc = [];
+        let offset = 0;
+
+        for (const block of blocks) {
+          const chunk = dataBytes.slice(offset, offset + block.dataCount);
+          offset += block.dataCount;
+          data.push(chunk);
+          ecc.push(rsRemainder(chunk, block.total - block.dataCount));
+        }
+
+        const result = [];
+        const maxData = Math.max(...data.map((b) => b.length));
+        const maxEcc = Math.max(...ecc.map((b) => b.length));
+
+        for (let i = 0; i < maxData; i++) {
+          for (const block of data) if (i < block.length) result.push(block[i]);
+        }
+        for (let i = 0; i < maxEcc; i++) {
+          for (const block of ecc) if (i < block.length) result.push(block[i]);
+        }
+
+        return result;
+      }
+
+      const BCH_G15 = 0b10100110111;
+      const BCH_G15_MASK = 0b101010000010010;
+      const BCH_G18 = 0b1111100100101;
+
+      function bchDigit(value) {
+        let digits = 0;
+        while (value !== 0) {
+          digits++;
+          value >>>= 1;
+        }
+        return digits;
+      }
+
+      function bchTypeInfo(data) {
+        let d = data << 10;
+        while (bchDigit(d) - bchDigit(BCH_G15) >= 0) d ^= BCH_G15 << (bchDigit(d) - bchDigit(BCH_G15));
+        return ((data << 10) | d) ^ BCH_G15_MASK;
+      }
+
+      function bchTypeNumber(data) {
+        let d = data << 12;
+        while (bchDigit(d) - bchDigit(BCH_G18) >= 0) d ^= BCH_G18 << (bchDigit(d) - bchDigit(BCH_G18));
+        return (data << 12) | d;
+      }
+
+      function maskAt(pattern, row, col) {
+        switch (pattern) {
+          case 0: return (row + col) % 2 === 0;
+          case 1: return row % 2 === 0;
+          case 2: return col % 3 === 0;
+          case 3: return (row + col) % 3 === 0;
+          case 4: return (Math.floor(row / 2) + Math.floor(col / 3)) % 2 === 0;
+          case 5: return ((row * col) % 2) + ((row * col) % 3) === 0;
+          case 6: return (((row * col) % 2) + ((row * col) % 3)) % 2 === 0;
+          case 7: return (((row * col) % 3) + ((row + col) % 2)) % 2 === 0;
+          default: throw new Error(`máscara inválida: ${pattern}`);
+        }
+      }
+
+      function buildMatrix(version, level, codewords, maskPattern, test) {
+        const size = version * 4 + 17;
+        const modules = Array.from({ length: size }, () => new Array(size).fill(null));
+
+        const drawFinder = (row, col) => {
+          for (let r = -1; r <= 7; r++) {
+            if (row + r < 0 || size <= row + r) continue;
+            for (let c = -1; c <= 7; c++) {
+              if (col + c < 0 || size <= col + c) continue;
+              const onBorder = (r >= 0 && r <= 6 && (c === 0 || c === 6)) ||
+                               (c >= 0 && c <= 6 && (r === 0 || r === 6));
+              const inCenter = r >= 2 && r <= 4 && c >= 2 && c <= 4;
+              modules[row + r][col + c] = onBorder || inCenter;
+            }
+          }
+        };
+
+        drawFinder(0, 0);
+        drawFinder(size - 7, 0);
+        drawFinder(0, size - 7);
+
+        const positions = QR_ALIGNMENT[version - 1];
+        for (const row of positions) {
+          for (const col of positions) {
+            if (modules[row][col] !== null) continue;
+            for (let r = -2; r <= 2; r++) {
+              for (let c = -2; c <= 2; c++) {
+                modules[row + r][col + c] = Math.abs(r) === 2 || Math.abs(c) === 2 || (r === 0 && c === 0);
+              }
+            }
+          }
+        }
+
+        for (let i = 8; i < size - 8; i++) {
+          if (modules[i][6] === null) modules[i][6] = i % 2 === 0;
+          if (modules[6][i] === null) modules[6][i] = i % 2 === 0;
+        }
+
+        const formatBits = bchTypeInfo((QR_LEVEL_BITS[level] << 3) | maskPattern);
+        for (let i = 0; i < 15; i++) {
+          const dark = !test && ((formatBits >> i) & 1) === 1;
+
+          if (i < 6) modules[i][8] = dark;
+          else if (i < 8) modules[i + 1][8] = dark;
+          else modules[size - 15 + i][8] = dark;
+
+          if (i < 8) modules[8][size - i - 1] = dark;
+          else if (i < 9) modules[8][15 - i - 1 + 1] = dark;
+          else modules[8][15 - i - 1] = dark;
+        }
+        modules[size - 8][8] = !test;
+
+        if (version >= 7) {
+          const versionBits = bchTypeNumber(version);
+          for (let i = 0; i < 18; i++) {
+            const dark = !test && ((versionBits >> i) & 1) === 1;
+            modules[Math.floor(i / 3)][(i % 3) + size - 8 - 3] = dark;
+            modules[(i % 3) + size - 8 - 3][Math.floor(i / 3)] = dark;
+          }
+        }
+
+        let inc = -1;
+        let row = size - 1;
+        let bitIndex = 7;
+        let byteIndex = 0;
+
+        for (let col = size - 1; col > 0; col -= 2) {
+          if (col === 6) col--;
+
+          for (;;) {
+            for (let c = 0; c < 2; c++) {
+              if (modules[row][col - c] !== null) continue;
+
+              let dark = byteIndex < codewords.length &&
+                         ((codewords[byteIndex] >>> bitIndex) & 1) === 1;
+
+              if (maskAt(maskPattern, row, col - c)) dark = !dark;
+
+              modules[row][col - c] = dark;
+              bitIndex--;
+
+              if (bitIndex === -1) {
+                byteIndex++;
+                bitIndex = 7;
+              }
+            }
+
+            row += inc;
+
+            if (row < 0 || size <= row) {
+              row -= inc;
+              inc = -inc;
+              break;
+            }
+          }
+        }
+
+        return modules;
+      }
+
+      function penalty(modules) {
+        const size = modules.length;
+        let score = 0;
+
+        for (let row = 0; row < size; row++) {
+          for (let col = 0; col < size; col++) {
+            let same = 0;
+            const dark = modules[row][col];
+
+            for (let r = -1; r <= 1; r++) {
+              if (row + r < 0 || size <= row + r) continue;
+              for (let c = -1; c <= 1; c++) {
+                if (col + c < 0 || size <= col + c) continue;
+                if (r === 0 && c === 0) continue;
+                if (dark === modules[row + r][col + c]) same++;
+              }
+            }
+
+            if (same > 5) score += 3 + same - 5;
+          }
+        }
+
+        for (let row = 0; row < size - 1; row++) {
+          for (let col = 0; col < size - 1; col++) {
+            let dark = 0;
+            if (modules[row][col]) dark++;
+            if (modules[row + 1][col]) dark++;
+            if (modules[row][col + 1]) dark++;
+            if (modules[row + 1][col + 1]) dark++;
+            if (dark === 0 || dark === 4) score += 3;
+          }
+        }
+
+        for (let row = 0; row < size; row++) {
+          for (let col = 0; col < size - 6; col++) {
+            if (modules[row][col] && !modules[row][col + 1] && modules[row][col + 2] &&
+                modules[row][col + 3] && modules[row][col + 4] && !modules[row][col + 5] &&
+                modules[row][col + 6]) score += 40;
+          }
+        }
+
+        for (let col = 0; col < size; col++) {
+          for (let row = 0; row < size - 6; row++) {
+            if (modules[row][col] && !modules[row + 1][col] && modules[row + 2][col] &&
+                modules[row + 3][col] && modules[row + 4][col] && !modules[row + 5][col] &&
+                modules[row + 6][col]) score += 40;
+          }
+        }
+
+        let darkCount = 0;
+        for (let col = 0; col < size; col++) {
+          for (let row = 0; row < size; row++) {
+            if (modules[row][col]) darkCount++;
+          }
+        }
+
+        const ratio = Math.abs((darkCount * 100) / (size * size) - 50) / 5;
+        return score + ratio * 10;
+      }
+
+      function utf8Bytes(text) {
+        return Array.from(new TextEncoder().encode(text));
+      }
+
+      function encodeQr(content, level = "H") {
+        const bytes = utf8Bytes(content);
+        const version = smallestVersion(bytes.length, level);
+        const codewords = interleave(encodeData(bytes, version, level), version, level);
+
+        let best = null;
+        let bestScore = Infinity;
+
+        for (let pattern = 0; pattern < 8; pattern++) {
+          const score = penalty(buildMatrix(version, level, codewords, pattern, true));
+
+          if (score < bestScore) {
+            bestScore = score;
+            best = pattern;
+          }
+        }
+
+        return { version, level, modules: buildMatrix(version, level, codewords, best, false), mask: best };
+      }
+
+      const PDF_PAGE = { width: 595, height: 842 };
+
+      function pdfText(value) {
+        return String(value)
+          .replace(/[—–]/g, "-")
+          .replace(/[“”]/g, '"')
+          .replace(/[‘’]/g, "'")
+          .replace(/…/g, "...")
+          .replace(/[^\x00-\xff]/g, "")
+          .replace(/[\\()]/g, (char) => `\\${char}`);
+      }
+
+      function pdfLine(text, size, y, { bold = false } = {}) {
+        return `BT /${bold ? "F2" : "F1"} ${size} Tf 1 0 0 1 56 ${y} Tm (${pdfText(text)}) Tj ET\n`;
+      }
+
+      function buildPdf(matrix, accreditation) {
+        const drawing = 300;
+        const modules = matrix.length + QR_QUIET_ZONE * 2;
+        const unit = drawing / modules;
+        const left = (PDF_PAGE.width - drawing) / 2;
+        const bottom = PDF_PAGE.height - 190 - drawing;
+
+        let stream = "1 1 1 rg\n";
+        stream += `${left} ${bottom} ${drawing} ${drawing} re f\n`;
+        stream += "0 0 0 rg\n";
+
+        for (const run of darkRuns(matrix)) {
+          const x = left + (run.x + QR_QUIET_ZONE) * unit;
+          const y = bottom + drawing - (run.y + QR_QUIET_ZONE + 1) * unit;
+          stream += `${x.toFixed(2)} ${y.toFixed(2)} ${(run.width * unit).toFixed(2)} ${unit.toFixed(2)} re f\n`;
+        }
+
+        stream += pdfLine("Credencial de acesso", 22, PDF_PAGE.height - 90, { bold: true });
+        stream += pdfLine(accreditation.name, 14, PDF_PAGE.height - 118);
+        stream += pdfLine(formatDay(accreditation.attends_on), 12, PDF_PAGE.height - 140, { bold: true });
+        stream += pdfLine("Apresente este código na entrada do evento.", 10, bottom - 40);
+        stream += pdfLine(`Token: ${accreditation.qr_code.token}`, 8, bottom - 62);
+        stream += pdfLine("Válido para uma única entrada, apenas na data acima.", 8, bottom - 78);
+
+        const objects = [
+          "<< /Type /Catalog /Pages 2 0 R >>",
+          "<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
+          `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${PDF_PAGE.width} ${PDF_PAGE.height}] ` +
+            "/Resources << /Font << /F1 5 0 R /F2 6 0 R >> >> /Contents 4 0 R >>",
+          `<< /Length ${stream.length} >>\nstream\n${stream}endstream`,
+          "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>",
+          "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>"
+        ];
+
+        let pdf = "%PDF-1.4\n";
+        const offsets = [];
+
+        objects.forEach((body, index) => {
+          offsets.push(pdf.length);
+          pdf += `${index + 1} 0 obj\n${body}\nendobj\n`;
+        });
+
+        const startxref = pdf.length;
+        pdf += `xref\n0 ${objects.length + 1}\n0000000000 65535 f \n`;
+        pdf += offsets.map((offset) => `${String(offset).padStart(10, "0")} 00000 n \n`).join("");
+        pdf += `trailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${startxref}\n%%EOF\n`;
+
+        const bytes = Uint8Array.from(pdf, (char) => char.charCodeAt(0) & 0xff);
+        return new Blob([bytes], { type: "application/pdf" });
+      }
+
+      function downloadBlob(content, filename, type) {
+        const blob = content instanceof Blob ? content : new Blob([content], { type });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+
+        link.href = url;
+        link.download = filename;
+        link.click();
+
+        URL.revokeObjectURL(url);
+      }
+    })();
+    </script>
+
+    <script src="assets/qr.js?v=202611101951"></script>
+    <script src="assets/kit.js?v=202611101951"></script>
+  </body>
+
+</html>
