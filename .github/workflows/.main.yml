@@ -113,6 +113,7 @@ jobs:
           **/.git*
           **/.git*/**
           **/node_modules/**
+          .claude/**
           api/storage/leads/**
           api/storage/ratelimit/**
           api/storage/integrations/**
