@@ -455,6 +455,10 @@ cwebp -q 76 -resize 1600 0 -m 6 imagem.png -o imagem.webp
 - `loading="lazy"` e `decoding="async"` nas imagens de conteúdo
 - `width`/`height` declarados para evitar layout shift
 - Cache de longo prazo e compressão configurados no `.htaccess`
+- CSS e JS próprios têm cache `immutable` de 1 ano: todo `<link>`/`<script>` local
+  leva `?v=N`. **Ao editar o arquivo, incremente o `?v=` em todos os HTMLs que o
+  carregam** (`grep -rn "main.js?v=" --include=*.html .`), senão quem já visitou o
+  site continua com a versão antiga
 - `background-attachment: fixed` desativado no mobile
 
 ---
