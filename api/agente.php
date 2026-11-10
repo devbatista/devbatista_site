@@ -24,7 +24,9 @@ if ($page === '') {
     $page = 'index';
 }
 
-$file = preg_match('/\A[a-z0-9-]+\z/', $page) ? $root . '/' . $page . '.html' : '';
+// Páginas da raiz (sobre) e posts do blog (blog/slug, blog/index). Nada além
+// disso: o padrão fechado impede subir de pasta (../) ou ler outro arquivo.
+$file = preg_match('/\A(?:blog\/)?[a-z0-9-]+\z/', $page) ? $root . '/' . $page . '.html' : '';
 $found = $file !== '' && is_file($file);
 $blocked = ($_GET['bloqueado'] ?? '') === '1';
 $method = (string) ($_SERVER['REQUEST_METHOD'] ?? 'GET');

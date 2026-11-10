@@ -2,62 +2,98 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://www.devbatista.com/</loc>
+    <lastmod>2026-11-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://www.devbatista.com/solucoes</loc>
+    <lastmod>2026-11-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://www.devbatista.com/tech-partner</loc>
+    <lastmod>2026-11-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://www.devbatista.com/para-agencias</loc>
+    <lastmod>2026-11-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.devbatista.com/produtos</loc>
+    <lastmod>2026-11-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.devbatista.com/projetos</loc>
+    <lastmod>2026-11-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.devbatista.com/sobre</loc>
+    <lastmod>2026-11-10</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.devbatista.com/contato</loc>
+    <lastmod>2026-11-10</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.devbatista.com/faq</loc>
+    <lastmod>2026-11-10</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://www.devbatista.com/sua-empresa-esta-perdendo-dinheiro-com-a-ti-sem-perceber</loc>
+    <lastmod>2026-11-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.devbatista.com/politica-de-privacidade</loc>
+    <lastmod>2026-11-10</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
     <loc>https://www.devbatista.com/termos-de-uso</loc>
+    <lastmod>2026-11-10</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
+
+  <!-- TODO: páginas com noindex até a revisão do texto provisório. Ao publicar
+       cada uma (robots = index), descomente a <url> e atualize o <lastmod>.
+  <url>
+    <loc>https://www.devbatista.com/sistemas-web-sob-medida</loc>
+    <lastmod>AAAA-MM-DD</lastmod>
+  </url>
+  <url>
+    <loc>https://www.devbatista.com/integracoes-entre-plataformas</loc>
+    <lastmod>AAAA-MM-DD</lastmod>
+  </url>
+  <url>
+    <loc>https://www.devbatista.com/automacao-whatsapp</loc>
+    <lastmod>AAAA-MM-DD</lastmod>
+  </url>
+  <url>
+    <loc>https://www.devbatista.com/servidores-mcp</loc>
+    <lastmod>AAAA-MM-DD</lastmod>
+  </url>
+  <url>
+    <loc>https://www.devbatista.com/blog/</loc>
+    <lastmod>AAAA-MM-DD</lastmod>
+  </url>
+  -->
 </urlset>

@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DevBatista | Consultoria e Soluções em Tecnologia para Empresas</title>
-  <meta name="description" content="Consultoria de TI, desenvolvimento de software sob medida, automação de processos e inteligência artificial para empresas. Projetos pontuais ou parceria tecnológica contínua.">
+  <title>DevBatista | Consultoria e Tecnologia para Empresas</title>
+  <meta name="description" content="Consultoria de TI, software sob medida, automação de processos e inteligência artificial para empresas. Projetos pontuais ou parceria tecnológica contínua.">
   <meta name="author" content="DevBatista">
   <meta name="robots" content="index, follow, max-image-preview:large">
 
@@ -26,7 +26,7 @@
   <meta property="og:type" content="website">
   <meta property="og:title" content="DevBatista | Consultoria e Soluções em Tecnologia">
   <meta property="og:description" content="Somos o parceiro de tecnologia da sua empresa: consultoria, software sob medida, automação e IA.">
-  <meta property="og:image" content="https://www.devbatista.com/images/og-image.jpg">
+  <meta property="og:image" content="https://www.devbatista.com/images/og-cover.jpg">
   <meta property="og:image:alt" content="DevBatista - Consultoria e Soluções em Tecnologia">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -38,7 +38,7 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="DevBatista | Consultoria e Soluções em Tecnologia">
   <meta name="twitter:description" content="Somos o parceiro de tecnologia da sua empresa: consultoria, software sob medida, automação e IA.">
-  <meta name="twitter:image" content="https://www.devbatista.com/images/og-image.jpg">
+  <meta name="twitter:image" content="https://www.devbatista.com/images/og-cover.jpg">
   <meta name="twitter:site" content="@devbatista">
 
   <script type="application/ld+json">
@@ -65,8 +65,11 @@
       "areaServed": { "@type": "Country", "name": "Brasil" },
       "founder": {
         "@type": "Person",
+        "@id": "https://www.devbatista.com/sobre#rafael-batista",
         "name": "Rafael Batista",
-        "jobTitle": "Founder & Technology Consultant"
+        "jobTitle": "Founder & Technology Consultant",
+        "url": "https://www.devbatista.com/sobre",
+        "sameAs": ["https://www.linkedin.com/in/rbatist10"]
       },
       "knowsAbout": [
         "Consultoria de TI",
@@ -215,7 +218,13 @@
           </div>
 
           <div class="hero-ed-visual fade-up-2" aria-hidden="true">
-            <img src="/images/og-image.jpg" alt="" width="1536" height="1024" fetchpriority="high" decoding="async">
+            <picture style="display: contents">
+              <!-- Abaixo de 1024px o .hero-ed-visual fica escondido: o GIF vazio evita baixar a imagem no celular. -->
+              <source media="(max-width: 1023px)" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
+              <source srcset="/images/hero-home.avif" type="image/avif">
+              <source srcset="/images/hero-home.webp" type="image/webp">
+              <img src="/images/og-image.jpg" alt="" width="1440" height="960" fetchpriority="high" decoding="async">
+            </picture>
           </div>
         </div>
       </div>
@@ -796,10 +805,13 @@
 
         <div>
           <h2 class="footer-heading">Soluções</h2>
+          <a href="/sistemas-web-sob-medida" class="footer-link">Sistemas web sob medida</a>
+          <a href="/integracoes-entre-plataformas" class="footer-link">Integrações entre plataformas</a>
+          <a href="/automacao-whatsapp" class="footer-link">Automação no WhatsApp</a>
+          <a href="/servidores-mcp" class="footer-link">Servidores MCP para IA</a>
           <a href="/solucoes#consultoria" class="footer-link">Consultoria de TI</a>
           <a href="/solucoes#software" class="footer-link">Desenvolvimento de Software</a>
           <a href="/solucoes#automacao-ia" class="footer-link">Automação e IA</a>
-          <a href="/solucoes#integracoes" class="footer-link">Integrações e APIs</a>
           <a href="/solucoes#aplicativos" class="footer-link">Aplicativos</a>
           <a href="/solucoes#sites" class="footer-link">Sites e Landing Pages</a>
         </div>
@@ -821,6 +833,9 @@
           <a href="/projetos" class="footer-link">Projetos</a>
           <a href="/faq" class="footer-link">Perguntas frequentes</a>
           <a href="/contato" class="footer-link">Contato</a>
+          <a href="/sua-empresa-esta-perdendo-dinheiro-com-a-ti-sem-perceber" class="footer-link">E-book gratuito</a>
+          <a href="/politica-de-privacidade" class="footer-link">Política de Privacidade</a>
+          <a href="/termos-de-uso" class="footer-link">Termos de Uso</a>
         </div>
       </div>
 
@@ -837,7 +852,7 @@
     <span>WhatsApp</span>
   </a>
 
-  <script src="/js/main.js" defer></script>
+  <script src="/js/main.js?v=2" defer></script>
   <script src="/js/lead-quiz.js?v=1" defer></script>
   <script src="/js/visitas.js?v=1" defer></script>
 </body>

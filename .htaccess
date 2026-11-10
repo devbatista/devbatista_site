@@ -29,8 +29,11 @@ DirectoryIndex index.html
   RewriteRule ^$ api/agente.php?pagina=&bloqueado=1 [L]
 
   RewriteCond %{ENV:DEVBATISTA_BLOQUEADO} =1
+  RewriteRule ^blog/$ api/agente.php?pagina=blog/index&bloqueado=1 [L]
+
+  RewriteCond %{ENV:DEVBATISTA_BLOQUEADO} =1
   RewriteCond %{REQUEST_FILENAME}.html -f
-  RewriteRule ^([a-z0-9-]+)$ api/agente.php?pagina=$1&bloqueado=1 [L]
+  RewriteRule ^((?:blog/)?[a-z0-9-]+)$ api/agente.php?pagina=$1&bloqueado=1 [L]
 
   RewriteCond %{ENV:DEVBATISTA_BLOQUEADO} =1
   RewriteRule ^ - [F,L]
@@ -50,20 +53,38 @@ DirectoryIndex index.html
   RewriteRule ^ https://www.devbatista.com%{REQUEST_URI} [R=301,L]
 
   # ----------------------------------------------------------------------
-  # 2. Redireciona /pagina.html -> /pagina  (301, preserva o SEO)
-  #    Só para requisições externas reais, nunca para rewrites internos.
+  # 2. Endereços antigos
+  #    /servicos virou /solucoes. 301 de verdade (o servicos.html com
+  #    meta refresh respondia 200 e o Google o tratava como página própria).
+  # ----------------------------------------------------------------------
+  RewriteCond %{ENV:REDIRECT_STATUS} ^$
+  RewriteRule ^servicos(\.html)?/?$ /solucoes [R=301,L]
+
+  # ----------------------------------------------------------------------
+  # 3. Remove index / index.html (raiz e pastas, como /blog/) num salto só
+  #    Antes, /index.html ia para /index e só depois para /.
+  # ----------------------------------------------------------------------
+  RewriteCond %{ENV:REDIRECT_STATUS} ^$
+  RewriteRule ^(.*/)?index(\.html)?$ /$1 [R=301,L]
+
+  # ----------------------------------------------------------------------
+  # 3a. Redireciona /pagina.html -> /pagina  (301, preserva o SEO)
+  #     Só para requisições externas reais, nunca para rewrites internos.
   # ----------------------------------------------------------------------
   RewriteCond %{ENV:REDIRECT_STATUS} ^$
   RewriteRule ^(.+)\.html$ /$1 [R=301,L]
 
   # ----------------------------------------------------------------------
-  # 3. Remove index / index.html da raiz
+  # 3b. Remove barra final de URLs que não são diretórios (/sobre/ -> /sobre)
+  #     Precisa vir antes da regra 4: lá o padrão aceita a barra e servia
+  #     /sobre/ com 200, uma cópia de /sobre.
   # ----------------------------------------------------------------------
   RewriteCond %{ENV:REDIRECT_STATUS} ^$
-  RewriteRule ^index$ / [R=301,L]
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^(.+)/$ /$1 [R=301,L]
 
   # ----------------------------------------------------------------------
-  # 3b. Robôs e agentes de IA: a página passa pelo api/agente.php, que
+  # 3c. Robôs e agentes de IA: a página passa pelo api/agente.php, que
   #     entrega o mesmo HTML e avisa o Admin (Visitas do site → Acessos de
   #     IA). Robô não roda JavaScript, então o js/visitas.js não o vê.
   #     Pessoas não passam por aqui: recebem o HTML estático, como sempre.
@@ -81,21 +102,19 @@ DirectoryIndex index.html
   RewriteRule ^$ api/agente.php?pagina= [L]
 
   RewriteCond %{ENV:DEVBATISTA_AGENTE} =1
+  RewriteRule ^blog/$ api/agente.php?pagina=blog/index [L]
+
+  RewriteCond %{ENV:DEVBATISTA_AGENTE} =1
   RewriteCond %{REQUEST_FILENAME}.html -f
-  RewriteRule ^([a-z0-9-]+)$ api/agente.php?pagina=$1 [L]
+  RewriteRule ^((?:blog/)?[a-z0-9-]+)$ api/agente.php?pagina=$1 [L]
 
   # ----------------------------------------------------------------------
   # 4. Serve /pagina a partir de pagina.html (rewrite interno, sem redirect)
+  #    Vale também para /blog/slug-do-post -> blog/slug-do-post.html.
   # ----------------------------------------------------------------------
   RewriteCond %{REQUEST_FILENAME} !-d
   RewriteCond %{REQUEST_FILENAME}\.html -f
-  RewriteRule ^(.+?)/?$ $1.html [L]
-
-  # ----------------------------------------------------------------------
-  # 5. Remove barra final de URLs que não são diretórios (/sobre/ -> /sobre)
-  # ----------------------------------------------------------------------
-  RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteRule ^(.+)/$ /$1 [R=301,L]
+  RewriteRule ^(.+)$ $1.html [L]
 </IfModule>
 
 # ==========================================================================
@@ -121,6 +140,7 @@ ErrorDocument 404 /404.html
   ExpiresByType text/css                "access plus 1 year"
   ExpiresByType application/javascript  "access plus 1 year"
   ExpiresByType image/webp              "access plus 1 year"
+  ExpiresByType image/avif              "access plus 1 year"
   ExpiresByType image/png               "access plus 1 year"
   ExpiresByType image/jpeg              "access plus 1 year"
   ExpiresByType image/x-icon            "access plus 1 year"
@@ -129,7 +149,7 @@ ErrorDocument 404 /404.html
 </IfModule>
 
 <IfModule mod_headers.c>
-  <FilesMatch "\.(css|js|webp|png|jpe?g|ico|svg|woff2?)$">
+  <FilesMatch "\.(css|js|webp|avif|png|jpe?g|ico|svg|woff2?)$">
     Header set Cache-Control "public, max-age=31536000, immutable"
   </FilesMatch>
   <FilesMatch "\.html$">
@@ -147,5 +167,6 @@ ErrorDocument 404 /404.html
 # ==========================================================================
 <IfModule mod_mime.c>
   AddType image/webp .webp
+  AddType image/avif .avif
   AddType application/manifest+json .webmanifest
 </IfModule>
