@@ -54,7 +54,11 @@ Preços não são exibidos em nenhuma página.
 ```
 .
 ├── index.html            # Home
-├── solucoes.html         # Soluções (consultoria, software, automação e IA)
+├── solucoes.html         # Soluções: página central, linka as 4 páginas de serviço
+├── sistemas-web-sob-medida.html       # Serviço (noindex até revisar o texto)
+├── integracoes-entre-plataformas.html # Serviço (noindex até revisar o texto)
+├── automacao-whatsapp.html            # Serviço (noindex até revisar o texto)
+├── servidores-mcp.html                # Serviço (noindex até revisar o texto)
 ├── tech-partner.html     # Tech Partner + CTO as a Service + IA gerenciada
 ├── para-agencias.html    # Parceria para agências e software houses
 ├── produtos.html         # Produtos próprios (SaaS) + cases
@@ -62,7 +66,8 @@ Preços não são exibidos em nenhuma página.
 ├── sobre.html            # Sobre a empresa e o fundador
 ├── contato.html          # Canais e briefing → WhatsApp
 ├── faq.html              # Perguntas frequentes (com schema FAQPage)
-├── servicos.html         # Redirecionamento legado → /solucoes
+├── blog/index.html       # Blog (/blog/), noindex até o primeiro post
+├── templates/            # Modelo de post + LEIA-ME (fora do deploy)
 ├── 404.html              # Página de erro
 ├── .htaccess             # URLs limpas, canonicalização, cache, compressão
 ├── sitemap.xml
@@ -98,6 +103,9 @@ resolvidas pelo `.htaccess` via Apache:
 - `/pagina.html` → **301** → `/pagina`
 - `/pagina` → serve `pagina.html` (rewrite interno, sem redirect)
 - `/pagina/` → **301** → `/pagina`
+- `/index.html`, `/index` → **301** → `/` (num salto só; vale para `/blog/index`)
+- `/servicos` → **301** → `/solucoes` (endereço antigo)
+- `/blog/` serve `blog/index.html`; `/blog/slug` serve `blog/slug.html`
 - `devbatista.com` e `http://` → **301** → `https://www.devbatista.com`
 
 Os arquivos continuam sendo `.html` no disco. Os links internos, os `canonical`
@@ -398,10 +406,10 @@ pessoa  → página estática → js/visitas.js → POST /api/v.php ──┐
 robô/IA → .htaccess → api/agente.php (mesmo HTML, ou 403) ────┴→ Admin /webhooks/site-visits
 ```
 
-- **Pessoas.** `js/visitas.js` (em todas as páginas, menos `servicos.html`)
+- **Pessoas.** `js/visitas.js` (em todas as páginas)
   manda a página vista e, na saída, o tempo visível. Sem cookie: o Admin
   calcula um visitante anônimo que muda todo dia e não guarda IP.
-- **Robôs e agentes de IA** não rodam JavaScript. A regra **3b** do `.htaccess`
+- **Robôs e agentes de IA** não rodam JavaScript. A regra **3c** do `.htaccess`
   manda as páginas pedidas por eles (user agent de bot/IA ou header
   `Signature-Agent`) ao `api/agente.php`, que entrega o mesmo HTML e avisa o
   Admin. Googlebot, Bingbot e os outros buscadores comuns ficam de fora.
@@ -441,9 +449,19 @@ cwebp -q 76 -resize 1600 0 -m 6 imagem.png -o imagem.webp
 - `<title>` e `meta description` próprios por página
 - Open Graph e Twitter Card
 - `canonical` em todas as páginas (URLs limpas, domínio `www`)
+- `<title>` com até 60 caracteres e `meta description` com até 155
 - Dados estruturados JSON-LD: `ProfessionalService`, `WebSite`, `OfferCatalog`,
-  `Service`, `ItemList`, `SoftwareApplication`, `ContactPage`, `FAQPage`
-- `sitemap.xml` e `robots.txt`
+  `Service`, `ItemList`, `SoftwareApplication`, `ContactPage`, `FAQPage`,
+  `BreadcrumbList`, `Book`, `Blog` e `BlogPosting` (modelo)
+- O fundador é um `Person` com `@id` `https://www.devbatista.com/sobre#rafael-batista`
+  (o mesmo `id` do card em `/sobre`), `url` e `sameAs` com o LinkedIn. Reutilize esse
+  `@id` como autor em posts e materiais
+- Imagem de compartilhamento: `images/og-cover.jpg` (1200x630). WebP também existe,
+  mas `og:image` fica em JPEG por compatibilidade com WhatsApp e LinkedIn
+- `sitemap.xml` (manual, com `<lastmod>`) e `robots.txt`. Ao criar ou alterar uma
+  página pública, atualize o `<lastmod>` dela
+- Páginas com texto provisório saem com `noindex` e ficam comentadas no sitemap.
+  Para achar o que falta revisar: `grep -rn "TODO" --include=*.html .`
 - Hierarquia de headings com um único `<h1>` por página
 
 ---
