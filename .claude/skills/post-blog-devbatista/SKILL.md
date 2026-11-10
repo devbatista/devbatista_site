@@ -57,14 +57,19 @@ O objetivo é escrever algo **mais útil e mais concreto** que o que já existe,
 
 ## 6. Arquivos e SEO técnico
 
-1. Crie `blog/<slug>.html` copiando a estrutura do post mais recente em `blog/` (head, menu, rodapé, scripts, versões `?v=` dos CSS/JS). Se ainda não houver post, use `blog/index.html` como base de layout. Não altere CSS/JS globais.
+1. Crie `blog/<slug>.html` a partir de `templates/blog-post.html` (o modelo de post, com head, menu, rodapé, scripts, JSON-LD e estrutura do artigo) e siga o passo a passo de `templates/LEIA-ME.md`. **Nunca use `blog/index.html` como base**: ele tem `noindex` enquanto o blog não tem post, e o post herdaria. Se o menu, o rodapé ou as versões `?v=` do modelo estiverem diferentes das páginas do site (compare com o post mais recente em `blog/` ou com `/solucoes`), use os das páginas, que são os atuais. Não altere CSS/JS globais.
 2. Slug: minúsculo, sem acento, palavras separadas por hífen, curto, com a palavra-chave. URL final: `https://www.devbatista.com/blog/<slug>`.
 3. `<title>` até 60 caracteres (terminando em `| DevBatista` se couber), `meta description` até 155, ambos únicos.
 4. `canonical`, Open Graph e Twitter Card completos, `og:type` = `article`.
-5. JSON-LD `BlogPosting` com `headline`, `description`, `datePublished` e `dateModified` (data de hoje, AAAA-MM-DD), `inLanguage: pt-BR`, `mainEntityOfPage`, `author` referenciando o Person do Rafael e `publisher` referenciando `https://www.devbatista.com/#organizacao` (confira os `@id` reais usados nas outras páginas e use os mesmos). Inclua `BreadcrumbList` (Início > Blog > post). Se houver seção de FAQ, inclua `FAQPage`.
+5. JSON-LD `BlogPosting` com `headline`, `description`, `datePublished` e `dateModified` (data de hoje, AAAA-MM-DD), `inLanguage: pt-BR`, `mainEntityOfPage`, `author` = o Person do Rafael (`@id` `https://www.devbatista.com/sobre#rafael-batista`, com `url` e `sameAs` do LinkedIn, já preenchidos no modelo) e `publisher` = `https://www.devbatista.com/#organizacao`, além de `isPartOf` apontando para `https://www.devbatista.com/blog/#blog` (confira nas outras páginas se esses `@id` continuam os mesmos). Inclua `BreadcrumbList` (Início > Blog > post). Se houver seção de FAQ, inclua `FAQPage`.
 6. Imagens: só se agregarem (diagrama, print ilustrativo). Em WebP, com `width`, `height`, `alt` e `loading="lazy"`. Não use foto de pessoa real tirada da web.
-7. Atualize `blog/index.html` (card do post no topo da listagem) e `sitemap.xml` (nova URL, com `<lastmod>` se o sitemap usar).
-8. Valide antes de commitar: HTML sem tags quebradas, JSON-LD com JSON válido (parse com Python ou Node), contagem de caracteres de title/description, links internos apontando para arquivos que existem.
+7. Atualize `blog/index.html`: card do post no topo da listagem (há um modelo comentado no arquivo) e um item em `"blogPost"` no JSON-LD do `Blog`. Atualize `sitemap.xml`: nova URL com `<lastmod>` do dia.
+8. **Se for o primeiro post do blog** (não há outro `blog/*.html` além do `index.html`), faça também, no mesmo PR, o passo 6 do `templates/LEIA-ME.md`:
+   - em `blog/index.html`, troque o `noindex, follow` por `index, follow, max-image-preview:large` e remova o card "Primeiros artigos em breve";
+   - em `sitemap.xml`, descomente a `<url>` de `/blog/` e preencha o `<lastmod>`;
+   - adicione o link "Blog" (`/blog/`) no menu (desktop e mobile) e na coluna "Empresa" do rodapé de **todas** as páginas, inclusive as do blog.
+   Diga isso no corpo do PR, porque o merge publica o blog inteiro, não só o post.
+9. Valide antes de commitar: HTML sem tags quebradas, JSON-LD com JSON válido (parse com Python ou Node), contagem de caracteres de title/description, links internos apontando para arquivos que existem, e `grep -n "TODO" blog/<slug>.html` retornando **só** os seus marcadores `TODO RAFAEL` / `[TODO: ...]` (nenhum `TODO` do modelo pode sobrar). Confira também que o post tem `index, follow` no `robots`.
 
 ## 7. Pauta
 
