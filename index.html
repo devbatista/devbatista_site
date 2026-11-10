@@ -218,7 +218,13 @@
           </div>
 
           <div class="hero-ed-visual fade-up-2" aria-hidden="true">
-            <img src="/images/og-image.jpg" alt="" width="1536" height="1024" fetchpriority="high" decoding="async">
+            <picture style="display: contents">
+              <!-- Abaixo de 1024px o .hero-ed-visual fica escondido: o GIF vazio evita baixar a imagem no celular. -->
+              <source media="(max-width: 1023px)" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
+              <source srcset="/images/hero-home.avif" type="image/avif">
+              <source srcset="/images/hero-home.webp" type="image/webp">
+              <img src="/images/og-image.jpg" alt="" width="1440" height="960" fetchpriority="high" decoding="async">
+            </picture>
           </div>
         </div>
       </div>
