@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>CatalystOps · Preview</title>
+<meta name="description" content="Demonstração navegável do painel do CatalystOps para empresas de serviços técnicos, com dados fictícios.">
+<link rel="icon" href="assets/img/favicon-32x32.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/app.css?v=2bb798c8cb">
+</head>
+<body>
+  <div class="pv-banner" role="note"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0zM12 9v4M12 17h.01"/></svg><span class="pv-long"><b>Ambiente de demonstração:</b> todos os dados são fictícios e servem apenas para apresentar o sistema.</span><span class="pv-short"><b>Demonstração:</b> dados fictícios</span></div>
+  <div class="wrapper">
+    <div id="sidebar" data-turbo-permanent="" data-controller="scrollbar" class="sidebar-wrapper js-perfect-scrollbar">
+  <div class="sidebar-header">
+    <div>
+      <img class="logo-icon" alt="logo icon" src="assets/img/logo-img.png">
+    </div>
+  </div>
+  
+  <ul class="metismenu" id="menu" style="position: relative; z-index: 10;">
+    <li id="onboarding-tour-dashboard-menu" class="list-group-item">
+      <a href="#/">
+      <div class="parent-icon"><i class="bx bx-home-alt"></i></div>
+      <div class="menu-title">Dashboard</div>
+</a>    </li>
+
+    <li id="onboarding-tour-clients-menu" class="list-group-item">
+      <a href="#/clients">
+      <div class="parent-icon"><i class="bx bx-user"></i></div>
+      <div class="menu-title">Clientes</div>
+</a>    </li>
+
+    <li id="onboarding-tour-budgets-menu" class="list-group-item">
+      <a href="#/budgets">
+      <div class="parent-icon"><i class="bx bx-receipt"></i></div>
+      <div class="menu-title">Orçamentos</div>
+</a>    </li>
+
+    <li id="onboarding-tour-technicians-menu" class="list-group-item">
+      <a href="#/technicians">
+      <div class="parent-icon"><i class="bx bx-run"></i></div>
+      <div class="menu-title">Técnicos</div>
+</a>    </li>
+
+    <li id="onboarding-tour-order-services-menu" class="list-group-item">
+      <a href="#/order_services">
+      <div class="parent-icon"><i class="bx bx-edit"></i></div>
+      <div class="menu-title">Ordens de Serviço</div>
+</a>    </li>
+
+    <li id="onboarding-tour-reports-menu" class="list-group-item">
+      <a href="#/reports">
+      <div class="parent-icon"><i class="bx bx-file"></i></div>
+      <div class="menu-title">Relatórios</div>
+</a>    </li>
+
+    <li id="onboarding-tour-financial-menu" class="list-group-item">
+      <a href="#/financial">
+      <div class="parent-icon"><i class="bx bx-line-chart"></i></div>
+      <div class="menu-title">Financeiro</div>
+</a>    </li>
+    
+    <li id="onboarding-tour-calendar-menu" class="list-group-item">
+      <a href="#/calendar">
+      <div class="parent-icon"><i class="bx bx-calendar"></i></div>
+      <div class="menu-title">Calendário</div>
+</a>    </li>
+
+    <li id="onboarding-tour-configurations-menu" class="list-group-item">
+      <a href="#/configurations">
+      <div class="parent-icon"><i class="bx bx-wrench"></i></div>
+      <div class="menu-title">Configuração</div>
+</a>    </li>
+
+    <li id="onboarding-tour-support-menu" class="list-group-item">
+      <a href="javascript:;" class="has-arrow">
+        <div class="parent-icon"><i class="bx bx-support"></i></div>
+        <div class="menu-title">Suporte</div>
+      </a>
+      <ul>
+          <li>
+            <a href="#/support">
+              <i class="bx bx-home-circle"></i>Visão geral
+</a>          </li>
+          <li>
+            <a href="#/support?section=tickets">
+              <i class="bx bx-conversation"></i>Tickets
+</a>          </li>
+          <li>
+            <a href="#/support?section=knowledge_base">
+              <i class="bx bx-book-open"></i>Base de conhecimento
+</a>          </li>
+          <li>
+            <a href="#/support?section=suggestions">
+              <i class="bx bx-bulb"></i>Sugestões
+</a>          </li>
+          <li>
+            <a href="#/support?section=quick_contact">
+              <i class="bx bx-envelope"></i>Contato rápido
+</a>          </li>
+      </ul>
+    </li>
+    
+    <li class="list-group-item">
+      <a class="js-logout" href="#" data-off="action">
+      <div class="parent-icon"><i class="bx bx-log-out"></i></div>
+      <div class="menu-title">Logout</div>
+</a>    </li>
+  </ul>
+  
+    <div class="sidebar-footer text-center mt-4 mb-2" style="font-size: 0.95em; color: #888;">
+      <hr>
+        <span>
+          Plano atual: <strong>Enterprise</strong>
+        </span>
+    </div>
+</div>
+    <header>
+  <div class="topbar d-flex align-items-center">
+    <nav class="navbar navbar-expand gap-3">
+      <div class="mobile-toggle-menu"><i class="bx bx-menu"></i>
+      </div>
+
+      <div class="top-menu ms-auto">
+      </div>
+      <div class="user-box dropdown px-3">
+        <div class="user-info">
+          <p class="user-name mb-0">Mércia Sais</p>
+          <p class="designattion mb-0">gestor</p>
+        </div>
+      </div>
+    </nav>
+  </div>
+</header>
+    <div id="pv-content"><div class="page-wrapper"><div class="page-content">Carregando…</div></div></div>
+  </div>
+  <footer class="page-footer">
+  <p class="mb-0">Copyright © 2026. Todos os direitos reservados.</p>
+</footer>
+  <div class="pv-toast" role="status" aria-live="polite" data-toast></div>
+  <script>window.PREVIEW_CONFIG={"area":"app","title":"CatalystOps","now":"2026-08-21T10:00:00-03:00","allowed":["page","status","section","category","approval_state","os_status","report_source","group_by","client_id","technician_id","document_type","tab","period"],"lazy":{"calendar":["assets/js/main.min.js","assets/js/locales-all.min.js"]}};</script>
+  <script src="assets/pages.js?v=2bb798c8cb"></script>
+  <script src="assets/js/jquery.min.js?v=2bb798c8cb"></script>
+  <script src="assets/js/bootstrap.bundle.min.js?v=2bb798c8cb"></script>
+  <script src="assets/js/metisMenu.min.js?v=2bb798c8cb"></script>
+  <script src="assets/js/perfect-scrollbar.js?v=2bb798c8cb"></script>
+  <script src="assets/js/chart.js?v=2bb798c8cb"></script>
+  <script src="assets/js/select2.min.js?v=2bb798c8cb"></script>
+  <script src="assets/app.js?v=2bb798c8cb"></script>
+</body>
+</html>
