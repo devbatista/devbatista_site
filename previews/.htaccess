@@ -1,4 +1,0 @@
-# Área de previews: não indexar em buscadores nem usar em IA
-<IfModule mod_headers.c>
-  Header always set X-Robots-Tag "noindex, nofollow, noarchive, nosnippet, noimageindex, noai, noimageai"
-</IfModule>
