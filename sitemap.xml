@@ -73,6 +73,19 @@
     <priority>0.3</priority>
   </url>
 
+  <url>
+    <loc>https://www.devbatista.com/blog/</loc>
+    <lastmod>2026-11-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.devbatista.com/blog/o-que-e-servidor-mcp</loc>
+    <lastmod>2026-11-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
   <!-- TODO: páginas com noindex até a revisão do texto provisório. Ao publicar
        cada uma (robots = index), descomente a <url> e atualize o <lastmod>.
   <url>
@@ -89,10 +102,6 @@
   </url>
   <url>
     <loc>https://www.devbatista.com/servidores-mcp</loc>
-    <lastmod>AAAA-MM-DD</lastmod>
-  </url>
-  <url>
-    <loc>https://www.devbatista.com/blog/</loc>
     <lastmod>AAAA-MM-DD</lastmod>
   </url>
   -->
