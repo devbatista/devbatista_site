@@ -1,0 +1,199 @@
+/* ==========================================================================
+   DevBatista — /bio (link da bio do Instagram @_devbatista)
+   Página única, mobile-first, estilo "Noturno": fundo escuro, texto claro e
+   o azul aceso só no botão principal. Não usa o style.css do site: a página
+   carrega só o que precisa.
+   ========================================================================== */
+
+:root {
+  --bio-primary: #1458C8;
+  --bio-primary-hover: #1A66E0;
+  --bio-secondary: #0C377C;
+  --bio-accent: #7B88F5;
+  --bio-ink: #071B3C;
+  --bio-light: #F1F6FE;
+  --bio-bg: #050F22;
+  --bio-text-muted: rgba(241, 246, 254, 0.72);
+  --bio-text-faint: rgba(241, 246, 254, 0.45);
+  --bio-line: rgba(241, 246, 254, 0.14);
+  --bio-line-strong: rgba(241, 246, 254, 0.28);
+  --bio-font-title: 'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --bio-font-text: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background-color: var(--bio-bg);
+  background-image: linear-gradient(180deg, var(--bio-ink) 0%, var(--bio-bg) 60%);
+  color: var(--bio-light);
+  font-family: var(--bio-font-text);
+  font-weight: 400;
+  font-size: 1rem;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.bio {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  max-width: 420px;
+  min-height: 100vh;
+  min-height: 100dvh;
+  margin: 0 auto;
+  padding: 48px 20px 32px;
+  text-align: center;
+}
+
+/* Cabeçalho ------------------------------------------------------------- */
+
+.bio-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 96px;
+  height: 96px;
+  margin: 0 auto 20px;
+  border-radius: 24px;
+  background: var(--bio-light);
+  box-shadow: 0 0 0 1px var(--bio-line), 0 12px 32px rgba(0, 0, 0, 0.35);
+}
+
+.bio-logo img {
+  display: block;
+  width: 72px;
+  height: 72px;
+}
+
+.bio-title {
+  margin: 0;
+  font-family: var(--bio-font-title);
+  font-weight: 700;
+  font-size: 1.875rem;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.bio-tagline {
+  margin: 6px 0 0;
+  font-family: var(--bio-font-title);
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: -0.02em;
+  color: var(--bio-accent);
+}
+
+.bio-desc {
+  margin: 16px auto 0;
+  max-width: 34ch;
+  color: var(--bio-text-muted);
+  font-size: 0.9375rem;
+  text-wrap: balance;
+}
+
+/* Botões ---------------------------------------------------------------- */
+
+.bio-links {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 32px;
+}
+
+.bio-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 52px;
+  padding: 14px 20px;
+  border: 1px solid var(--bio-line);
+  border-radius: 14px;
+  background: rgba(241, 246, 254, 0.04);
+  color: var(--bio-light);
+  font-family: var(--bio-font-title);
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.2s, border-color 0.2s, transform 0.2s;
+}
+
+.bio-btn:hover {
+  border-color: var(--bio-line-strong);
+  background: rgba(241, 246, 254, 0.08);
+}
+
+.bio-btn:active {
+  transform: scale(0.98);
+}
+
+.bio-btn:focus-visible {
+  outline: 2px solid var(--bio-accent);
+  outline-offset: 3px;
+}
+
+.bio-btn--primary {
+  min-height: 56px;
+  border-color: transparent;
+  background: var(--bio-primary);
+  color: #fff;
+  font-size: 1.0625rem;
+  box-shadow: 0 10px 28px rgba(20, 88, 200, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+
+.bio-btn--primary:hover {
+  border-color: transparent;
+  background: var(--bio-primary-hover);
+}
+
+/* Rodapé ---------------------------------------------------------------- */
+
+.bio-footer {
+  margin-top: 40px;
+  color: var(--bio-text-faint);
+  font-size: 0.8125rem;
+}
+
+.bio-footer p {
+  margin: 0;
+}
+
+/* Telas maiores: mais respiro, mesmo layout ---------------------------- */
+
+@media (min-width: 768px) {
+  .bio {
+    padding-top: 64px;
+    padding-bottom: 48px;
+  }
+
+  .bio-title {
+    font-size: 2.125rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bio-btn {
+    transition: none;
+  }
+
+  .bio-btn:active {
+    transform: none;
+  }
+}

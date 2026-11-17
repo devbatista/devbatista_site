@@ -67,6 +67,10 @@ Preços não são exibidos em nenhuma página.
 ├── contato.html          # Canais e briefing → WhatsApp
 ├── faq.html              # Perguntas frequentes (com schema FAQPage)
 ├── blog/index.html       # Blog (/blog/), noindex até o primeiro post
+├── bio.html              # /bio: link da bio do Instagram (noindex, fora do sitemap)
+├── bio-whatsapp.html     # /bio/whatsapp, /bio/site, /bio/linkedin: passagens
+├── bio-site.html         #   que contam o clique no Admin e redirecionam
+├── bio-linkedin.html     #   (ver "Visitas do site" → Link da bio)
 ├── templates/            # Modelo de post + LEIA-ME (fora do deploy)
 ├── 404.html              # Página de erro
 ├── .htaccess             # URLs limpas, canonicalização, cache, compressão
@@ -75,6 +79,7 @@ Preços não são exibidos em nenhuma página.
 ├── site.webmanifest
 ├── css/style.css         # Estilos globais (design system + componentes)
 ├── css/lead-quiz.css     # Modal do Diagnóstico Tecnológico
+├── css/bio.css           # Estilos da /bio (independente do style.css)
 ├── js/main.js            # Interações (vanilla JS, sem dependências)
 ├── js/lead-quiz.js       # Diagnóstico Tecnológico (modal, scoring, envio)
 ├── js/visitas.js         # Medição de visitas (beacon para api/v.php)
@@ -106,6 +111,9 @@ resolvidas pelo `.htaccess` via Apache:
 - `/index.html`, `/index` → **301** → `/` (num salto só; vale para `/blog/index`)
 - `/servicos` → **301** → `/solucoes` (endereço antigo)
 - `/blog/` serve `blog/index.html`; `/blog/slug` serve `blog/slug.html`
+- `/bio/whatsapp`, `/bio/site`, `/bio/linkedin` servem `bio-*.html` (regra 4a);
+  `/bio-whatsapp` → **301** → `/bio/whatsapp`. Não crie uma pasta `bio/`: com
+  ela, o Apache ignora as regras para `/bio` e redireciona para `/bio/`
 - `devbatista.com` e `http://` → **301** → `https://www.devbatista.com`
 
 Os arquivos continuam sendo `.html` no disco. Os links internos, os `canonical`
@@ -427,6 +435,29 @@ robô/IA → .htaccess → api/agente.php (mesmo HTML, ou 403) ────┴�
   frente, ajuste `visit_client_ip()` em `api/visitas.php`.**
 - Liga com o secret `SITE_VISITS_TOKEN` (seção Deploy). Sem ele, o script
   continua mandando para `/api/v.php`, que responde 204 e descarta.
+
+### Link da bio (`/bio`)
+
+A `/bio` é o link da bio do Instagram (`@_devbatista`). Use no perfil:
+`https://www.devbatista.com/bio?utm_source=instagram&utm_medium=social&utm_campaign=bio`.
+
+O script só conta páginas vistas (não há eventos), então cada botão passa por
+uma página de passagem que conta o clique e segue para o destino:
+
+| Botão                 | Passagem         | Destino                               |
+|-----------------------|------------------|---------------------------------------|
+| Conversar no WhatsApp | `/bio/whatsapp`  | `wa.me` com a mensagem pronta         |
+| Conheça o site        | `/bio/site`      | `/` com os mesmos UTMs                |
+| LinkedIn              | `/bio/linkedin`  | `linkedin.com/in/rbatist10`           |
+
+- **Cliques no WhatsApp** = páginas vistas de `/bio/whatsapp` no Admin
+  (filtro Página). Os UTMs da `/bio` vão junto nos links.
+- A passagem carrega o `js/visitas.js` **síncrono** (o envio sai antes do
+  redirecionamento) e segue em seguida, ou em 800 ms se o script demorar.
+  Sem CSS externo nem fonte, para nada segurar o script. Sem JavaScript, um
+  `meta refresh` leva ao destino (sem contar).
+- O redirecionamento usa `location.replace`: o "voltar" do celular cai na
+  `/bio`, não na passagem.
 
 ---
 
