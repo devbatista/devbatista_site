@@ -179,16 +179,19 @@ ErrorDocument 404 /404.html
 
   # Não contar as próprias visitas (js/visitas.js): qualquer página aberta
   # com ?nao-contar=1 grava o cookie nao_contar por 400 dias (o máximo que o
-  # Chrome aceita); ?nao-contar=0 apaga. Gravado aqui, pelo servidor, e não
+  # Chrome aceita); ?nao-contar=0 apaga. Domain=devbatista.com: vale também
+  # nas prévias de clientes (previews.devbatista.com). O =0 apaga também o
+  # cookie antigo, gravado sem Domain, só para o www. Gravado aqui, pelo servidor, e não
   # pelo JavaScript: o Safari corta para 7 dias os cookies criados por script.
   # Sem HttpOnly, porque o js/visitas.js precisa lê-lo. no-store: a resposta
   # com Set-Cookie não pode ficar em cache. Fica num <If> porque ele é aplicado
   # depois do <FilesMatch> acima, e o no-store prevalece sobre o do .html.
   <If "%{QUERY_STRING} =~ /(^|&)nao-contar=1(&|$)/">
-    Header always add Set-Cookie "nao_contar=1; Max-Age=34560000; Path=/; SameSite=Lax; Secure"
+    Header always add Set-Cookie "nao_contar=1; Max-Age=34560000; Path=/; Domain=devbatista.com; SameSite=Lax; Secure"
     Header set Cache-Control "no-store"
   </If>
   <ElseIf "%{QUERY_STRING} =~ /(^|&)nao-contar=0(&|$)/">
+    Header always add Set-Cookie "nao_contar=; Max-Age=0; Path=/; Domain=devbatista.com; SameSite=Lax; Secure"
     Header always add Set-Cookie "nao_contar=; Max-Age=0; Path=/; SameSite=Lax; Secure"
     Header set Cache-Control "no-store"
   </ElseIf>

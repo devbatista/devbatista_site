@@ -18,8 +18,12 @@ import { fileURLToPath } from 'node:url';
 const ROOT = fileURLToPath(new URL('..', import.meta.url)).replace(/\/$/, '');
 const HOST = 'www.devbatista.com';
 
-const COOKIE_LIGA = 'nao_contar=1; Max-Age=34560000; Path=/; SameSite=Lax; Secure';
-const COOKIE_DESLIGA = 'nao_contar=; Max-Age=0; Path=/; SameSite=Lax; Secure';
+const COOKIE_LIGA = 'nao_contar=1; Max-Age=34560000; Path=/; Domain=devbatista.com; SameSite=Lax; Secure';
+// Apaga o de todo o domínio e o antigo, gravado sem Domain, só para o www.
+const COOKIES_DESLIGA = [
+  'nao_contar=; Max-Age=0; Path=/; Domain=devbatista.com; SameSite=Lax; Secure',
+  'nao_contar=; Max-Age=0; Path=/; SameSite=Lax; Secure',
+];
 
 const HTTPD = ['/usr/sbin/httpd', '/usr/sbin/apache2', '/opt/homebrew/bin/httpd', '/usr/local/bin/httpd']
   .find(existsSync);
@@ -141,7 +145,7 @@ test('?nao-contar=1 grava o cookie por 400 dias, em qualquer página', { skip: S
 test('?nao-contar=0 apaga o cookie', { skip: SKIP }, async () => {
   const res = await get('/sobre?nao-contar=0');
   assert.equal(res.statusCode, 200);
-  assert.deepEqual(cookies(res), [COOKIE_DESLIGA]);
+  assert.deepEqual(cookies(res), COOKIES_DESLIGA);
   assert.equal(res.headers['cache-control'], 'no-store');
 });
 

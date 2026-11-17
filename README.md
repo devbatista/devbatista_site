@@ -415,12 +415,12 @@ pessoa  → página estática → js/visitas.js → POST /api/v.php ──┐
 robô/IA → .htaccess → api/agente.php (mesmo HTML, ou 403) ────┴→ Admin /webhooks/site-visits
 ```
 
-- **Pessoas.** `js/visitas.js` (em todas as páginas)
-  manda a página vista e, na saída, o tempo visível. Não cria cookie: o Admin
+- **Pessoas.** `js/visitas.js` (em todas as páginas, menos a `404.html`: link
+  quebrado não é página vista) manda a página vista e, na saída, o tempo visível. Não cria cookie: o Admin
   calcula um visitante anônimo que muda todo dia e não guarda IP.
 - **O que nunca conta.** Antes de qualquer envio, o `js/visitas.js` desiste se
-  (1) o host não for exatamente `devbatista.com` ou `www.devbatista.com`
-  (localhost, IP, preview e staging ficam de fora), (2) `navigator.webdriver`
+  (1) o host não for exatamente `devbatista.com`, `www.devbatista.com` ou
+  `previews.devbatista.com` (localhost, IP e staging ficam de fora), (2) `navigator.webdriver`
   for `true` (Playwright, Puppeteer, Selenium) ou (3) houver o cookie
   `nao_contar=1`.
 - **Segunda camada, no Admin.** Todo evento leva `webdriver` (booleano; o
@@ -428,6 +428,14 @@ robô/IA → .htaccess → api/agente.php (mesmo HTML, ou 403) ────┴�
   `Referer` nos headers. O Admin descarta, com 204, pageview e leave com
   `webdriver: true`, user agent de automação ou Origin/Referer de outro host.
   O `api/v.php` trata qualquer 2xx do Admin como sucesso.
+- **Prévias de clientes** (`previews.devbatista.com`, repositório `previews`).
+  Carregam este mesmo script por URL absoluta
+  (`https://www.devbatista.com/js/visitas.js?v=N`) e, sem PHP lá, mandam os
+  eventos para o `/api/v.php` daqui por `sendBeacon`. O `api/v.php` aceita a
+  origem delas por `VISIT_EXTRA_ORIGINS` (`api/visitas.php`), fora do
+  `allowed_origins`, para não abrir o formulário de leads. Nos protótipos de
+  sistema (`/sys/...`), cada mudança de fragmento (`#resumo`) é uma tela nova.
+  O Admin conta as prévias à parte, fora dos números do site.
 - **Robôs e agentes de IA** não rodam JavaScript. A regra **3c** do `.htaccess`
   manda as páginas pedidas por eles (user agent de bot/IA ou header
   `Signature-Agent`) ao `api/agente.php`, que entrega o mesmo HTML e avisa o
@@ -440,13 +448,15 @@ robô/IA → .htaccess → api/agente.php (mesmo HTML, ou 403) ────┴�
   3b se o user agent dele não tiver `bot`, `crawl`, `spider`, `-User`, `GPT`,
   `Claude`, `Perplexity`, `anthropic`, `openai`, `meta-external` ou `MistralAI`.
 - **Não contar as próprias visitas:** abra qualquer página com `?nao-contar=1`
-  (vale para aquele navegador por 400 dias; `?nao-contar=0` volta a contar).
+  (vale para aquele navegador por 400 dias, no site e nas prévias, porque o
+  cookie é de `Domain=devbatista.com`; `?nao-contar=0` volta a contar).
   Quem grava o cookie é o `.htaccess` (header `Set-Cookie`, bloco `<If>` no
   fim do `mod_headers`), não o JavaScript: o Safari corta para 7 dias os
   cookies criados por script. Confira com
   `curl -sI 'https://www.devbatista.com/?nao-contar=1' | grep -i set-cookie`.
 - **Ao mexer no `js/visitas.js`**, suba o `?v=` dele em todas as páginas (e em
-  `templates/blog-post.html`): o JS tem cache `immutable` de 1 ano.
+  `templates/blog-post.html` e nas prévias, no repositório `previews`): o JS
+  tem cache `immutable` de 1 ano.
 - **Testes:** `node --test 'tests/*.test.mjs'` (Node 20+, sem dependências).
   Testam o script nos 4 casos, o cookie do `.htaccess` num Apache temporário
   em HTTPS e o `api/v.php` contra um Admin falso (`php -S`, sem o

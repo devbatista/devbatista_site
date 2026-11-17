@@ -11,7 +11,7 @@ import vm from 'node:vm';
 
 const SCRIPT = readFileSync(new URL('../js/visitas.js', import.meta.url), 'utf8');
 
-function runScript({ hostname = 'www.devbatista.com', webdriver = false, cookie = '' } = {}) {
+function runScript({ hostname = 'www.devbatista.com', webdriver = false, cookie = '', pathname = '/sobre', hash = '' } = {}) {
   const sent = [];
   const listeners = { window: {}, document: {} };
   const on = (bag) => (type, fn) => { (bag[type] ||= []).push(fn); };
@@ -30,7 +30,7 @@ function runScript({ hostname = 'www.devbatista.com', webdriver = false, cookie 
   const context = {
     document,
     navigator,
-    location: { hostname, href: `https://${hostname}/sobre?utm_source=teste` },
+    location: { hostname, pathname, hash, get href() { return `https://${hostname}${pathname}${pathname === '/sobre' ? '?utm_source=teste' : ''}${this.hash}`; } },
     screen: { width: 1280 },
     crypto: { randomUUID: () => 'id-fixo' },
     performance: { now: () => 0 },
@@ -39,7 +39,18 @@ function runScript({ hostname = 'www.devbatista.com', webdriver = false, cookie 
   };
   context.window = context;
 
+  // setTimeout guardado: o teste decide quando ele dispara.
+  const timers = [];
+  context.setTimeout = (fn) => timers.push(fn);
+  const runTimers = () => timers.splice(0).forEach((fn) => fn());
+
   vm.runInNewContext(SCRIPT, context);
+
+  // Muda o fragmento, como um protótipo das prévias ao trocar de tela.
+  const goTo = (hash) => {
+    context.location.hash = hash;
+    (listeners.window.hashchange || []).forEach((fn) => fn());
+  };
 
   // Simula a saída da página: é quando o leave seria enviado.
   const leavePage = () => {
@@ -48,7 +59,7 @@ function runScript({ hostname = 'www.devbatista.com', webdriver = false, cookie 
     (listeners.window.pagehide || []).forEach((fn) => fn());
   };
 
-  return { sent, leavePage, navigator };
+  return { sent, leavePage, navigator, goTo, runTimers };
 }
 
 // Nada enviado nem ao abrir nem ao sair da página.
@@ -112,6 +123,7 @@ test('host fora de produção: não envia nada', async (t) => {
     '[::1]',
     'staging.devbatista.com',
     'preview.devbatista.com',
+    'previews.devbatista.com.br',
     'devbatista.com.preview-123.vercel.app',
     'devbatista-site.netlify.app',
     'devbatista.com.br',
@@ -120,6 +132,41 @@ test('host fora de produção: não envia nada', async (t) => {
   for (const hostname of hosts) {
     await t.test(hostname || '(vazio)', () => assertNothingSent(runScript({ hostname })));
   }
+});
+
+// --- Prévias de clientes (previews.devbatista.com) ------------------------
+
+test('prévia de site: envia ao beacon do site, e o fragmento não é tela nova', () => {
+  const env = runScript({ hostname: 'previews.devbatista.com', pathname: '/sites/romulo-contabil/' });
+  assert.equal(env.sent.length, 1);
+  assert.equal(env.sent[0].url, 'https://www.devbatista.com/api/v.php');
+  assert.equal(env.sent[0].data.url, 'https://previews.devbatista.com/sites/romulo-contabil/');
+
+  env.goTo('#orcamento');
+  assert.equal(env.sent.length, 1);
+});
+
+test('protótipo de sistema: a primeira página leva a tela inicial, e cada tela nova fecha a anterior', () => {
+  const env = runScript({ hostname: 'previews.devbatista.com', pathname: '/sys/aguas-cristalinas/' });
+  assert.equal(env.sent.length, 0, 'espera o protótipo pôr a tela inicial no fragmento');
+
+  env.goTo('#resumo');
+  assert.equal(env.sent.length, 0, 'a troca antes da primeira página vista não conta à parte');
+  env.runTimers();
+  assert.equal(env.sent.length, 1);
+  assert.equal(env.sent[0].data.url, 'https://previews.devbatista.com/sys/aguas-cristalinas/#resumo');
+
+  env.goTo('#clientes');
+  assert.deepEqual(env.sent.slice(1).map((s) => [s.data.type, s.data.url]), [
+    ['leave', undefined],
+    ['pageview', 'https://previews.devbatista.com/sys/aguas-cristalinas/#clientes'],
+  ]);
+});
+
+test('prévia com o cookie nao_contar=1 (gravado para todo o domínio): não envia nada', () => {
+  const env = runScript({ hostname: 'previews.devbatista.com', pathname: '/sys/aguas-cristalinas/', cookie: 'nao_contar=1' });
+  env.runTimers();
+  assertNothingSent(env);
 });
 
 // --- 2. Navegador automatizado ----------------------------------------------
