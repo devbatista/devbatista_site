@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>DevBatista | Sistemas, automação e IA</title>
+  <meta name="description" content="Sistemas sob medida, integrações e automação de WhatsApp para pequenas empresas.">
+  <meta name="author" content="DevBatista">
+  <!-- Link da bio do Instagram: fora do Google e do sitemap. -->
+  <meta name="robots" content="noindex, follow">
+
+  <link rel="canonical" href="https://www.devbatista.com/bio">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400&family=Manrope:wght@700&display=swap">
+  <link rel="stylesheet" href="/css/bio.css?v=1">
+
+  <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <meta name="theme-color" content="#071B3C">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="DevBatista | Sistemas, automação e IA">
+  <meta property="og:description" content="Sistemas sob medida, integrações e automação de WhatsApp para pequenas empresas.">
+  <meta property="og:image" content="https://www.devbatista.com/images/og-cover.jpg">
+  <meta property="og:image:alt" content="Logo da DevBatista">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:url" content="https://www.devbatista.com/bio">
+  <meta property="og:site_name" content="DevBatista">
+  <meta property="og:locale" content="pt_BR">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="DevBatista | Sistemas, automação e IA">
+  <meta name="twitter:description" content="Sistemas sob medida, integrações e automação de WhatsApp para pequenas empresas.">
+  <meta name="twitter:image" content="https://www.devbatista.com/images/og-cover.jpg">
+  <meta name="twitter:site" content="@devbatista">
+  <!-- Meta Pixel Code -->
+  <script>
+  !function(f,b,e,v,n,t,s)
+  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+  n.queue=[];t=b.createElement(e);t.async=!0;
+  t.src=v;s=b.getElementsByTagName(e)[0];
+  s.parentNode.insertBefore(t,s)}(window, document,'script',
+  'https://connect.facebook.net/en_US/fbevents.js');
+  fbq('init', '1437257638248418');
+  fbq('track', 'PageView');
+  </script>
+  <!-- End Meta Pixel Code -->
+</head>
+<body>
+  <noscript><img height="1" width="1" style="display:none" alt=""
+  src="https://www.facebook.com/tr?id=1437257638248418&amp;ev=PageView&amp;noscript=1"></noscript>
+
+  <main class="bio">
+    <header>
+      <div class="bio-logo">
+        <img src="/images/icon-256x256.png" alt="Logo da DevBatista" width="72" height="72" fetchpriority="high">
+      </div>
+      <h1 class="bio-title">DevBatista</h1>
+      <p class="bio-tagline">Sistemas, automação e IA</p>
+      <p class="bio-desc">Sistemas sob medida, integrações e automação de WhatsApp para pequenas empresas.</p>
+    </header>
+
+    <!-- Os links passam por /bio/* para cada clique virar uma página vista
+         no Admin (o analytics só conta páginas, não eventos). -->
+    <nav class="bio-links" aria-label="Links da DevBatista">
+      <a class="bio-btn bio-btn--primary" href="/bio/whatsapp" data-repassa-utm>Conversar no WhatsApp</a>
+      <a class="bio-btn" href="/bio/site" data-repassa-utm>Conheça o site</a>
+      <a class="bio-btn" href="/bio/linkedin" data-repassa-utm>LinkedIn</a>
+    </nav>
+
+    <footer class="bio-footer">
+      <p>@_devbatista</p>
+    </footer>
+  </main>
+
+  <script>
+    // Repassa os UTMs desta URL (utm_source, utm_medium, utm_campaign...) aos
+    // links, para a origem do clique chegar junto no Admin.
+    (function () {
+      try {
+        var utm = new URLSearchParams();
+        new URLSearchParams(window.location.search).forEach(function (valor, chave) {
+          if (chave.indexOf('utm_') === 0) utm.append(chave, valor);
+        });
+        var query = utm.toString();
+        if (!query) return;
+        var links = document.querySelectorAll('[data-repassa-utm]');
+        for (var i = 0; i < links.length; i++) {
+          links[i].setAttribute('href', links[i].getAttribute('href') + '?' + query);
+        }
+      } catch (e) { /* navegador antigo: os links seguem sem UTM */ }
+    })();
+  </script>
+  <script src="/js/visitas.js?v=1" defer></script>
+</body>
+</html>

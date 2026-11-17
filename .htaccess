@@ -109,6 +109,22 @@ DirectoryIndex index.html
   RewriteRule ^((?:blog/)?[a-z0-9-]+)$ api/agente.php?pagina=$1 [L]
 
   # ----------------------------------------------------------------------
+  # 3d. Passagens da bio do Instagram: o endereço é /bio/whatsapp (ver 4a);
+  #     /bio-whatsapp, o nome do arquivo, vai para ele. A query (UTMs) segue.
+  # ----------------------------------------------------------------------
+  RewriteCond %{ENV:REDIRECT_STATUS} ^$
+  RewriteRule ^bio-(whatsapp|site|linkedin)$ /bio/$1 [R=301,L]
+
+  # ----------------------------------------------------------------------
+  # 4a. Passagens da bio do Instagram (/bio/whatsapp, /bio/site,
+  #     /bio/linkedin): contam o clique no Admin e seguem para o destino.
+  #     Ficam em bio-*.html na raiz, não numa pasta bio/: com a pasta, o
+  #     Apache ignora as regras para /bio (sem barra) e o manda para /bio/.
+  #     A /bio em si é o bio.html, servido pela regra 4.
+  # ----------------------------------------------------------------------
+  RewriteRule ^bio/(whatsapp|site|linkedin)$ bio-$1.html [L]
+
+  # ----------------------------------------------------------------------
   # 4. Serve /pagina a partir de pagina.html (rewrite interno, sem redirect)
   #    Vale também para /blog/slug-do-post -> blog/slug-do-post.html.
   # ----------------------------------------------------------------------
