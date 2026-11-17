@@ -43,4 +43,12 @@ if (!is_array($data) || !in_array($data['type'] ?? '', ['pageview', 'leave'], tr
 
 // Só os campos do script. IP e headers vêm do servidor, nunca do navegador.
 $fields = ['type', 'id', 'url', 'referrer', 'screen_width', 'duration_ms'];
-visit_forward(array_intersect_key($data, array_flip($fields)));
+$event = array_intersect_key($data, array_flip($fields));
+
+// navigator.webdriver, para o Admin descartar visita de teste automatizado.
+// Só booleano: "true", 1 ou qualquer outro valor é descartado.
+if (is_bool($data['webdriver'] ?? null)) {
+    $event['webdriver'] = $data['webdriver'];
+}
+
+visit_forward($event);

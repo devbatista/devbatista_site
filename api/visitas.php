@@ -16,9 +16,14 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/leads-config.php';
 
-/** Headers repassados ao Admin. Nunca cookie nem autenticação. */
+/**
+ * Headers repassados ao Admin. Nunca cookie nem autenticação. Vale para o
+ * beacon (api/v.php) e para o server_hit (api/agente.php). Origin e Referer
+ * servem ao filtro de testes do Admin, que descarta pageview/leave vindos de
+ * outro host; no server_hit o Admin os ignora.
+ */
 const VISIT_HEADERS = [
-    'User-Agent', 'Referer', 'Accept', 'Accept-Language', 'From',
+    'User-Agent', 'Origin', 'Referer', 'Accept', 'Accept-Language', 'From',
     'Signature-Agent', 'Signature-Input', 'Signature',
     'Sec-Fetch-Mode', 'Sec-Fetch-Site', 'Sec-CH-UA', 'Sec-Purpose', 'Purpose',
 ];
@@ -128,7 +133,9 @@ function visit_forward(array $event): void
         $error = $ok ? '' : 'falha de conexão (sem cURL)';
     }
 
-    if ($status !== 202) {
+    // Qualquer 2xx é sucesso: 202 (gravado) ou 204 (descartado de propósito,
+    // como as visitas de teste automatizado).
+    if ($status < 200 || $status > 299) {
         error_log('[visitas] Admin não aceitou o evento ' . ($event['type'] ?? '?') . ': '
             . ($error !== '' ? $error : 'HTTP ' . $status));
     }
