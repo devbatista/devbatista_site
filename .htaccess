@@ -176,6 +176,22 @@ ErrorDocument 404 /404.html
   Header always set X-Content-Type-Options "nosniff"
   Header always set X-Frame-Options "SAMEORIGIN"
   Header always set Referrer-Policy "strict-origin-when-cross-origin"
+
+  # Não contar as próprias visitas (js/visitas.js): qualquer página aberta
+  # com ?nao-contar=1 grava o cookie nao_contar por 400 dias (o máximo que o
+  # Chrome aceita); ?nao-contar=0 apaga. Gravado aqui, pelo servidor, e não
+  # pelo JavaScript: o Safari corta para 7 dias os cookies criados por script.
+  # Sem HttpOnly, porque o js/visitas.js precisa lê-lo. no-store: a resposta
+  # com Set-Cookie não pode ficar em cache. Fica num <If> porque ele é aplicado
+  # depois do <FilesMatch> acima, e o no-store prevalece sobre o do .html.
+  <If "%{QUERY_STRING} =~ /(^|&)nao-contar=1(&|$)/">
+    Header always add Set-Cookie "nao_contar=1; Max-Age=34560000; Path=/; SameSite=Lax; Secure"
+    Header set Cache-Control "no-store"
+  </If>
+  <ElseIf "%{QUERY_STRING} =~ /(^|&)nao-contar=0(&|$)/">
+    Header always add Set-Cookie "nao_contar=; Max-Age=0; Path=/; SameSite=Lax; Secure"
+    Header set Cache-Control "no-store"
+  </ElseIf>
 </IfModule>
 
 # ==========================================================================

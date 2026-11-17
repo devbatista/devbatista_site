@@ -2,11 +2,17 @@
  * DevBatista — medição de visitas (Admin DevBatista → Marketing → Visitas do site).
  *
  * Manda ao /api/v.php a página vista (pageview) e, na saída, o tempo em que
- * ela ficou visível (leave). Sem cookie e sem guardar nada que identifique o
- * visitante: o Admin calcula um visitante anônimo que muda todo dia.
+ * ela ficou visível (leave). Não cria cookie nem guarda nada que identifique
+ * o visitante: o Admin calcula um visitante anônimo que muda todo dia.
  *
- * Para não contar as próprias visitas, abra qualquer página com ?nao-contar=1
- * (vale para este navegador; ?nao-contar=0 volta a contar).
+ * Não envia nada (nem pageview, nem leave) quando:
+ *   1. o host não é o de produção (localhost, IP, preview, staging);
+ *   2. o navegador é automatizado (navigator.webdriver: Playwright,
+ *      Puppeteer, Selenium);
+ *   3. o navegador tem o cookie nao_contar=1. Quem grava o cookie é o
+ *      servidor (.htaccess, ao abrir qualquer página com ?nao-contar=1;
+ *      ?nao-contar=0 apaga), não este script: o Safari corta para 7 dias os
+ *      cookies criados por JavaScript.
  *
  * Nunca trava nem quebra a página: qualquer erro é engolido.
  */
@@ -14,16 +20,19 @@
   'use strict';
 
   var ENDPOINT = '/api/v.php';
+  var PRODUCAO = ['devbatista.com', 'www.devbatista.com'];
 
+  // 1. Só o site de produção conta. Comparação exata: staging.devbatista.com
+  //    ou devbatista.com.algum-preview.app também ficam de fora.
+  if (PRODUCAO.indexOf(window.location.hostname) === -1) return;
+
+  // 2. Automação declarada não é visita.
+  if (navigator.webdriver === true) return;
+
+  // 3. Navegador marcado com ?nao-contar=1.
   try {
-    var flag = new URLSearchParams(window.location.search).get('nao-contar');
-    if (flag === '1') window.localStorage.setItem('devbatista_nao_contar', '1');
-    if (flag === '0') window.localStorage.removeItem('devbatista_nao_contar');
-    if (window.localStorage.getItem('devbatista_nao_contar') === '1') return;
-  } catch (e) { /* localStorage bloqueado: conta normalmente */ }
-
-  // Automação declarada (Selenium, Puppeteer, Playwright) não é visita.
-  if (navigator.webdriver) return;
+    if (/(?:^|;\s*)nao_contar=1(?:;|$)/.test(document.cookie)) return;
+  } catch (e) { /* cookie inacessível: conta normalmente */ }
 
   var id, visibleMs, visibleSince, left;
 
@@ -36,7 +45,11 @@
     return window.performance && performance.now ? performance.now() : Date.now();
   }
 
+  // Todo evento leva o webdriver: se o corte lá em cima for contornado (o
+  // navegador passa a se declarar automatizado depois de carregar, por
+  // exemplo), o Admin ainda descarta a visita.
   function send(data) {
+    data.webdriver = navigator.webdriver === true;
     var body = JSON.stringify(data);
     try {
       if (navigator.sendBeacon && navigator.sendBeacon(ENDPOINT, body)) return;
