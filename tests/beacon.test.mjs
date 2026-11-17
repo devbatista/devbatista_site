@@ -195,6 +195,14 @@ test('sem Origin (sendBeacon de mesma origem pode não mandar), segue sem o head
   assert.equal('origin' in hit.event.headers, false);
 });
 
+test('Origin das prévias de clientes é aceito e repassado', { skip: SKIP }, async () => {
+  const ev = pageview();
+  const previa = 'https://previews.devbatista.com';
+  assert.equal(await beacon(ev, { Origin: previa, Referer: `${previa}/sys/aguas-cristalinas/` }), 204);
+  const hit = await receivedFor(ev.id);
+  assert.equal(hit.event.headers.origin, previa);
+});
+
 test('Origin de fora continua levando 403 no próprio site, sem repasse', { skip: SKIP }, async () => {
   const ev = pageview();
   assert.equal(await beacon(ev, { Origin: 'http://localhost:8000' }), 403);

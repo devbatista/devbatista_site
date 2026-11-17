@@ -28,6 +28,13 @@ const VISIT_HEADERS = [
     'Sec-Fetch-Mode', 'Sec-Fetch-Site', 'Sec-CH-UA', 'Sec-Purpose', 'Purpose',
 ];
 
+/**
+ * Origens aceitas no beacon (api/v.php) além das do site (allowed_origins):
+ * as prévias de clientes, que não têm PHP e mandam as visitas para cá. Ficam
+ * só aqui, e não em allowed_origins, para não abrir o formulário de leads.
+ */
+const VISIT_EXTRA_ORIGINS = ['https://previews.devbatista.com'];
+
 /** Perder uma página vista é aceitável; segurar o PHP, não. */
 const VISIT_TIMEOUT = 2;
 

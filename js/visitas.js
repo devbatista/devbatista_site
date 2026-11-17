@@ -5,8 +5,15 @@
  * ela ficou visível (leave). Não cria cookie nem guarda nada que identifique
  * o visitante: o Admin calcula um visitante anônimo que muda todo dia.
  *
+ * Também roda nas prévias de clientes (previews.devbatista.com), que o
+ * carregam por URL absoluta: lá, os eventos vão para o /api/v.php do site, e
+ * o Admin os conta à parte. Nos protótipos de sistema (/sys/...), que
+ * navegam pelo fragmento (#resumo, #/financeiro), cada tela é uma página
+ * vista nova.
+ *
  * Não envia nada (nem pageview, nem leave) quando:
- *   1. o host não é o de produção (localhost, IP, preview, staging);
+ *   1. o host não é o de produção nem o das prévias (localhost, IP,
+ *      staging);
  *   2. o navegador é automatizado (navigator.webdriver: Playwright,
  *      Puppeteer, Selenium);
  *   3. o navegador tem o cookie nao_contar=1. Quem grava o cookie é o
@@ -19,12 +26,19 @@
 (function () {
   'use strict';
 
-  var ENDPOINT = '/api/v.php';
   var PRODUCAO = ['devbatista.com', 'www.devbatista.com'];
+  var PREVIAS = 'previews.devbatista.com';
 
-  // 1. Só o site de produção conta. Comparação exata: staging.devbatista.com
-  //    ou devbatista.com.algum-preview.app também ficam de fora.
-  if (PRODUCAO.indexOf(window.location.hostname) === -1) return;
+  // 1. Só o site de produção e as prévias contam. Comparação exata:
+  //    staging.devbatista.com ou devbatista.com.algum-preview.app ficam de fora.
+  var host = window.location.hostname;
+  var naPrevia = host === PREVIAS;
+  if (PRODUCAO.indexOf(host) === -1 && !naPrevia) return;
+
+  // As prévias não têm PHP: mandam ao beacon do site, que aceita a origem delas.
+  var ENDPOINT = naPrevia ? 'https://www.devbatista.com/api/v.php' : '/api/v.php';
+  // Protótipo de sistema: a tela está no fragmento.
+  var telas = naPrevia && /^\/sys\//.test(window.location.pathname || '');
 
   // 2. Automação declarada não é visita.
   if (navigator.webdriver === true) return;
@@ -103,10 +117,28 @@
     if (event.persisted) pageview();
   });
 
+  // Tela nova num protótipo das prévias: fecha a anterior e conta a nova. Se
+  // a primeira página vista ainda não saiu, ela já leva a tela atual.
+  if (telas) {
+    window.addEventListener('hashchange', function () {
+      if (!id) return;
+      leave();
+      pageview();
+    });
+  }
+
+  // Nos protótipos, a primeira página vista espera um instante: o protótipo
+  // costuma pôr a tela inicial no fragmento ao abrir, e ela já vai junto,
+  // em vez de virar uma página vista de zero segundo.
+  function start() {
+    if (telas) setTimeout(pageview, 300);
+    else pageview();
+  }
+
   // Página pré-renderizada só conta quando a pessoa de fato a abre.
   if (document.prerendering) {
-    document.addEventListener('prerenderingchange', pageview, { once: true });
+    document.addEventListener('prerenderingchange', start, { once: true });
   } else {
-    pageview();
+    start();
   }
 })();

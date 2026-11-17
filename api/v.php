@@ -7,7 +7,9 @@ declare(strict_types=1);
  *
  * Recebe pageview e leave do navegador, responde 204 na hora e repassa ao
  * Admin com o IP e os headers. O token do Admin nunca vai ao navegador, e a
- * chamada fica no mesmo domínio do site (sem CORS).
+ * chamada fica no mesmo domínio do site (sem CORS). As prévias de clientes
+ * (previews.devbatista.com) também mandam para cá, por sendBeacon, que não
+ * depende de CORS.
  */
 
 require __DIR__ . '/visitas.php';
@@ -21,9 +23,10 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
 }
 
 // Chamada de outro site não conta. O beacon do próprio site manda Origin
-// igual ao do site, ou nenhum.
+// igual ao do site, ou nenhum; o das prévias, o delas.
 $origin = (string) ($_SERVER['HTTP_ORIGIN'] ?? '');
-if ($origin !== '' && !in_array($origin, (array) lead_config()['allowed_origins'], true)) {
+$origins = array_merge((array) lead_config()['allowed_origins'], VISIT_EXTRA_ORIGINS);
+if ($origin !== '' && !in_array($origin, $origins, true)) {
     http_response_code(403);
     exit;
 }
