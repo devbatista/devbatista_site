@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API oficial do WhatsApp: custo e integração | DevBatista</title>
+  <meta name="description" content="Quanto custa a API oficial do WhatsApp depois de outubro de 2026, o que entra na conta além da Meta e o passo a passo para integrar ao sistema da empresa.">
+  <meta name="author" content="Rafael Batista">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+
+  <link rel="canonical" href="https://www.devbatista.com/blog/api-oficial-whatsapp">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="/css/style.css?v=3">
+  <link rel="stylesheet" href="/css/legal.css?v=1">
+  <link rel="stylesheet" href="/css/lead-quiz.css?v=1">
+  <!-- Ajustes só deste post (tabela, lista numerada, breadcrumb, bloco de código). Reaproveita o layout de leitura de legal.css. -->
+  <style>
+    .post-breadcrumb { font-size: var(--fs-sm); color: var(--slate-500); margin-bottom: 1rem; }
+    .post-breadcrumb a { color: var(--slate-400); text-decoration: none; }
+    .post-breadcrumb a:hover { color: var(--cyan-400); }
+    .legal-hero .legal-updated a { color: var(--slate-400); }
+    .legal-body ol.post-steps { margin: 1rem 0 0; padding-left: 1.5rem; display: grid; gap: 0.7rem; }
+    .legal-body ol.post-steps li { padding-left: 0.25rem; }
+    .legal-body ol.post-steps li::before { content: none; }
+    .legal-body ol.post-steps li::marker { color: var(--cyan-400); font-weight: 700; }
+    .legal-body .table-scroll { margin-top: 1.25rem; }
+    .post-table { width: 100%; min-width: 36rem; border-collapse: collapse; font-size: var(--fs-sm); line-height: 1.6; }
+    .post-table caption { text-align: left; color: var(--slate-500); font-size: var(--fs-xs); margin-bottom: 0.5rem; }
+    .post-table th, .post-table td { padding: 0.75rem; border-bottom: 1px solid rgba(30, 41, 59, 0.8); text-align: left; vertical-align: top; color: var(--slate-400); }
+    .post-table thead th { color: var(--white); font-weight: 600; }
+    .post-table tbody th { color: var(--slate-300); font-weight: 600; }
+    .legal-body pre.post-code { margin: 1.25rem 0 0; padding: 1rem 1.25rem; overflow-x: auto; background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(30, 41, 59, 0.8); border-radius: 0.5rem; font-size: var(--fs-xs); line-height: 1.6; color: var(--slate-300); }
+    .legal-body pre.post-code code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; white-space: pre; }
+  </style>
+
+  <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#0b1120">
+
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="API oficial do WhatsApp: quanto custa e como integrar ao seu sistema">
+  <meta property="og:description" content="Quanto custa a API oficial do WhatsApp depois de outubro de 2026, o que entra na conta além da Meta e o passo a passo para integrar ao sistema da empresa.">
+  <meta property="og:image" content="https://www.devbatista.com/images/og-cover.jpg">
+  <meta property="og:image:alt" content="DevBatista - Consultoria e Soluções em Tecnologia">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:url" content="https://www.devbatista.com/blog/api-oficial-whatsapp">
+  <meta property="og:site_name" content="DevBatista">
+  <meta property="og:locale" content="pt_BR">
+  <meta property="article:published_time" content="2026-11-23">
+  <meta property="article:modified_time" content="2026-11-23">
+  <meta property="article:author" content="https://www.devbatista.com/sobre">
+  <meta property="article:section" content="Automação e API do WhatsApp">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="API oficial do WhatsApp: quanto custa e como integrar ao seu sistema">
+  <meta name="twitter:description" content="Quanto custa a API oficial do WhatsApp depois de outubro de 2026, o que entra na conta além da Meta e o passo a passo para integrar ao sistema da empresa.">
+  <meta name="twitter:image" content="https://www.devbatista.com/images/og-cover.jpg">
+  <meta name="twitter:site" content="@devbatista">
+
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "@id": "https://www.devbatista.com/blog/api-oficial-whatsapp#artigo",
+  "headline": "API oficial do WhatsApp: quanto custa e como integrar ao sistema da sua empresa",
+  "description": "Quanto custa a API oficial do WhatsApp depois de outubro de 2026, o que entra na conta além da Meta e o passo a passo para integrar ao sistema da empresa.",
+  "image": "https://www.devbatista.com/images/og-cover.jpg",
+  "datePublished": "2026-11-23",
+  "dateModified": "2026-11-23",
+  "inLanguage": "pt-BR",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://www.devbatista.com/blog/api-oficial-whatsapp"
+  },
+  "url": "https://www.devbatista.com/blog/api-oficial-whatsapp",
+  "author": {
+    "@type": "Person",
+    "@id": "https://www.devbatista.com/sobre#rafael-batista",
+    "name": "Rafael Batista",
+    "url": "https://www.devbatista.com/sobre"
+  },
+  "publisher": {
+    "@id": "https://www.devbatista.com/#organizacao"
+  },
+  "isPartOf": {
+    "@id": "https://www.devbatista.com/blog/#blog"
+  },
+  "about": [
+    "WhatsApp Business Platform",
+    "API oficial do WhatsApp",
+    "Automação no WhatsApp"
+  ]
+}
+  </script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Início",
+      "item": "https://www.devbatista.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Blog",
+      "item": "https://www.devbatista.com/blog/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "API oficial do WhatsApp",
+      "item": "https://www.devbatista.com/blog/api-oficial-whatsapp"
+    }
+  ]
+}
+  </script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Preciso contratar um provedor (BSP) para usar a API oficial?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Não. A Cloud API pode ser usada direto com a Meta. O provedor faz sentido quando você quer um painel pronto, suporte na configuração ou não tem quem cuide da parte técnica."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Responder clientes pela API passou a ser cobrado?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Sim, desde 1º de outubro de 2026, depois das 1.000 mensagens de serviço gratuitas por número por mês. Conversas que começam por anúncios de clique para o WhatsApp continuam gratuitas durante a janela de entrada gratuita."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Posso usar um chatbot com IA no WhatsApp da empresa?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Pode, desde que a IA atenda o seu negócio: dúvidas, pedidos, agendamentos, suporte. O que a Meta proíbe é oferecer um assistente de IA de uso geral como produto principal."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "A API não oficial é mais barata. Vale a pena?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Não para uso profissional. Ela não é autorizada pela Meta, para de funcionar quando o WhatsApp muda e pode levar ao bloqueio do número da empresa."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Quanto tempo leva para começar?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Dá para testar com o número de teste da Meta logo depois de criar o aplicativo. A produção depende da verificação da empresa, da aprovação dos modelos e do tamanho da integração com o seu sistema."
+      }
+    }
+  ]
+}
+  </script>
+  <!-- Meta Pixel Code -->
+  <script>
+  !function(f,b,e,v,n,t,s)
+  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+  n.queue=[];t=b.createElement(e);t.async=!0;
+  t.src=v;s=b.getElementsByTagName(e)[0];
+  s.parentNode.insertBefore(t,s)}(window, document,'script',
+  'https://connect.facebook.net/en_US/fbevents.js');
+  fbq('init', '1437257638248418');
+  fbq('track', 'PageView');
+  </script>
+  <!-- End Meta Pixel Code -->
+</head>
+<body>
+  <noscript><img height="1" width="1" style="display:none" alt=""
+  src="https://www.facebook.com/tr?id=1437257638248418&amp;ev=PageView&amp;noscript=1"></noscript>
+
+  <!-- Navegação -->
+  <nav class="nav" id="nav">
+    <div class="container">
+      <div class="nav-inner">
+        <a href="/" class="nav-logo" aria-label="DevBatista - página inicial">
+          <img src="/images/logo.png" alt="DevBatista" width="150" height="36">
+        </a>
+        <div class="nav-links">
+          <a href="/" class="nav-link">Início</a>
+          <a href="/solucoes" class="nav-link">Soluções</a>
+          <a href="/tech-partner" class="nav-link">Tech Partner</a>
+          <a href="/para-agencias" class="nav-link">Para Agências</a>
+          <a href="/produtos" class="nav-link">Produtos</a>
+          <a href="/projetos" class="nav-link">Projetos</a>
+          <a href="/sobre" class="nav-link">Sobre</a>
+          <a href="/contato" class="nav-link">Contato</a>
+        </div>
+        <a data-lead-modal="blog-api-oficial-whatsapp" href="https://wa.me/5511991308008?text=Ol%C3%A1%21%20Encontrei%20a%20DevBatista%20pelo%20site%20e%20gostaria%20de%20conversar%20sobre%20uma%20solu%C3%A7%C3%A3o%20de%20tecnologia%20para%20minha%20empresa." class="nav-cta" target="_blank" rel="noopener noreferrer">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.47 14.38c-.3-.15-1.75-.86-2.02-.96-.27-.1-.47-.15-.67.15-.2.3-.77.96-.94 1.16-.17.2-.35.22-.64.07-.3-.15-1.25-.46-2.38-1.47-.88-.78-1.48-1.75-1.65-2.05-.17-.3-.02-.46.13-.6.14-.14.3-.35.45-.53.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.6-.92-2.2-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.01-1.04 2.470 0 1.46 1.06 2.87 1.21 3.07.15.2 2.1 3.2 5.08 4.49.71.3 1.26.49 1.69.63.71.22 1.36.19 1.87.12.57-.09 1.75-.72 2-1.41.25-.69.25-1.28.17-1.41-.07-.13-.27-.2-.57-.35z"/><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.9-4.45 9.9-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2m0 1.67c2.2 0 4.27.86 5.83 2.42a8.2 8.2 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.25 8.24a8.23 8.23 0 0 1-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.39c0-4.54 3.7-8.24 8.26-8.24"/></svg>
+          Falar com especialista
+        </a>
+        <button class="nav-mobile-btn" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="mobile-menu">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="nav-mobile-menu" id="mobile-menu">
+        <a href="/" class="nav-mobile-link">Início</a>
+        <a href="/solucoes" class="nav-mobile-link">Soluções</a>
+        <a href="/tech-partner" class="nav-mobile-link">Tech Partner</a>
+        <a href="/para-agencias" class="nav-mobile-link">Para Agências</a>
+        <a href="/produtos" class="nav-mobile-link">Produtos</a>
+        <a href="/projetos" class="nav-mobile-link">Projetos</a>
+        <a href="/sobre" class="nav-mobile-link">Sobre</a>
+        <a href="/contato" class="nav-mobile-link">Contato</a>
+        <a data-lead-modal="blog-api-oficial-whatsapp" href="https://wa.me/5511991308008?text=Ol%C3%A1%21%20Encontrei%20a%20DevBatista%20pelo%20site%20e%20gostaria%20de%20conversar%20sobre%20uma%20solu%C3%A7%C3%A3o%20de%20tecnologia%20para%20minha%20empresa." class="nav-mobile-cta" target="_blank" rel="noopener noreferrer">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.47 14.38c-.3-.15-1.75-.86-2.02-.96-.27-.1-.47-.15-.67.15-.2.3-.77.96-.94 1.16-.17.2-.35.22-.64.07-.3-.15-1.25-.46-2.38-1.47-.88-.78-1.48-1.75-1.65-2.05-.17-.3-.02-.46.13-.6.14-.14.3-.35.45-.53.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.6-.92-2.2-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.01-1.04 2.470 0 1.46 1.06 2.87 1.21 3.07.15.2 2.1 3.2 5.08 4.49.71.3 1.26.49 1.69.63.71.22 1.36.19 1.87.12.57-.09 1.75-.72 2-1.41.25-.69.25-1.28.17-1.41-.07-.13-.27-.2-.57-.35z"/><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.9-4.45 9.9-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2m0 1.67c2.2 0 4.27.86 5.83 2.42a8.2 8.2 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.25 8.24a8.23 8.23 0 0 1-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.39c0-4.54 3.7-8.24 8.26-8.24"/></svg>
+          Falar com um especialista
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="legal-page" id="conteudo">
+    <article>
+      <section class="legal-hero">
+        <div class="grid-bg" aria-hidden="true"></div>
+        <div class="container">
+          <div class="legal-hero-inner">
+            <nav class="post-breadcrumb" aria-label="Você está em">
+              <a href="/">Início</a> <span aria-hidden="true">/</span> <a href="/blog/">Blog</a>
+            </nav>
+            <p class="section-label">Automação e API do WhatsApp</p>
+            <h1 class="section-title">API oficial do WhatsApp: quanto custa e como integrar ao sistema da sua empresa</h1>
+            <p class="legal-intro">A API oficial do WhatsApp é cobrada por mensagem entregue, e o valor depende do tipo de mensagem e do país de quem recebe. Desde 1º de outubro de 2026, até as respostas ao cliente entram na conta: cada número tem 1.000 mensagens de atendimento grátis por mês e, a partir daí, a Meta cobra. Avisos de pedido e códigos de acesso para números do Brasil custam menos de um centavo de dólar cada; mensagens de marketing custam bem mais.</p>
+            <p class="legal-intro">Mas a tarifa da Meta é só uma parte do custo. Para integrar a API ao sistema da empresa, você precisa de uma conta empresarial na Meta, de um número dedicado, de modelos de mensagem aprovados e de um programa que envie e receba as mensagens. Esse programa pode ser uma plataforma pronta ou uma integração feita sob medida. Este artigo mostra as três partes do custo e o passo a passo para colocar tudo de pé.</p>
+            <p class="legal-updated">Por <a href="/sobre">Rafael Batista</a> · Publicado em <time datetime="2026-11-23">23 de novembro de 2026</time></p>
+
+            <nav class="legal-toc" aria-label="Índice do artigo">
+              <h2>Neste artigo</h2>
+              <ol>
+                <li><a href="#o-que-e">O que é a API oficial (e o que ela não é)</a></li>
+                <li><a href="#quanto-custa">Quanto custa: as três partes da conta</a></li>
+                <li><a href="#limites">Limites de envio: quantas mensagens dá para mandar</a></li>
+                <li><a href="#caminhos">Três caminhos para integrar</a></li>
+                <li><a href="#passo-a-passo">Passo a passo da integração</a></li>
+                <li><a href="#ia">Chatbot com IA: o que a Meta permite</a></li>
+                <li><a href="#erros">Erros que encarecem o projeto</a></li>
+                <li><a href="#faq">Perguntas frequentes</a></li>
+              </ol>
+            </nav>
+          </div>
+        </div>
+      </section>
+
+      <div class="container">
+        <div class="legal-body">
+          <section>
+            <h2 id="o-que-e">O que é a API oficial (e o que ela não é)</h2>
+            <p>Existem três formas de uma empresa usar o WhatsApp. O aplicativo comum e o WhatsApp Business (o app verde com o “B”) funcionam num celular, com uma pessoa digitando. A API, que a Meta chama de WhatsApp Business Platform, não tem tela: é uma porta para que os <em>seus sistemas</em> enviem e recebam mensagens sozinhos.</p>
+            <p>É a API que permite, por exemplo, que o ERP avise o cliente quando o pedido sai para entrega, que o sistema de agenda mande a confirmação da consulta ou que a resposta do cliente caia direto no CRM. Hoje, o caminho padrão para isso é a <strong>Cloud API</strong>, hospedada pela própria Meta.</p>
+            <p>E o que ela não é: as chamadas “APIs não oficiais”, que simulam um WhatsApp Web aberto para disparar mensagens. Elas parecem mais baratas, mas não têm autorização da Meta, quebram quando o WhatsApp muda e colocam o número da empresa em risco de bloqueio. Para algo que conversa com cliente todos os dias, não vale a economia.</p>
+          </section>
+
+          <section>
+            <h2 id="quanto-custa">Quanto custa: as três partes da conta</h2>
+            <p>Quem pergunta quanto custa a API normalmente está olhando só para a tabela da Meta. Na prática, a conta tem três partes:</p>
+            <ol class="post-steps">
+              <li><strong>Tarifa da Meta</strong>, por mensagem entregue. Varia por tipo de mensagem e por país.</li>
+              <li><strong>Plataforma ou parceiro</strong>, se você usar um provedor (os chamados BSPs) ou um software de atendimento. Costuma ser uma mensalidade, às vezes com taxa por mensagem.</li>
+              <li><strong>Integração e manutenção</strong>: ligar o WhatsApp ao seu sistema, cuidar dos modelos de mensagem, dos erros e das mudanças que a Meta faz algumas vezes por ano.</li>
+            </ol>
+
+            <h3>A tarifa da Meta, por tipo de mensagem</h3>
+            <p>Desde julho de 2025 a Meta cobra por mensagem, não mais por conversa. Toda mensagem enviada pela empresa recebe uma categoria:</p>
+            <div class="table-scroll">
+              <table class="post-table">
+                <caption>Categorias de mensagem da API oficial do WhatsApp e como cada uma é cobrada (situação em novembro de 2026)</caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Categoria</th>
+                    <th scope="col">Para que serve</th>
+                    <th scope="col">Exemplo</th>
+                    <th scope="col">Como é cobrada</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th scope="row">Utilidade</th>
+                    <td>Avisos ligados a algo que o cliente fez ou pediu</td>
+                    <td>“Seu pedido #1234 saiu para entrega”</td>
+                    <td>Por mensagem, com desconto por volume. Referência da Meta para o Brasil: US$ 0,0068</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Autenticação</th>
+                    <td>Códigos de verificação e login</td>
+                    <td>“Seu código é 482913”</td>
+                    <td>Por mensagem, com desconto por volume. Mesma referência de US$ 0,0068 no Brasil</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Marketing</th>
+                    <td>Ofertas, novidades, reativação de clientes</td>
+                    <td>“Volte e ganhe frete grátis esta semana”</td>
+                    <td>Por mensagem, a categoria mais cara</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Serviço</th>
+                    <td>Respostas livres dentro da janela de atendimento</td>
+                    <td>Responder a dúvida que o cliente mandou</td>
+                    <td>1.000 grátis por número por mês; cobrada a partir da 1.001ª (desde 1º/10/2026)</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p>Utilidade, autenticação e marketing são enviadas por <strong>modelos</strong> (templates): textos que a Meta aprova antes do uso, com campos variáveis como nome e número do pedido. A Meta também criou, em julho de 2026, uma categoria para respostas geradas pelo agente de IA da própria Meta, cobrada por uso de processamento. Ela só se aplica se você usar esse agente.</p>
+
+            <h3>O que mudou em outubro de 2026</h3>
+            <p>Até setembro, responder o cliente dentro da janela de 24 horas era grátis. Desde 1º de outubro de 2026, duas coisas passaram a ser cobradas:</p>
+            <ul>
+              <li><strong>Mensagens de serviço</strong>, depois das 1.000 gratuitas por número de telefone por mês. A franquia não acumula de um mês para o outro.</li>
+              <li><strong>Modelos de utilidade enviados dentro da janela de atendimento</strong>, que antes saíam de graça.</li>
+            </ul>
+            <p>Para quem tem pouco volume de atendimento, quase nada muda. Para quem tem um time inteiro respondendo pela API, vale olhar o relatório de cobrança: uma conversa com dez idas e vindas agora pode virar dez mensagens cobradas.</p>
+
+            <h3>Janela de atendimento e anúncios</h3>
+            <p>Quando o cliente manda mensagem, abre-se uma <strong>janela de atendimento de 24 horas</strong>. Dentro dela, a empresa pode responder com texto livre. Fora dela, só com modelos aprovados.</p>
+            <p>Há uma exceção que pesa a favor de quem anuncia: se o cliente chega por um anúncio de clique para o WhatsApp (no Facebook ou no Instagram) e a empresa responde dentro da janela, abre-se uma janela de entrada gratuita que pode durar até 7 dias. Nesse período, as mensagens de marketing, utilidade, autenticação e serviço não são cobradas.</p>
+
+            <h3>Cobrança em reais</h3>
+            <p>Desde julho de 2026, empresas do Brasil podem ter a conta de mensagens em reais, faturada pelo Facebook Brasil. A migração é obrigatória até 30 de junho de 2027: a partir de julho de 2027, a Meta deixa de entregar mensagens de contas brasileiras elegíveis que ainda estiverem em outra moeda. Se você já usa a API em dólar, coloque isso no calendário.</p>
+
+            <h3>Um exemplo de conta</h3>
+            <p>Imagine uma loja que manda 2.000 avisos de pedido por mês (utilidade) e uma campanha de marketing para 1.000 clientes. Usando a referência da Meta para utilidade no Brasil, os avisos ficam em cerca de US$ 13,60. Para marketing, tabelas publicadas por provedores em setembro de 2026 indicam US$ 0,0625 por mensagem no Brasil, o que daria uns US$ 62,50 pela campanha. As respostas aos clientes entram na franquia de 1.000; o que passar disso é cobrado.</p>
+            <p>São valores de referência em dólar e servem para dar ordem de grandeza. Contas em reais têm tabela própria, e a Meta só altera preços em quatro datas do ano (1º de janeiro, abril, julho e outubro). Antes de fechar o orçamento, confira a tabela oficial do mês.</p>
+          </section>
+
+          <section>
+            <h2 id="limites">Limites de envio: quantas mensagens dá para mandar</h2>
+            <p>Além do preço, existe um teto. A Meta limita quantas <em>pessoas diferentes</em> a empresa pode contatar fora da janela de atendimento num período de 24 horas. O limite vale para o portfólio empresarial inteiro, somando todos os números:</p>
+            <ul>
+              <li><strong>Começo:</strong> 250 pessoas por dia.</li>
+              <li><strong>2.000 por dia:</strong> depois de verificar a empresa na Meta, ou após enviar 2.000 mensagens de boa qualidade em 30 dias.</li>
+              <li><strong>10.000, 100.000 e ilimitado:</strong> sobe automaticamente quando a empresa usa pelo menos metade do limite em 7 dias e mantém a qualidade das mensagens.</li>
+            </ul>
+            <p>Responder quem mandou mensagem não conta para esse teto. O que conta é o envio ativo: avisos, cobranças, campanhas. Se o seu projeto começa com um disparo grande para a base inteira, planeje a verificação da empresa antes.</p>
+          </section>
+
+          <section>
+            <h2 id="caminhos">Três caminhos para integrar</h2>
+            <div class="table-scroll">
+              <table class="post-table">
+                <caption>Comparação entre os caminhos para usar a API oficial do WhatsApp</caption>
+                <thead>
+                  <tr>
+                    <th scope="col"></th>
+                    <th scope="col">Plataforma pronta</th>
+                    <th scope="col">Provedor (BSP) + integração</th>
+                    <th scope="col">Cloud API direto</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th scope="row">Como funciona</th>
+                    <td>Software de atendimento com o WhatsApp já conectado</td>
+                    <td>O provedor cuida da conta e entrega uma API; você integra ao seu sistema</td>
+                    <td>Seu sistema fala direto com a Meta, sem intermediário</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Bom para</th>
+                    <td>Atendimento humano com várias pessoas no mesmo número</td>
+                    <td>Quem quer suporte do provedor e um painel pronto</td>
+                    <td>Quem tem sistema próprio e quer controle total do fluxo</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Custo além da Meta</th>
+                    <td>Mensalidade por usuário ou por número</td>
+                    <td>Mensalidade do provedor + desenvolvimento</td>
+                    <td>Só desenvolvimento e manutenção</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Ponto de atenção</th>
+                    <td>Integração com o seu sistema pode ser limitada</td>
+                    <td>Dependência do provedor</td>
+                    <td>Alguém precisa acompanhar as mudanças da Meta</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p>Os caminhos podem se misturar. É comum a empresa usar uma plataforma pronta para o atendimento humano e uma integração própria para os avisos automáticos que saem do ERP. O que não funciona é deixar o WhatsApp isolado: se a conversa não chega ao sistema onde a empresa trabalha, alguém vai copiar e colar. Esse é o mesmo problema que resolvemos com <a href="/integracoes-entre-plataformas">integrações entre plataformas</a>, só que com o WhatsApp numa das pontas.</p>
+            <!-- TODO RAFAEL: exemplo real de integração com o WhatsApp que você fez ou usa (ex.: o seu próprio sistema de gestão comercial, que envia mensagens aos leads e registra as respostas). Qual caminho usou, o que automatizou e o que mudou na rotina. Sem números que você não tenha medido. -->
+            <p>[TODO: exemplo real de uma integração com o WhatsApp feita pela DevBatista: qual caminho foi escolhido, o que passou a ser automático e o que mudou na rotina.]</p>
+          </section>
+
+          <section>
+            <h2 id="passo-a-passo">Passo a passo da integração</h2>
+            <p>Para quem vai integrar ao próprio sistema pela Cloud API, este é o caminho, do cadastro à produção:</p>
+            <ol class="post-steps">
+              <li><strong>Portfólio empresarial na Meta.</strong> É o antigo Business Manager. Quanto antes a empresa for verificada (CNPJ, site, documentos), melhor: a verificação aumenta os limites de envio e é o caminho para o selo de conta oficial.</li>
+              <li><strong>Número dedicado.</strong> Um número que receba SMS ou ligação para validação. Evite usar o número pessoal de alguém da equipe.</li>
+              <li><strong>Aplicativo no painel de desenvolvedores da Meta</strong>, com o produto WhatsApp ativado. A Meta oferece um número de teste para começar antes de ter tudo aprovado.</li>
+              <li><strong>Token permanente</strong> de um usuário do sistema, guardado no servidor. Nunca no código do site ou no celular.</li>
+              <li><strong>Webhook</strong>: um endereço no seu sistema que a Meta chama a cada mensagem recebida e a cada mudança de status (enviada, entregue, lida, com falha). É aqui que a resposta do cliente entra no CRM.</li>
+              <li><strong>Modelos de mensagem</strong> cadastrados e aprovados, na categoria certa. Um aviso de pedido classificado como marketing custa mais; um texto promocional disfarçado de utilidade pode ser reclassificado ou recusado.</li>
+              <li><strong>Consentimento (opt-in).</strong> A Meta exige que o cliente tenha aceitado receber mensagens pelo WhatsApp. Registre quando e onde ele aceitou: isso também é o que a LGPD vai pedir se alguém questionar.</li>
+              <li><strong>Regras do seu negócio no sistema:</strong> quando cada aviso sai, o que acontece se a mensagem falhar, quando a conversa passa para uma pessoa.</li>
+              <li><strong>Produção com monitoramento.</strong> Acompanhe entregas, falhas, qualidade dos modelos e a fatura nas primeiras semanas.</li>
+            </ol>
+            <p>Para ter uma ideia do lado técnico, este é o envio de um aviso de pedido a partir de um modelo aprovado. É uma chamada simples; o trabalho de verdade está em tudo o que vem em volta dela.</p>
+            <pre class="post-code"><code>POST https://graph.facebook.com/v26.0/{ID_DO_NUMERO}/messages
+Authorization: Bearer {TOKEN}
+Content-Type: application/json
+
+{
+  "messaging_product": "whatsapp",
+  "to": "5511900000000",
+  "type": "template",
+  "template": {
+    "name": "pedido_enviado",
+    "language": { "code": "pt_BR" },
+    "components": [{
+      "type": "body",
+      "parameters": [
+        { "type": "text", "text": "Maria" },
+        { "type": "text", "text": "#1234" }
+      ]
+    }]
+  }
+}</code></pre>
+            <!-- TODO RAFAEL: quanto tempo levou, na sua experiência, a verificação da empresa e a aprovação dos modelos, e algum modelo que foi recusado ou reclassificado (e por quê). -->
+            <p>[TODO: quanto tempo costuma levar a verificação da empresa e a aprovação dos modelos na prática, e um exemplo de modelo recusado ou reclassificado.]</p>
+          </section>
+
+          <section>
+            <h2 id="ia">Chatbot com IA: o que a Meta permite</h2>
+            <p>Desde 15 de janeiro de 2026, os termos da API proíbem empresas cujo produto principal é um assistente de IA de uso geral, como os robôs do ChatGPT e do Perplexity que funcionavam dentro do WhatsApp. A Meta deixou claro que a regra não atinge empresas que usam IA para atender os próprios clientes.</p>
+            <p>Na prática: um assistente que responde sobre os seus produtos, consulta pedidos, agenda horários e passa para uma pessoa quando precisa continua permitido. Um “pergunte qualquer coisa” aberto, sem relação com o seu negócio, não. Se a ideia é colocar IA no atendimento, o caminho mais seguro é ligar o assistente aos dados reais da empresa, com regras claras do que ele pode fazer. Explicamos esse tipo de conexão no artigo sobre <a href="/blog/o-que-e-servidor-mcp">servidores MCP</a>.</p>
+          </section>
+
+          <section>
+            <h2 id="erros">Erros que encarecem o projeto</h2>
+            <ul>
+              <li><strong>Escolher a categoria errada do modelo.</strong> Marketing custa várias vezes mais que utilidade. Vale revisar cada modelo antes de enviar para aprovação.</li>
+              <li><strong>Disparar para a base inteira no primeiro dia.</strong> O limite começa em 250 pessoas por dia, e mensagens mal recebidas derrubam a qualidade da conta.</li>
+              <li><strong>Não registrar o consentimento.</strong> Sem opt-in, o risco é bloqueio na Meta e problema com a LGPD.</li>
+              <li><strong>Deixar a conversa fora do sistema.</strong> Se a resposta do cliente não vai para o CRM ou para o ERP, o retrabalho só mudou de lugar.</li>
+              <li><strong>Tratar como projeto que termina na entrega.</strong> Em 2026 a Meta mudou cobrança, moeda, regras de IA e limites. Alguém precisa acompanhar e ajustar.</li>
+            </ul>
+          </section>
+
+          <section>
+            <h2 id="faq">Perguntas frequentes</h2>
+
+            <h3>Preciso contratar um provedor (BSP) para usar a API oficial?</h3>
+            <p>Não. A Cloud API pode ser usada direto com a Meta. O provedor faz sentido quando você quer um painel pronto, suporte na configuração ou não tem quem cuide da parte técnica.</p>
+
+            <h3>Responder clientes pela API passou a ser cobrado?</h3>
+            <p>Sim, desde 1º de outubro de 2026, depois das 1.000 mensagens de serviço gratuitas por número por mês. Conversas que começam por anúncios de clique para o WhatsApp continuam gratuitas durante a janela de entrada gratuita.</p>
+
+            <h3>Posso usar um chatbot com IA no WhatsApp da empresa?</h3>
+            <p>Pode, desde que a IA atenda o seu negócio: dúvidas, pedidos, agendamentos, suporte. O que a Meta proíbe é oferecer um assistente de IA de uso geral como produto principal.</p>
+
+            <h3>A API não oficial é mais barata. Vale a pena?</h3>
+            <p>Não para uso profissional. Ela não é autorizada pela Meta, para de funcionar quando o WhatsApp muda e pode levar ao bloqueio do número da empresa.</p>
+
+            <h3>Quanto tempo leva para começar?</h3>
+            <p>Dá para testar com o número de teste da Meta logo depois de criar o aplicativo. A produção depende da verificação da empresa, da aprovação dos modelos e do tamanho da integração com o seu sistema.</p>
+          </section>
+
+          <section>
+            <h2 id="proximo-passo">Por onde começar na sua empresa</h2>
+            <p>Antes de escolher plataforma ou provedor, liste as mensagens que a empresa manda à mão hoje e de qual sistema sai cada informação. Essa lista diz quais modelos você vai precisar, em que categoria cada um entra e quanto vai custar por mês.</p>
+            <p>A DevBatista desenha e mantém <a href="/automacao-whatsapp">automações no WhatsApp</a> ligadas aos sistemas que a empresa já usa, pela API oficial. E, como a Meta muda as regras com frequência, isso pode seguir com acompanhamento contínuo dentro do <a href="/tech-partner">Tech Partner</a>.</p>
+          </section>
+        </div>
+      </div>
+
+      <section class="section">
+        <div class="container relative">
+          <div class="cta-final">
+            <h2>Quer saber como a API oficial do WhatsApp entraria na sua operação?</h2>
+            <p>
+              Faça o Diagnóstico Tecnológico: leva cerca de 2 minutos e ajuda a entender o seu cenário
+              e o caminho mais adequado, mesmo que ele não passe por um projeto agora.
+            </p>
+            <div class="cta-final-actions">
+              <a data-lead-modal="blog-api-oficial-whatsapp" href="https://wa.me/5511991308008?text=Ol%C3%A1%21%20Li%20o%20artigo%20sobre%20a%20API%20oficial%20do%20WhatsApp%20e%20gostaria%20de%20conversar%20sobre%20integrar%20o%20WhatsApp%20aos%20sistemas%20da%20minha%20empresa." class="btn-wa btn-lg" target="_blank" rel="noopener noreferrer">Fazer o diagnóstico</a>
+              <a href="/automacao-whatsapp" class="btn-secondary btn-lg">Conhecer automação no WhatsApp</a>
+            </div>
+            <p class="cta-final-note">Sem compromisso e sem proposta automática.</p>
+          </div>
+        </div>
+      </section>
+    </article>
+  </main>
+
+  <!-- Rodapé -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid footer-grid-4">
+        <div>
+          <a href="/" class="u-inline-block-mb-5" aria-label="DevBatista - página inicial">
+            <img src="/images/logo.png" alt="DevBatista" class="u-footer-logo" width="150" height="32">
+          </a>
+          <p class="u-footer-desc">
+            Consultoria e soluções em tecnologia para empresas. Atuamos em projetos pontuais
+            e como parceiro tecnológico contínuo em consultoria, desenvolvimento de software,
+            automação, integrações e inteligência artificial.
+          </p>
+          <div class="footer-social">
+            <a href="https://github.com/devbatista" target="_blank" rel="noopener noreferrer" aria-label="GitHub da DevBatista"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg></a>
+            <a href="https://linkedin.com/company/devbatista" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn da DevBatista"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg></a>
+            <a href="https://instagram.com/_devbatista" target="_blank" rel="noopener noreferrer" aria-label="Instagram da DevBatista"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg></a>
+            <a href="mailto:rafael@devbatista.com" aria-label="Enviar e-mail para a DevBatista"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></a>
+          </div>
+        </div>
+
+        <div>
+          <h2 class="footer-heading">Soluções</h2>
+          <a href="/sistemas-web-sob-medida" class="footer-link">Sistemas web sob medida</a>
+          <a href="/integracoes-entre-plataformas" class="footer-link">Integrações entre plataformas</a>
+          <a href="/automacao-whatsapp" class="footer-link">Automação no WhatsApp</a>
+          <a href="/servidores-mcp" class="footer-link">Servidores MCP para IA</a>
+          <a href="/solucoes#consultoria" class="footer-link">Consultoria de TI</a>
+          <a href="/solucoes#software" class="footer-link">Desenvolvimento de Software</a>
+          <a href="/solucoes#automacao-ia" class="footer-link">Automação e IA</a>
+          <a href="/solucoes#aplicativos" class="footer-link">Aplicativos</a>
+          <a href="/solucoes#sites" class="footer-link">Sites e Landing Pages</a>
+        </div>
+
+        <div>
+          <h2 class="footer-heading">Modelos</h2>
+          <a href="/tech-partner" class="footer-link">Tech Partner</a>
+          <a href="/tech-partner#cto" class="footer-link">CTO as a Service</a>
+          <a href="/tech-partner#automacao-gerenciada" class="footer-link">Automação e IA Gerenciada</a>
+          <a href="/para-agencias" class="footer-link">Para Agências</a>
+          <a href="/projetos" class="footer-link">Projetos pontuais</a>
+        </div>
+
+        <div>
+          <h2 class="footer-heading">Empresa</h2>
+          <a href="/" class="footer-link">Início</a>
+          <a href="/sobre" class="footer-link">Sobre</a>
+          <a href="/produtos" class="footer-link">Produtos e Cases</a>
+          <a href="/projetos" class="footer-link">Projetos</a>
+          <a href="/faq" class="footer-link">Perguntas frequentes</a>
+          <a href="/contato" class="footer-link">Contato</a>
+          <a href="/sua-empresa-esta-perdendo-dinheiro-com-a-ti-sem-perceber" class="footer-link">E-book gratuito</a>
+          <a href="/politica-de-privacidade" class="footer-link">Política de Privacidade</a>
+          <a href="/termos-de-uso" class="footer-link">Termos de Uso</a>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; 2026 DevBatista. Todos os direitos reservados. CNPJ: 61.408.507/0001-73</p>
+        <p class="u-letter-spacing-015">&lt; built with code /&gt;</p>
+      </div>
+    </div>
+  </footer>
+
+  <a class="wa-float" href="https://wa.me/5511991308008?text=Ol%C3%A1%21%20Encontrei%20a%20DevBatista%20pelo%20site%20e%20gostaria%20de%20conversar%20sobre%20uma%20solu%C3%A7%C3%A3o%20de%20tecnologia%20para%20minha%20empresa." target="_blank" rel="noopener noreferrer"
+     aria-label="Falar com a DevBatista no WhatsApp">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.47 14.38c-.3-.15-1.75-.86-2.02-.96-.27-.1-.47-.15-.67.15-.2.3-.77.96-.94 1.16-.17.2-.35.22-.64.07-.3-.15-1.25-.46-2.38-1.47-.88-.78-1.48-1.75-1.65-2.05-.17-.3-.02-.46.13-.6.14-.14.3-.35.45-.53.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.6-.92-2.2-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.01-1.04 2.470 0 1.46 1.06 2.87 1.21 3.07.15.2 2.1 3.2 5.08 4.49.71.3 1.26.49 1.69.63.71.22 1.36.19 1.87.12.57-.09 1.75-.72 2-1.41.25-.69.25-1.28.17-1.41-.07-.13-.27-.2-.57-.35z"/><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.9-4.45 9.9-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2m0 1.67c2.2 0 4.27.86 5.83 2.42a8.2 8.2 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.25 8.24a8.23 8.23 0 0 1-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.39c0-4.54 3.7-8.24 8.26-8.24"/></svg>
+    <span>WhatsApp</span>
+  </a>
+
+  <script src="/js/main.js?v=2" defer></script>
+  <script src="/js/lead-quiz.js?v=1" defer></script>
+  <script src="/js/visitas.js?v=3" defer></script>
+</body>
+</html>
