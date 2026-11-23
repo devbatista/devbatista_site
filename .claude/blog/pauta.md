@@ -18,7 +18,7 @@ Status possíveis: `pendente`, `em revisão (PR #n)`, `publicado`, `descartado`.
 | # | Título provisório | Busca-alvo | Linka para | Slug | Status |
 |---|---|---|---|---|---|
 | 1 | O que é um servidor MCP e como ele conecta o ChatGPT e o Claude aos sistemas da sua empresa | o que é servidor mcp | /servidores-mcp | o-que-e-servidor-mcp | publicado |
-| 2 | API oficial do WhatsApp: quanto custa e como integrar ao sistema da sua empresa | api oficial whatsapp como integrar | /automacao-whatsapp | api-oficial-whatsapp | em revisão (PR #12) |
+| 2 | API oficial do WhatsApp: quanto custa e como integrar ao sistema da sua empresa | api oficial whatsapp como integrar | /automacao-whatsapp | api-oficial-whatsapp | publicado |
 | 3 | Sistema sob medida ou software pronto: como decidir sem desperdiçar dinheiro | sistema sob medida ou software pronto | /sistemas-web-sob-medida | | pendente |
 | 4 | Integração entre sistemas: como acabar com o retrabalho e as planilhas paralelas | integração entre sistemas empresa | /integracoes-entre-plataformas | | pendente |
 | 5 | Automação no WhatsApp para pequenas empresas: o que dá para automatizar (e o que não deve) | automação whatsapp pequenas empresas | /automacao-whatsapp | | pendente |
