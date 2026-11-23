@@ -40,9 +40,10 @@ O objetivo é escrever algo **mais útil e mais concreto** que o que já existe,
 ## 4. Regras de honestidade (inegociáveis)
 
 - **Nunca invente** cases, clientes, depoimentos, números de resultado, anos de experiência ou certificações.
-- Onde a experiência real do Rafael fortaleceria o texto (um exemplo de projeto, um erro comum que ele já viu, um detalhe do sistema dele), deixe um marcador visível para ele preencher:
-  `<!-- TODO RAFAEL: exemplo real de ... -->` e, no texto, um parágrafo curto entre `[TODO: ...]`.
-  Use de 1 a 3 TODOs por post, nos pontos que mais ganham com experiência própria.
+- Onde a experiência real do Rafael fortaleceria o texto (um exemplo de projeto, um erro comum que ele já viu, um detalhe do sistema dele), deixe um marcador para ele preencher **somente como comentário HTML**:
+  `<!-- TODO RAFAEL: exemplo real de ... -->`.
+  **Não** escreva parágrafo visível (`[TODO: ...]` ou similar) no texto: se o PR for mergeado sem preencher, o leitor não pode ver marcador nenhum. O texto ao redor do comentário precisa fazer sentido sozinho, sem o trecho do Rafael.
+  Use de 1 a 3 TODOs por post, nos pontos que mais ganham com experiência própria. Cada um precisa estar listado no corpo do PR (seção 8), que é onde o Rafael vai vê-los.
 - Toda afirmação factual verificável precisa de fonte; liste as fontes no corpo do PR.
 
 ## 5. Estrutura do post
@@ -64,7 +65,7 @@ O objetivo é escrever algo **mais útil e mais concreto** que o que já existe,
 5. JSON-LD `BlogPosting` com `headline`, `description`, `datePublished` e `dateModified` (data de hoje, AAAA-MM-DD), `inLanguage: pt-BR`, `mainEntityOfPage`, `author` referenciando o Person do Rafael e `publisher` referenciando `https://www.devbatista.com/#organizacao` (confira os `@id` reais usados nas outras páginas e use os mesmos). Inclua `BreadcrumbList` (Início > Blog > post). Se houver seção de FAQ, inclua `FAQPage`.
 6. Imagens: só se agregarem (diagrama, print ilustrativo). Em WebP, com `width`, `height`, `alt` e `loading="lazy"`. Não use foto de pessoa real tirada da web.
 7. Atualize `blog/index.html` (card do post no topo da listagem) e `sitemap.xml` (nova URL, com `<lastmod>` se o sitemap usar).
-8. Valide antes de commitar: HTML sem tags quebradas, JSON-LD com JSON válido (parse com Python ou Node), contagem de caracteres de title/description, links internos apontando para arquivos que existem.
+8. Valide antes de commitar: nenhum `[TODO` ou `TODO` fora de comentário HTML no post, HTML sem tags quebradas, JSON-LD com JSON válido (parse com Python ou Node), contagem de caracteres de title/description, links internos apontando para arquivos que existem.
 
 ## 7. Pauta
 
@@ -76,7 +77,7 @@ No mesmo PR, em `.claude/blog/pauta.md`, mude o status do item para `em revisão
 - Título do PR: `[blog] <título do post>`.
 - Corpo do PR, nesta ordem:
   1. **Busca-alvo** e por que o post pode ranquear (o que ele cobre que os concorrentes não cobrem, em 2 a 3 linhas).
-  2. **TODOs para o Rafael**: lista de cada marcador com o que se espera nele.
+  2. **TODOs para o Rafael**: lista de cada marcador com a seção onde está e o que se espera nele (os marcadores são só comentários HTML, então o PR é o único lugar onde ele os vê).
   3. **Post para o LinkedIn**: texto pronto de 120 a 200 palavras, primeira pessoa (Rafael), com um gancho na primeira linha e o link do post no final. Sem hashtags em excesso (no máximo 3).
   4. **Fontes** consultadas (título + URL).
   5. **Checklist de revisão**: preencher TODOs; conferir fatos; ler em voz alta; merge publica automaticamente via FTP.
