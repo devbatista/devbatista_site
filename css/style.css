@@ -5744,3 +5744,73 @@ body::before {
   color: var(--slate-500);
   font-size: var(--fs-xs);
 }
+
+/* ---------- Contato: campos novos do formulário ---------- */
+.form-optional {
+  color: var(--slate-500);
+  font-weight: 400;
+}
+
+.form-hint {
+  margin-top: 0.375rem;
+  color: var(--slate-500);
+  font-size: var(--fs-xs);
+}
+
+.form-error {
+  margin-top: 0.375rem;
+  color: #fca5a5;
+  font-size: var(--fs-xs);
+}
+
+.form-input[aria-invalid="true"],
+.form-select[aria-invalid="true"],
+.form-textarea[aria-invalid="true"] {
+  border-color: #f87171;
+}
+
+.form-check {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: start;
+  color: var(--slate-300);
+  font-size: var(--fs-sm);
+  line-height: 1.6;
+  cursor: pointer;
+}
+
+.form-check input {
+  width: 1.125rem;
+  height: 1.125rem;
+  margin-top: 0.2rem;
+  accent-color: var(--cyan-400);
+  cursor: pointer;
+}
+
+.form-check a { color: var(--cyan-400); text-decoration: underline; }
+
+.form-check input[aria-invalid="true"] { outline: 2px solid #f87171; outline-offset: 2px; }
+
+/* Honeypot: fora da tela, fora do teclado e do leitor de tela */
+.form-hp {
+  position: absolute;
+  left: -9999px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.contact-submit {
+  display: grid;
+  gap: 0.75rem;
+  justify-items: start;
+}
+
+.contact-submit-note {
+  color: var(--slate-400);
+  font-size: var(--fs-sm);
+}
+
+button[type="submit"][aria-busy="true"] { opacity: 0.7; cursor: progress; }

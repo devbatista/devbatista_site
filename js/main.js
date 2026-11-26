@@ -88,69 +88,249 @@
   }
 
   // ========================================
-  // Formulário de contato -> WhatsApp
+  // Formulário de contato -> Admin (api/contato.php) -> WhatsApp
+  //
+  // O WhatsApp abre sempre: depois da resposta do PHP, de um erro ou de
+  // CONTACT_TIMEOUT_MS sem resposta. Falha do Admin nunca trava o visitante.
   // ========================================
+  const CONTACT_ENDPOINT = '/api/contato.php';
+  const CONTACT_TIMEOUT_MS = 4000;
+  const CONTACT_WHATSAPP = '5511991308008';
+  const TRACKING_STORAGE_KEY = 'devbatista:tracking'; // gravado por js/lead-quiz.js
+
+  // Espelham as listas de api/contato.php.
+  const CONTACT_LABELS = {
+    segment: {
+      contabilidade: 'Contabilidade',
+      saude_estetica: 'Saúde e estética',
+      imobiliario: 'Imobiliário',
+      servicos: 'Prestador de serviços',
+      comercio: 'Comércio',
+      outro: 'Outro'
+    },
+    need: {
+      whatsapp_ia: 'Atendimento com IA no WhatsApp',
+      automacao_ia: 'Automação de tarefas com IA',
+      ia_sistemas: 'IA conectada aos meus sistemas',
+      sob_medida: 'Sistema, site ou app sob medida',
+      manutencao: 'Manutenção de sistema existente',
+      agencia: 'Sou agência ou software house',
+      nao_sei: 'Ainda não sei'
+    },
+    volume: {
+      ate_300: 'Até 300',
+      '300_1000': '300 a 1.000',
+      mais_1000: 'Mais de 1.000',
+      nao_sei: 'Não sei'
+    },
+    engagement: {
+      continuo: 'Contínuo',
+      pontual: 'Pontual',
+      nao_sei: 'Ainda não sei'
+    }
+  };
+
+  // DDD + número, sem o 55. Mesmas regras de api/contato.php.
+  function normalizePhone(value) {
+    let digits = String(value || '').replace(/\D+/g, '');
+    if (digits.length > 11 && digits.indexOf('55') === 0) digits = digits.slice(2);
+    return digits;
+  }
+
+  function phoneError(digits) {
+    if (digits.length < 10 || digits.length > 11) return 'Informe o WhatsApp com DDD.';
+    if (Number(digits.slice(0, 2)) < 11) return 'DDD inválido.';
+    if (digits.length === 11 && digits[2] !== '9') return 'Número de celular inválido.';
+    return '';
+  }
+
+  function formatPhone(digits) {
+    if (digits.length === 11) return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+    if (digits.length === 10) return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+    return digits;
+  }
+
+  function readContactFields(form) {
+    const data = new FormData(form);
+    const get = (key) => (data.get(key) || '').toString().trim();
+    return {
+      name: get('name'),
+      phone: normalizePhone(get('phone')),
+      email: get('email').toLowerCase(),
+      company: get('company'),
+      segment: get('segment'),
+      need: get('need'),
+      volume: get('volume'),
+      engagement: get('engagement'),
+      message: get('message'),
+      consent: data.get('consent') === 'sim',
+      website: get('website') // honeypot
+    };
+  }
+
+  function validateContact(fields) {
+    const errors = {};
+    if (fields.name.length < 2) errors.name = 'Informe seu nome.';
+    const phone = phoneError(fields.phone);
+    if (phone) errors.phone = phone;
+    if (fields.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(fields.email)) errors.email = 'E-mail inválido.';
+    if (!CONTACT_LABELS.segment[fields.segment]) errors.segment = 'Selecione o segmento.';
+    if (!CONTACT_LABELS.need[fields.need]) errors.need = 'Selecione o que você precisa.';
+    if (!fields.consent) errors.consent = 'Para enviar, é preciso concordar com a Política de Privacidade.';
+    return errors;
+  }
+
+  function contactWhatsAppText(fields) {
+    const label = (group, value) => CONTACT_LABELS[group][value] || '';
+    const lines = [
+      'Olá, DevBatista! Vim pelo site e quero conversar sobre IA para a minha empresa.',
+      '',
+      `Nome: ${fields.name}`,
+      `WhatsApp: ${formatPhone(fields.phone)}`
+    ];
+    if (fields.email) lines.push(`E-mail: ${fields.email}`);
+    if (fields.company) lines.push(`Empresa: ${fields.company}`);
+    lines.push(`Segmento: ${label('segment', fields.segment)}`);
+    lines.push(`Preciso de: ${label('need', fields.need)}`);
+    if (fields.volume) lines.push(`Mensagens por mês no WhatsApp: ${label('volume', fields.volume)}`);
+    if (fields.engagement) lines.push(`Contínuo ou pontual: ${label('engagement', fields.engagement)}`);
+    if (fields.message) lines.push('', `Meu caso: ${fields.message}`);
+    return lines.join('\n');
+  }
+
+  function readTracking() {
+    let tracking = {};
+    try {
+      tracking = JSON.parse(window.sessionStorage.getItem(TRACKING_STORAGE_KEY) || '{}') || {};
+    } catch (error) {
+      tracking = {};
+    }
+    tracking.page = window.location.pathname;
+    return tracking;
+  }
+
+  // POST com orçamento de tempo. Nunca rejeita: o resultado só vai para o log.
+  function sendContact(payload) {
+    const controller = typeof AbortController === 'function' ? new AbortController() : null;
+    const request = window.fetch(CONTACT_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify(payload),
+      credentials: 'same-origin',
+      signal: controller ? controller.signal : undefined
+    }).then((response) => response.status, () => 0);
+
+    const timeout = new Promise((resolve) => {
+      window.setTimeout(() => {
+        if (controller) controller.abort();
+        resolve('timeout');
+      }, CONTACT_TIMEOUT_MS);
+    });
+
+    return Promise.race([request, timeout]);
+  }
+
   function initContactForm() {
     const form = document.querySelector('#contact-form');
     if (!form) return;
 
-    const whatsappNumber = '5511991308008';
+    const feedback = form.querySelector('#form-feedback');
+    const button = form.querySelector('button[type="submit"]');
+    let startedAt = Date.now();
+    let sending = false;
 
-    const subjectLabels = {
-      'tech-partner': 'Tech Partner (parceria contínua)',
-      consultoria: 'Consultoria de tecnologia / CTO as a Service',
-      software: 'Desenvolvimento de software sob medida',
-      automacao: 'Automação de processos e Inteligência Artificial',
-      integracao: 'Integrações e APIs',
-      app: 'Aplicativo mobile',
-      site: 'Site institucional ou landing page',
-      agencia: 'Parceria para agência / software house',
-      manutencao: 'Manutenção e evolução de sistema existente',
-      outro: 'Outro'
+    const setFeedback = (text, url) => {
+      if (!feedback) return;
+      feedback.hidden = false;
+      feedback.textContent = text;
+      if (url) {
+        const link = document.createElement('a');
+        link.href = url;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.textContent = 'Abrir o WhatsApp';
+        feedback.append(' ', link, '.');
+      }
     };
 
-    const modelLabels = {
-      recorrente: 'Parceria recorrente',
-      projeto: 'Projeto pontual',
-      indefinido: 'Ainda não definido'
+    const clearErrors = () => {
+      form.querySelectorAll('.form-error').forEach((el) => {
+        el.hidden = true;
+        el.textContent = '';
+      });
+      form.querySelectorAll('[aria-invalid="true"]').forEach((el) => el.removeAttribute('aria-invalid'));
     };
 
-    const timelineLabels = {
-      urgente: 'O quanto antes',
-      '30dias': 'Até 30 dias',
-      '90dias': '1 a 3 meses',
-      planejamento: 'Em fase de planejamento'
+    const showErrors = (errors) => {
+      let first = null;
+      Object.keys(errors).forEach((name) => {
+        const field = form.elements.namedItem(name);
+        const message = form.querySelector(`#erro-${name}`);
+        if (field && field.setAttribute) {
+          field.setAttribute('aria-invalid', 'true');
+          if (!first) first = field;
+        }
+        if (message) {
+          message.hidden = false;
+          message.textContent = errors[name];
+        }
+      });
+      if (first) first.focus();
     };
 
     form.addEventListener('submit', (event) => {
       event.preventDefault();
+      if (sending) return;
 
-      const data = new FormData(form);
-      const get = (key) => (data.get(key) || '').toString().trim();
-
-      const lines = [
-        'Olá, DevBatista! Encontrei o site e gostaria de conversar sobre tecnologia para minha empresa.',
-        '',
-        `Nome: ${get('name') || 'Não informado'}`,
-        `Empresa: ${get('company') || 'Não informado'}`,
-        `Email: ${get('email') || 'Não informado'}`,
-        `Necessidade: ${subjectLabels[get('subject')] || 'Não informado'}`,
-        `Modelo de trabalho: ${modelLabels[get('model')] || 'Não informado'}`,
-        `Prazo: ${timelineLabels[get('timeline')] || 'Não informado'}`,
-        '',
-        `Contexto: ${get('message') || 'Não informado'}`
-      ];
-
-      const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(lines.join('\n'))}`;
-      window.open(url, '_blank', 'noopener,noreferrer');
-
-      const feedback = form.querySelector('#form-feedback');
-      if (feedback) {
-        feedback.hidden = false;
-        feedback.textContent = 'Abrimos o WhatsApp em uma nova aba com seus dados preenchidos. Se não abrir, verifique o bloqueador de pop-ups.';
+      clearErrors();
+      const fields = readContactFields(form);
+      const errors = validateContact(fields);
+      if (Object.keys(errors).length) {
+        showErrors(errors);
+        return;
       }
 
-      form.reset();
+      const url = `https://wa.me/${CONTACT_WHATSAPP}?text=${encodeURIComponent(contactWhatsAppText(fields))}`;
+
+      // A aba abre ainda no clique: depois de esperar o servidor, o navegador
+      // (Safari principalmente) bloquearia o pop-up. Ela recebe o endereço
+      // do WhatsApp quando o envio termina.
+      let tab = null;
+      try {
+        tab = window.open('', '_blank');
+        if (tab) {
+          tab.opener = null;
+          tab.document.title = 'Abrindo o WhatsApp…';
+          tab.document.body.textContent = 'Abrindo o WhatsApp…';
+        }
+      } catch (error) {
+        /* segue com o redirecionamento na própria aba */
+      }
+
+      sending = true;
+      if (button) button.setAttribute('aria-busy', 'true');
+      setFeedback('Enviando…');
+
+      const payload = Object.assign({}, fields, {
+        tracking: readTracking(),
+        meta: { elapsed_ms: Date.now() - startedAt, page_url: window.location.href }
+      });
+
+      sendContact(payload).then(() => {
+        sending = false;
+        if (button) button.removeAttribute('aria-busy');
+
+        if (tab && !tab.closed) {
+          tab.location.href = url;
+        } else {
+          // Pop-up bloqueado: segue na própria aba.
+          window.location.href = url;
+        }
+
+        setFeedback('Recebemos seus dados e abrimos o WhatsApp com a mensagem pronta. Se ele não abriu:', url);
+        form.reset();
+        startedAt = Date.now();
+      });
     });
   }
 
