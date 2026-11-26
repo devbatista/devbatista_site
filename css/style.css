@@ -5689,9 +5689,13 @@ body::before {
   }
 }
 
+/* Mesma proporção das gravações (1514x1074): o player ocupa a largura da
+   coluna, sem faixa preta, e a altura acompanha. min-width: 0 impede que o
+   vídeo alargue a coluna do grid no celular. */
 .demo-frame {
   position: relative;
-  aspect-ratio: 16 / 9;
+  min-width: 0;
+  aspect-ratio: 1514 / 1074;
   background: var(--ed-surface);
   border: 1px solid var(--ed-line);
   border-radius: var(--ed-radius);
@@ -5701,9 +5705,11 @@ body::before {
 .demo-frame video {
   display: block;
   width: 100%;
-  height: 100%;
+  max-width: 100%;
+  height: auto;
+  aspect-ratio: 1514 / 1074;
   object-fit: contain;
-  background: #000;
+  background: var(--ed-surface);
 }
 
 .demo-placeholder {

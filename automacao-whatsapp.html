@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap">
-  <link rel="stylesheet" href="/css/style.css?v=4">
+  <link rel="stylesheet" href="/css/style.css?v=5">
   <link rel="stylesheet" href="/css/lead-quiz.css?v=1">
 
   <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
@@ -394,7 +394,7 @@
           <h2 class="section-title" id="titulo-demo">Uma demonstração real, com um escritório de contabilidade fictício.</h2>
         </div>
 
-        <!-- Vídeos em assets/videos/. Sem o arquivo, o painel mostra o aviso "Vídeo em breve" no lugar do player. -->
+        <!-- Vídeos em assets/videos/, capas em assets/videos/posters/. O src e o poster só entram quando a seção chega perto da tela. Sem o arquivo, o painel mostra o aviso "Vídeo em breve" no lugar do player. -->
         <div class="demo" data-demo>
           <div class="demo-tabs" role="tablist" aria-label="Situações da demonstração">
             <button type="button" class="demo-tab active" role="tab" id="demo-tab-1" aria-controls="demo-painel-1" aria-selected="true"><span>01</span>Dúvida e documentos</button>
@@ -405,7 +405,7 @@
 
           <div class="demo-panel" role="tabpanel" id="demo-painel-1" aria-labelledby="demo-tab-1" tabindex="0">
             <div class="demo-frame">
-              <video controls muted playsinline preload="none" data-src="/assets/videos/1-duvida-e-lembrete.mp4" aria-describedby="demo-legenda-1"></video>
+              <video controls muted playsinline preload="none" width="1514" height="1074" data-src="/assets/videos/1-duvida-e-lembrete.mp4" data-poster="/assets/videos/posters/1-duvida-e-lembrete.jpg" aria-describedby="demo-legenda-1"></video>
               <p class="demo-placeholder" hidden>Vídeo em breve.</p>
             </div>
             <ul class="demo-captions" id="demo-legenda-1">
@@ -416,7 +416,7 @@
 
           <div class="demo-panel" role="tabpanel" id="demo-painel-2" aria-labelledby="demo-tab-2" tabindex="0">
             <div class="demo-frame">
-              <video controls muted playsinline preload="none" data-src="/assets/videos/2-guia-das-e-paguei.mp4" aria-describedby="demo-legenda-2"></video>
+              <video controls muted playsinline preload="none" width="1514" height="1074" data-src="/assets/videos/2-guia-das-e-paguei.mp4" data-poster="/assets/videos/posters/2-guia-das-e-paguei.jpg" aria-describedby="demo-legenda-2"></video>
               <p class="demo-placeholder" hidden>Vídeo em breve.</p>
             </div>
             <ul class="demo-captions" id="demo-legenda-2">
@@ -426,7 +426,7 @@
 
           <div class="demo-panel" role="tabpanel" id="demo-painel-3" aria-labelledby="demo-tab-3" tabindex="0">
             <div class="demo-frame">
-              <video controls muted playsinline preload="none" data-src="/assets/videos/3-transbordo-contratacao.mp4" aria-describedby="demo-legenda-3"></video>
+              <video controls muted playsinline preload="none" width="1514" height="1074" data-src="/assets/videos/3-transbordo-contratacao.mp4" data-poster="/assets/videos/posters/3-transbordo-contratacao.jpg" aria-describedby="demo-legenda-3"></video>
               <p class="demo-placeholder" hidden>Vídeo em breve.</p>
             </div>
             <ul class="demo-captions" id="demo-legenda-3">
@@ -436,7 +436,7 @@
 
           <div class="demo-panel" role="tabpanel" id="demo-painel-4" aria-labelledby="demo-tab-4" tabindex="0">
             <div class="demo-frame">
-              <video controls muted playsinline preload="none" data-src="/assets/videos/4-tentativa-de-vazamento.mp4" aria-describedby="demo-legenda-4"></video>
+              <video controls muted playsinline preload="none" width="1514" height="1074" data-src="/assets/videos/4-tentativa-de-vazamento.mp4" data-poster="/assets/videos/posters/4-tentativa-de-vazamento.jpg" aria-describedby="demo-legenda-4"></video>
               <p class="demo-placeholder" hidden>Vídeo em breve.</p>
             </div>
             <ul class="demo-captions" id="demo-legenda-4">
@@ -667,7 +667,7 @@
     <span>WhatsApp</span>
   </a>
 
-  <script src="/js/main.js?v=4" defer></script>
+  <script src="/js/main.js?v=5" defer></script>
   <script src="/js/lead-quiz.js?v=1" defer></script>
   <script src="/js/visitas.js?v=3" defer></script>
 </body>

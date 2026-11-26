@@ -467,6 +467,16 @@ endereço em `data-src`; `initDemoVideos()` só põe o `src` quando a seção
 chega perto da tela (IntersectionObserver), e só no vídeo da aba aberta. Se o
 arquivo não existir, o painel mostra "Vídeo em breve." no lugar do player.
 
+Cada vídeo tem uma capa em `assets/videos/posters/` (mesmo nome, `.jpg`,
+1280 px de largura, até 150 KB), um quadro em que a conversa já aparece. Ela
+fica em `data-poster` e vira `poster` junto com o `src`: com o atributo
+`poster` direto no HTML, o navegador baixaria as quatro capas logo ao abrir a
+página, mesmo com `preload="none"`. O player segue a proporção das gravações
+(1514x1074, `aspect-ratio` no `.demo-frame`); ao trocar os vídeos por outros
+de proporção diferente, ajuste o `aspect-ratio` e o `width`/`height` do
+`<video>`. Arquivo novo com o mesmo nome fica preso no cache de 1 ano do
+`.jpg`: troque o nome ou acrescente `?v=N` no `data-poster`.
+
 > `css/lead-quiz.css` e `js/lead-quiz.js` são servidos com cache `immutable` de
 > 1 ano. Ao editá-los, **incremente o `?v=` nos 9 HTMLs**, senão ninguém verá a
 > mudança.
