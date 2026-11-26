@@ -175,8 +175,9 @@ test('envio válido: 201, grava no JSONL dos leads e manda ao Admin no formato c
   assert.ok(hit, 'o Admin deveria receber o lead');
   assert.equal(hit.auth, 'Bearer token-de-teste');
   assert.deepEqual(Object.keys(hit.lead).sort(),
-    ['company', 'details', 'email', 'name', 'need', 'phone', 'site_id', 'source', 'summary'].sort());
+    ['company', 'consent', 'details', 'email', 'name', 'need', 'phone', 'site_id', 'source', 'summary'].sort());
   assert.equal(hit.lead.source, 'contact');
+  assert.equal(hit.lead.consent, true, 'booleano, não "sim" nem 1');
   assert.equal(hit.lead.name, input.name);
   assert.equal(hit.lead.email, 'maria@escritorio.com.br');
   assert.equal(hit.lead.phone, '11987654321', 'DDD + número, sem o 55');

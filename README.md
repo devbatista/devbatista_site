@@ -424,22 +424,26 @@ O PHP grava o envio no mesmo `api/storage/leads/AAAA-MM.jsonl` do diagnóstico
   "site_id": "a1b2c3d4e5f60718",
   "name": "...", "company": "...", "email": "...", "phone": "11987654321",
   "need": "whatsapp_ia",
+  "consent": true,
   "summary": "Contato pelo site: Atendimento com IA no WhatsApp · Contabilidade",
   "details": "todos os campos preenchidos, um por linha"
 }
 ```
 
 E-mail, empresa, volume de mensagens, "contínuo ou pontual" e o caso são
-opcionais. Honeypot preenchido (`website`) ou envio em menos de 2 s respondem
-`200` sem gravar nem enviar nada. Rate limit próprio (`contato-*` em
-`storage/ratelimit/`). O resultado da integração fica em
-`api/storage/integrations/` com `"source": "contact"`.
+opcionais (`email` vai vazio quando não preenchido). `consent` é sempre `true`,
+porque o envio sem aceite é barrado antes; o Admin o registra nas observações
+do lead ("Consentimento de contato: sim"). Honeypot preenchido (`website`) ou
+envio em menos de 2 s respondem `200` sem gravar nem enviar nada. Rate limit
+próprio (`contato-*` em `storage/ratelimit/`). O resultado da integração fica
+em `api/storage/integrations/` com `"source": "contact"`.
 
-> **Pendente no Admin:** hoje o `SiteLeadCapture` só aceita `source`
-> `diagnosis` e `ebook` e exige e-mail. Até ele aceitar `contact` (com e-mail
-> opcional e o campo `need`), o envio responde `422` lá — o contato continua
-> gravado no JSONL daqui, o erro vai para `storage/integrations/` e o
-> visitante segue para o WhatsApp normalmente.
+No Admin, o `SiteLeadCapture` cria o lead com origem "site", o serviço de
+interesse a partir do `need` (agência e "ainda não sei" ficam sem serviço), o
+próximo passo "Responder o contato do site pelo WhatsApp" e uma notificação.
+Se o Admin estiver fora do ar ou recusar o envio, o contato continua gravado
+no JSONL daqui, o erro vai para `storage/integrations/` e o visitante segue
+para o WhatsApp normalmente.
 
 As páginas de oferta levam a `/contato?need=<valor>` ("Contar meu caso"), que
 já chega com "O que você precisa" selecionado.
