@@ -13,6 +13,7 @@
     initNavScroll();
     initMobileMenu();
     initContactForm();
+    initDemoVideos();
     initFaqAccordion();
     initScrollyProcess();
     initServiceFinder();
@@ -151,6 +152,88 @@
 
       form.reset();
     });
+  }
+
+  // ========================================
+  // Home: vídeos da demonstração em abas
+  // O vídeo só ganha o src quando a seção entra na tela. Sem o arquivo
+  // (ainda não publicado), o painel mostra o aviso no lugar do player.
+  // ========================================
+  function initDemoVideos() {
+    const root = document.querySelector('[data-demo]');
+    if (!root) return;
+
+    const tabs = Array.from(root.querySelectorAll('[role="tab"]'));
+    const panels = tabs.map((tab) => document.getElementById(tab.getAttribute('aria-controls')));
+    if (!tabs.length || panels.some((panel) => !panel)) return;
+
+    let current = 0;
+    let visible = false;
+
+    const load = (panel) => {
+      const video = panel.querySelector('video[data-src]');
+      if (!video) return;
+      const placeholder = panel.querySelector('.demo-placeholder');
+      video.addEventListener('error', () => {
+        video.hidden = true;
+        if (placeholder) placeholder.hidden = false;
+      }, { once: true });
+      video.preload = 'metadata';
+      video.src = video.dataset.src;
+      video.removeAttribute('data-src');
+    };
+
+    const select = (index, focus) => {
+      current = index;
+      tabs.forEach((tab, i) => {
+        const active = i === index;
+        tab.classList.toggle('active', active);
+        tab.setAttribute('aria-selected', active ? 'true' : 'false');
+        tab.tabIndex = active ? 0 : -1;
+        panels[i].hidden = !active;
+        if (!active) {
+          const video = panels[i].querySelector('video');
+          if (video && !video.paused) video.pause();
+        }
+      });
+      if (focus) tabs[index].focus();
+      if (visible) load(panels[index]);
+    };
+
+    tabs.forEach((tab, i) => {
+      tab.addEventListener('click', () => select(i, false));
+      tab.addEventListener('keydown', (event) => {
+        const last = tabs.length - 1;
+        const next = {
+          ArrowRight: i === last ? 0 : i + 1,
+          ArrowLeft: i === 0 ? last : i - 1,
+          Home: 0,
+          End: last
+        }[event.key];
+        if (next === undefined) return;
+        event.preventDefault();
+        select(next, true);
+      });
+    });
+
+    select(0, false);
+
+    const reveal = () => {
+      visible = true;
+      load(panels[current]);
+    };
+
+    if (!('IntersectionObserver' in window)) {
+      reveal();
+      return;
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      if (!entries.some((entry) => entry.isIntersecting)) return;
+      observer.disconnect();
+      reveal();
+    }, { rootMargin: '200px 0px' });
+    observer.observe(root);
   }
 
   // ========================================
