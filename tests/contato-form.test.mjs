@@ -45,7 +45,7 @@ function element(extra = {}) {
   };
 }
 
-function setup({ values = VALID, fetchImpl, popupBlocked = false } = {}) {
+function setup({ values = VALID, fetchImpl, popupBlocked = false, search = '' } = {}) {
   const fields = {};
   Object.keys(VALID).forEach((name) => { fields[name] = element({ name }); });
   const errors = {};
@@ -92,7 +92,8 @@ function setup({ values = VALID, fetchImpl, popupBlocked = false } = {}) {
       get(key) { return key in this.f.values ? this.f.values[key] : null; }
     },
     sessionStorage: { getItem: () => JSON.stringify({ utm_source: 'instagram', landing_page: '/?utm_source=instagram' }) },
-    location: { pathname: '/contato', href: 'https://www.devbatista.com/contato' },
+    location: { pathname: '/contato', search, href: 'https://www.devbatista.com/contato' + search },
+    URLSearchParams,
     open(url, target) { opened.push({ url, target }); return popupBlocked ? null : tab; },
     fetch(url, opts) {
       posts.push({ url, opts, body: JSON.parse(opts.body) });
@@ -232,4 +233,16 @@ test('WhatsApp com 55 na frente é aceito; celular sem o 9 não', async () => {
   const no9 = setup({ values: { ...VALID, phone: '11 88765-4321' } });
   await no9.submit();
   assert.equal(no9.posts.length, 0);
+});
+
+// --- Pré-seleção vinda das páginas de oferta ---------------------------------
+
+test('?need= da página de oferta já seleciona a necessidade', () => {
+  const env = setup({ search: '?need=ia_sistemas' });
+  assert.equal(env.fields.need.value, 'ia_sistemas');
+});
+
+test('?need= com valor fora da lista é ignorado', () => {
+  const env = setup({ search: '?need=qualquer-coisa' });
+  assert.equal(env.fields.need.value, undefined);
 });

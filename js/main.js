@@ -237,6 +237,14 @@
     const feedback = form.querySelector('#form-feedback');
     const button = form.querySelector('button[type="submit"]');
     let startedAt = Date.now();
+
+    // /contato?need=whatsapp_ia: as páginas de oferta já chegam com a
+    // necessidade escolhida. Valor fora da lista é ignorado.
+    const preset = typeof URLSearchParams === 'function'
+      ? new URLSearchParams(window.location.search || '').get('need')
+      : null;
+    const needField = form.elements.namedItem('need');
+    if (preset && CONTACT_LABELS.need[preset] && needField) needField.value = preset;
     let sending = false;
 
     const setFeedback = (text, url) => {
