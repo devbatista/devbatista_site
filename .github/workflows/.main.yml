@@ -23,43 +23,24 @@ jobs:
         HEALTH_TOKEN: ${{ secrets.HEALTH_TOKEN }}
         CRM_TOKEN: ${{ secrets.CRM_TOKEN }}
         SITE_VISITS_TOKEN: ${{ secrets.SITE_VISITS_TOKEN }}
-        LEADS_EMAIL_TO: ${{ secrets.LEADS_EMAIL_TO }}
-        LEADS_EMAIL_FROM: ${{ secrets.LEADS_EMAIL_FROM }}
-        LEADS_EMAIL_TIERS: ${{ secrets.LEADS_EMAIL_TIERS }}
-        AWS_SES_REGION: ${{ secrets.AWS_SES_REGION }}
-        AWS_SES_KEY: ${{ secrets.AWS_SES_KEY }}
-        AWS_SES_SECRET: ${{ secrets.AWS_SES_SECRET }}
-        WHATSAPP_TOKEN: ${{ secrets.WHATSAPP_TOKEN }}
-        WHATSAPP_ENDPOINT: ${{ secrets.WHATSAPP_ENDPOINT }}
-        WHATSAPP_TO: ${{ secrets.WHATSAPP_TO }}
       run: |
         php -r '
           // var_export() cuida do escaping: um segredo com aspas, barras
           // ou $ não quebra o arquivo nem injeta código.
           $env = static fn(string $k): string => (string) (getenv($k) ?: "");
 
-          $crm     = $env("CRM_TOKEN");
-          $visits  = $env("SITE_VISITS_TOKEN");
-          $emailTo = $env("LEADS_EMAIL_TO");
-          $sesKey  = $env("AWS_SES_KEY");
-          $waToken = $env("WHATSAPP_TOKEN");
-
-          // Faixas comerciais que viram e-mail. Secret opcional: sem ele,
-          // notifica morno e quente. "todos" manda tudo, inclusive frio.
-          $tiers = array_values(array_filter(array_map("trim", explode(",", strtolower($env("LEADS_EMAIL_TIERS"))))));
-          if ($tiers === []) {
-              $tiers = ["morno", "quente"];
-          } elseif ($tiers === ["todos"]) {
-              $tiers = [];
-          }
+          $crm    = $env("CRM_TOKEN");
+          $visits = $env("SITE_VISITS_TOKEN");
 
           $config = [
               "health_token" => $env("HEALTH_TOKEN"),
 
               "allowed_origins" => ["https://www.devbatista.com", "https://devbatista.com"],
 
-              // CRM próprio (Admin DevBatista): diagnóstico e e-book viram
-              // lead lá. CRM_TOKEN é o mesmo SITE_LEADS_TOKEN do Admin.
+              // CRM próprio (Admin DevBatista): diagnóstico, contato e e-book
+              // viram lead lá, e é o Admin quem manda os e-mails (aviso ao
+              // Rafael e o e-book ao visitante). CRM_TOKEN é o mesmo
+              // SITE_LEADS_TOKEN do Admin.
               "crm_enabled" => $crm !== "",
               "crm_token"   => $crm,
 
@@ -68,29 +49,6 @@ jobs:
               // SITE_VISITS_TOKEN do Admin, separado do de leads.
               "visits_enabled" => $visits !== "",
               "visits_token"   => $visits,
-
-              // O material só chega por e-mail: sem SES, não há entrega.
-              // Sai do endereço pessoal — o e-book é assinado pelo Rafael e
-              // promete resposta direta. Nada aqui é segredo.
-              "ebook_email_enabled"   => $sesKey !== "",
-              "ebook_download_url"    => "https://www.devbatista.com/materiais/ebook-devbatista-sua-empresa-esta-perdendo-dinheir-com-a-ti.pdf",
-              "ebook_email_from"      => "rafael@devbatista.com",
-              "ebook_email_from_name" => "Rafael Batista",
-
-              // Só liga com destinatário E credencial: ligado sem chave só
-              // encheria o log de erro a cada lead.
-              "email_enabled" => $emailTo !== "" && $sesKey !== "",
-              "email_to"      => $emailTo,
-              "email_from"    => $env("LEADS_EMAIL_FROM"),
-              "email_tiers"   => $tiers,
-              "ses_region"    => $env("AWS_SES_REGION"),
-              "ses_key"       => $sesKey,
-              "ses_secret"    => $env("AWS_SES_SECRET"),
-
-              "whatsapp_enabled"  => $waToken !== "",
-              "whatsapp_token"    => $waToken,
-              "whatsapp_endpoint" => $env("WHATSAPP_ENDPOINT"),
-              "whatsapp_to"       => $env("WHATSAPP_TO"),
           ];
 
           file_put_contents(

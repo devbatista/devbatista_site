@@ -5,7 +5,8 @@ declare(strict_types=1);
 /**
  * DevBatista — configuração compartilhada do endpoint de leads.
  *
- * Usado por leads.php e health.php. Só define funções: incluir este
+ * Usado por leads.php, ebook.php, contato.php, visitas.php e health.php.
+ * Só define funções: incluir este
  * arquivo não produz saída nem efeito colateral.
  */
 
@@ -28,8 +29,9 @@ function lead_config(): array
         'rate_limit_max' => 5,          // envios por IP
         'rate_limit_window' => 600,     // em 10 minutos
         'health_token' => '',           // vazio = /api/health.php responde 404
-        // CRM próprio (Admin DevBatista): o diagnóstico e o e-book viram
-        // lead lá. O token é o SITE_LEADS_TOKEN do Admin.
+        // CRM próprio (Admin DevBatista): o diagnóstico, o contato e o
+        // e-book viram lead lá, e é o Admin quem manda os e-mails (aviso ao
+        // Rafael e o e-book ao visitante). O token é o SITE_LEADS_TOKEN do Admin.
         'crm_enabled' => false,
         'crm_url' => 'https://admin.devbatista.com/webhooks/site-leads',
         'crm_token' => '',
@@ -39,28 +41,6 @@ function lead_config(): array
         'visits_enabled' => false,
         'visits_url' => 'https://admin.devbatista.com/webhooks/site-visits',
         'visits_token' => '',
-        // Entrega do material. O PDF vai como link, não como anexo: 326 KB
-        // saindo de um domínio novo é convite para o filtro de spam.
-        'ebook_email_enabled' => false,
-        'ebook_download_url' => '',     // URL absoluta do PDF
-        // Remetente do material: endereço pessoal, não o leads@. Vazio cai
-        // em email_from. Precisa ser identidade verificada no SES.
-        'ebook_email_from' => '',
-        'ebook_email_from_name' => 'Rafael Batista', // só ASCII: vai cru no From
-        // Notificação por e-mail via API do Amazon SES (api/mailer.php).
-        'email_enabled' => false,
-        'email_to' => '',               // aceita vários separados por vírgula
-        'email_from' => '',             // precisa ser identidade verificada no SES
-        'email_from_name' => 'DevBatista Leads', // só ASCII: vai cru no header From
-        // Quais faixas de potencial comercial viram e-mail. Lista vazia = todas.
-        'email_tiers' => ['morno', 'quente'],
-        'ses_region' => '',
-        'ses_key' => '',                // IAM com permissão ses:SendEmail
-        'ses_secret' => '',
-        'whatsapp_enabled' => false,
-        'whatsapp_endpoint' => '',
-        'whatsapp_token' => '',
-        'whatsapp_to' => '',
     ];
 
     $file = __DIR__ . '/config.php';
@@ -126,10 +106,7 @@ const HTTP_TOTAL_TIMEOUT = 8;
  * Nunca lança e nunca devolve o corpo cru num erro — só o suficiente para
  * diagnosticar. Usa cURL quando disponível; cai para stream context.
  *
- * $payload aceita array (serializado aqui) ou string já serializada. A
- * segunda forma existe para o SES: a assinatura SigV4 é calculada sobre os
- * bytes exatos do corpo, então quem assina precisa enviar o mesmo texto que
- * hasheou — não uma reserialização.
+ * $payload aceita array (serializado aqui) ou string já serializada.
  *
  * @param array|string|null $payload
  * @return array{ok:bool,http_code:int,body:array,message:string}

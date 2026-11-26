@@ -8,11 +8,10 @@ Arquivos entregues após a conversão nas landing pages.
 | --- | --- |
 | `ebook-devbatista-sua-empresa-esta-perdendo-dinheir-com-a-ti.pdf` | `/sua-empresa-esta-perdendo-dinheiro-com-a-ti-sem-perceber` — e-book "Sua empresa está perdendo dinheiro com a TI sem perceber?" |
 
-O PDF **não é entregue pela página**: `api/ebook.php` manda o link por e-mail
-depois que o visitante informa o endereço. A URL fica em `ebook_download_url`
-(`api/config.php`), gerado pelo deploy a partir de `.github/workflows/.main.yml`.
-Se o PDF mudar de nome, ajuste nesses dois lugares — o front não conhece mais
-o arquivo.
+O PDF **não é entregue pela página**: `api/ebook.php` repassa o pedido ao
+Admin DevBatista, e é o Admin quem manda o link por e-mail. A URL do PDF fica
+na configuração do Admin, não neste repositório. Se o PDF mudar de nome,
+ajuste lá — nem o front nem o `api/ebook.php` conhecem o arquivo.
 
 Como o link é público, quem tiver o endereço baixa sem preencher nada. Isso é
 proposital: o mesmo link precisa funcionar quando o lead abrir o e-mail dias

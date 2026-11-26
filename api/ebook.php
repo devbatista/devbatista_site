@@ -5,11 +5,12 @@ declare(strict_types=1);
 /**
  * DevBatista — captura de e-mail da landing page do e-book.
  *
- * Aceita apenas POST com JSON contendo o e-mail. Valida, grava e devolve
- * JSON. O front (js/ebook.js) libera o PDF assim que a resposta chega.
+ * Aceita apenas POST com JSON contendo o e-mail. Valida, grava e repassa
+ * ao Admin DevBatista, que é quem envia o e-book por e-mail. A resposta ao
+ * visitante depende do Admin ter aceitado o pedido (ver ebook_deliver()).
  *
  * Compartilha configuração, armazenamento e cliente HTTP com o endpoint
- * do diagnóstico (leads-config.php). O CRM fica desligado por padrão —
+ * do diagnóstico (leads-config.php). O Admin fica desligado por padrão —
  * ver api/config.example.php.
  */
 
@@ -24,7 +25,6 @@ header('Cache-Control: no-store');
 header('Referrer-Policy: strict-origin-when-cross-origin');
 
 require_once __DIR__ . '/leads-config.php';
-require_once __DIR__ . '/mailer.php';
 
 // ============================================================
 // Limites
@@ -55,35 +55,6 @@ function ebook_fail(int $status, string $code, string $message): void
     ebook_respond($status, ['ok' => false, 'error' => ['code' => $code, 'message' => $message]]);
 }
 
-/**
- * Entrega a resposta e segue processando em segundo plano.
- *
- * O lead já está gravado quando esta função é chamada: nada do que rodar
- * depois (CRM) pode segurar o download do visitante.
- */
-function ebook_respond_and_continue(int $status, array $payload): void
-{
-    $body = (string) json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-
-    http_response_code($status);
-    header('Content-Length: ' . strlen($body));
-    header('Connection: close');
-    echo $body;
-
-    ignore_user_abort(true);
-
-    foreach (['fastcgi_finish_request', 'litespeed_finish_request'] as $finish) {
-        if (function_exists($finish)) {
-            $finish();
-            return;
-        }
-    }
-
-    while (ob_get_level() > 0) {
-        ob_end_flush();
-    }
-    flush();
-}
 
 // ============================================================
 // Entrada
@@ -226,105 +197,27 @@ function ebook_store(array $record): bool
 }
 
 // ============================================================
-// Entrega do material
-// O e-book agora chega SÓ por e-mail: a página não baixa mais nada. Por
-// isso este envio é síncrono e o seu resultado decide a resposta HTTP —
-// dizer "enviamos" sem ter enviado perde o lead e a confiança dele.
+// Entrega do material — pelo Admin DevBatista.
+// A página não baixa o PDF: quem manda o e-mail com o link é o Admin, ao
+// receber o lead com "source": "ebook". Então o repasse É a entrega, e por
+// isso é síncrono: o resultado decide a resposta ao visitante. Dizer
+// "enviamos" sem o Admin ter aceitado perde o lead e a confiança dele.
 // ============================================================
+
+/** Só estas respostas do Admin contam como entregue (201 criado, 200 completado). */
+const EBOOK_DELIVERED_HTTP_CODES = [200, 201];
+
+/**
+ * Repassa o pedido ao Admin, que cria (ou completa) o lead e manda o e-book.
+ *
+ * Topo de funil: o lead nasce só com o e-mail, que o Admin usa de nome
+ * provisório. Se a pessoa depois fizer o diagnóstico, o mesmo lead é
+ * completado (ver sendToCrm() em leads.php).
+ *
+ * Espera no máximo HTTP_TOTAL_TIMEOUT (8 s, em leads-config.php): sem
+ * resposta nesse tempo, conta como falha.
+ */
 function ebook_deliver(array $lead): array
-{
-    $config = lead_config();
-
-    if (!($config['ebook_email_enabled'] ?? false)) {
-        return ['status' => 'disabled'];
-    }
-
-    $url = trim((string) ($config['ebook_download_url'] ?? ''));
-    if ($url === '') {
-        return ['status' => 'error', 'message' => 'ebook_download_url não configurada'];
-    }
-
-    // Sai do endereço pessoal, não de um leads@: o material é assinado pelo
-    // Rafael e promete resposta direta. Remetente genérico desmente isso —
-    // e responder o e-mail já cai na caixa certa, sem Reply-To.
-    $sent = ses_send_email(
-        $lead['email'],
-        'Seu e-book chegou: onde a TI drena o lucro da sua empresa',
-        ebook_email_html($url),
-        ebook_email_text($url),
-        [
-            'from' => (string) ($config['ebook_email_from'] ?: $config['email_from']),
-            'from_name' => (string) $config['ebook_email_from_name'],
-        ]
-    );
-
-    if (!$sent['ok']) {
-        return ['status' => 'error', 'http_code' => $sent['http_code'], 'message' => $sent['message']];
-    }
-
-    return ['status' => 'ok', 'message_id' => (string) ($sent['body']['MessageId'] ?? '')];
-}
-
-function ebook_email_text(string $url): string
-{
-    return implode("\n", [
-        'Obrigado pelo interesse!',
-        '',
-        'Seu e-book "Sua empresa está perdendo dinheiro com a TI sem perceber?"',
-        'está disponível neste link:',
-        '',
-        $url,
-        '',
-        'São 5 sinais de que a tecnologia está custando mais do que deveria —',
-        'e o que fazer sobre cada um deles, sem linguagem técnica.',
-        '',
-        'Qualquer dúvida, é só responder este e-mail.',
-        '',
-        'Rafael Batista',
-        'DevBatista — devbatista.com',
-    ]);
-}
-
-function ebook_email_html(string $url): string
-{
-    $link = htmlspecialchars($url, ENT_QUOTES, 'UTF-8');
-
-    return '<!doctype html><html lang="pt-BR"><head><meta charset="utf-8">'
-        . '<meta name="viewport" content="width=device-width,initial-scale=1"></head>'
-        . '<body style="margin:0;padding:24px 12px;background:#f1f5f9;font-family:-apple-system,BlinkMacSystemFont,\'Segoe UI\',Arial,sans-serif;">'
-        . '<div style="max-width:560px;margin:0 auto;background:#ffffff;border-radius:12px;padding:32px;">'
-
-        . '<h1 style="margin:0 0 16px;font-size:22px;line-height:1.3;color:#0f172a;">Seu e-book está pronto</h1>'
-
-        . '<p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#334155;">'
-        . '<strong>Sua empresa está perdendo dinheiro com a TI sem perceber?</strong><br>'
-        . '5 sinais de que a tecnologia está custando mais do que deveria — e o que fazer '
-        . 'sobre cada um deles, sem linguagem técnica.</p>'
-
-        . '<p style="margin:0 0 28px;"><a href="' . $link . '" '
-        . 'style="display:inline-block;background:#1d4ed8;color:#ffffff;text-decoration:none;'
-        . 'padding:14px 28px;border-radius:8px;font-size:15px;font-weight:700;">'
-        . 'Baixar o e-book (PDF)</a></p>'
-
-        . '<p style="margin:0 0 24px;font-size:13px;line-height:1.6;color:#64748b;">'
-        . 'Se o botão não funcionar, copie este endereço no navegador:<br>'
-        . '<a href="' . $link . '" style="color:#1d4ed8;word-break:break-all;">' . $link . '</a></p>'
-
-        . '<p style="margin:0;padding-top:20px;border-top:1px solid #e2e8f0;font-size:14px;line-height:1.6;color:#334155;">'
-        . 'Qualquer dúvida, é só responder este e-mail — ele chega direto em mim.<br><br>'
-        . '<strong>Rafael Batista</strong><br>'
-        . '<span style="color:#64748b;">DevBatista · devbatista.com</span></p>'
-
-        . '</div></body></html>';
-}
-
-// ============================================================
-// CRM (Admin DevBatista) — desligado por padrão.
-// Topo de funil: o lead nasce só com o e-mail, que o Admin usa de nome
-// provisório. Se a pessoa depois fizer o diagnóstico, o mesmo lead é
-// completado (ver sendToCrm() em leads.php).
-// ============================================================
-function ebook_send_to_crm(array $lead): array
 {
     $config = lead_config();
     if (!$config['crm_enabled'] || (string) $config['crm_token'] === '') {
@@ -338,11 +231,20 @@ function ebook_send_to_crm(array $lead): array
         'summary' => ebook_crm_summary($lead),
     ]);
 
-    if (!$response['ok']) {
-        return ['status' => 'error', 'http_code' => $response['http_code'], 'message' => $response['message']];
+    if (!in_array($response['http_code'], EBOOK_DELIVERED_HTTP_CODES, true)) {
+        return [
+            'status' => 'error',
+            'http_code' => $response['http_code'],
+            'message' => $response['message'] !== '' ? $response['message'] : ('HTTP ' . $response['http_code']),
+        ];
     }
 
-    return ['status' => 'ok', 'crm_lead_id' => (string) ($response['body']['id'] ?? '')];
+    return [
+        'status' => 'ok',
+        'http_code' => $response['http_code'],
+        'crm_lead_id' => (string) ($response['body']['id'] ?? ''),
+        'created' => (bool) ($response['body']['created'] ?? false),
+    ];
 }
 
 /** Uma linha para a timeline do lead: o material e, se houver, a campanha. */
@@ -356,6 +258,31 @@ function ebook_crm_summary(array $lead): string
 
     return 'Baixou o e-book pelo site (' . $lead['source'] . ')'
         . ($campaign !== [] ? ' · ' . implode(' / ', $campaign) : '');
+}
+
+/**
+ * Registra o resultado da entrega em storage/integrations, no mesmo formato
+ * de logIntegrations() em leads.php — é por aqui que se confere se o Admin
+ * aceitou cada pedido.
+ */
+function ebook_log_delivery(string $leadId, array $crm): void
+{
+    $dir = storage_dir('integrations');
+    if ($dir === null) {
+        error_log('[ebook] não foi possível registrar a entrega do pedido ' . $leadId);
+        return;
+    }
+
+    $line = json_encode([
+        'lead_id' => $leadId,
+        'source' => 'ebook',
+        'at' => gmdate('c'),
+        'results' => ['crm' => $crm],
+    ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+    if ($line !== false) {
+        @file_put_contents($dir . '/' . gmdate('Y-m') . '.jsonl', $line . PHP_EOL, FILE_APPEND | LOCK_EX);
+    }
 }
 
 // ============================================================
@@ -416,19 +343,32 @@ try {
         'user_agent' => substr((string) ($_SERVER['HTTP_USER_AGENT'] ?? ''), 0, 255),
     ];
 
-    // Grava primeiro: nenhuma integração pode custar um lead.
+    // Grava primeiro: o pedido fica no JSONL mesmo se o Admin falhar.
     if (!ebook_store($record)) {
         error_log('[ebook] falha ao gravar lead ' . $record['id']);
     }
 
-    // O e-mail É a entrega — a página não baixa mais o PDF. Então ele roda
-    // ANTES da resposta: se o envio falhar, o visitante precisa saber disso
-    // e poder tentar de novo, em vez de ficar esperando um e-mail que nunca
-    // chegou. O lead já está gravado, então nada se perde nesse caminho.
-    $delivery = ebook_deliver($record);
+    // O repasse ao Admin É a entrega: ele é quem manda o e-mail com o link.
+    // Por isso roda ANTES da resposta. Se falhar, o visitante precisa saber
+    // e poder tentar de novo, em vez de esperar um e-mail que não vai sair.
+    $startedAt = microtime(true);
+    try {
+        $delivery = ebook_deliver($record);
+    } catch (Throwable $deliveryError) {
+        $delivery = ['status' => 'error', 'message' => $deliveryError->getMessage()];
+    }
+    $delivery['duration_ms'] = (int) round((microtime(true) - $startedAt) * 1000);
+    ebook_log_delivery($record['id'], $delivery);
 
-    if (($delivery['status'] ?? '') === 'error') {
-        error_log('[ebook] entrega ' . $record['id'] . ': ' . ($delivery['message'] ?? ''));
+    if (($delivery['status'] ?? '') !== 'ok') {
+        error_log(sprintf(
+            '[ebook] entrega %s não confirmada pelo Admin (%s, HTTP %d, %d ms): %s',
+            $record['id'],
+            (string) ($delivery['status'] ?? ''),
+            (int) ($delivery['http_code'] ?? 0),
+            $delivery['duration_ms'],
+            ($delivery['status'] ?? '') === 'disabled' ? 'crm desligado na configuração' : (string) ($delivery['message'] ?? '')
+        ));
         ebook_fail(
             502,
             'delivery_failed',
@@ -436,21 +376,7 @@ try {
         );
     }
 
-    // Responde antes de falar com o CRM: ele não segura o visitante.
-    ebook_respond_and_continue(201, ['ok' => true, 'data' => ['lead_id' => $record['id']]]);
-
-    // A partir daqui o visitante já recebeu a resposta: uma falha de
-    // integração vira log, nunca uma tentativa de responder de novo.
-    try {
-        $integration = ebook_send_to_crm($record);
-        if (($integration['status'] ?? '') === 'error') {
-            error_log('[ebook] crm ' . $record['id'] . ': ' . ($integration['message'] ?? ''));
-        }
-    } catch (Throwable $integrationError) {
-        error_log('[ebook] crm ' . $record['id'] . ': ' . $integrationError->getMessage());
-    }
-
-    exit;
+    ebook_respond(201, ['ok' => true, 'data' => ['lead_id' => $record['id']]]);
 } catch (Throwable $exception) {
     error_log('[ebook] ' . $exception->getMessage() . ' @ ' . $exception->getFile() . ':' . $exception->getLine());
     ebook_fail(500, 'internal_error', 'Não foi possível processar o envio agora. Tente novamente em instantes.');
