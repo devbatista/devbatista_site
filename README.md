@@ -1,10 +1,11 @@
-# DevBatista — Consultoria e Soluções em Tecnologia
+# DevBatista — IA aplicada a pequenas e médias empresas
 
 ![DevBatista](https://www.devbatista.com/images/logo.png)
 
-> Consultoria de TI, desenvolvimento de software sob medida, automação, inteligência
-> artificial e integrações para empresas. Atuamos em projetos pontuais e como parceiro
-> tecnológico contínuo (Tech Partner).
+> IA que trabalha no negócio: atendimento com IA no WhatsApp, automação de tarefas com
+> IA e IA conectada aos sistemas da empresa (servidores MCP), sob medida, com implantação
+> e acompanhamento mensal. Por trás disso, consultoria de TI, software sob medida e
+> parceria tecnológica contínua (Tech Partner).
 
 [![Site](https://img.shields.io/badge/Website-devbatista.com-003366?style=flat-square)](https://www.devbatista.com)
 [![GitHub](https://img.shields.io/badge/GitHub-devbatista-333?style=flat-square)](https://github.com/devbatista)
@@ -15,8 +16,12 @@
 
 ## Posicionamento
 
-O site comunica **"somos o parceiro de tecnologia da sua empresa"** — e não
-"desenvolvemos sites e sistemas". A prioridade de conversão é:
+O site comunica **"IA que trabalha no seu negócio"**, para pequenas e médias
+empresas. A home apresenta três ofertas — atendimento com IA no WhatsApp,
+automação de tarefas com IA e IA conectada aos sistemas (MCP) — e mostra a IA
+funcionando numa demonstração em vídeo (`/#demo`). Consultoria e
+desenvolvimento aparecem como a base que sustenta as ofertas ("Como
+entregamos"). A prioridade de conversão é:
 
 ```
 visitante → Diagnóstico Tecnológico → lead qualificado → WhatsApp
@@ -64,7 +69,7 @@ Preços não são exibidos em nenhuma página.
 ├── produtos.html         # Produtos próprios (SaaS) + cases
 ├── projetos.html         # Projetos pontuais + galeria
 ├── sobre.html            # Sobre a empresa e o fundador
-├── contato.html          # Canais e briefing → WhatsApp
+├── contato.html          # Canais e formulário → api/contato.php → WhatsApp
 ├── faq.html              # Perguntas frequentes (com schema FAQPage)
 ├── blog/index.html       # Blog (/blog/), noindex até o primeiro post
 ├── bio.html              # /bio: link da bio do Instagram (noindex, fora do sitemap)
@@ -84,6 +89,7 @@ Preços não são exibidos em nenhuma página.
 ├── js/lead-quiz.js       # Diagnóstico Tecnológico (modal, scoring, envio)
 ├── js/visitas.js         # Medição de visitas (beacon para api/v.php)
 ├── api/leads.php         # Endpoint de recebimento dos leads
+├── api/contato.php       # Formulário de /contato → Admin (mesmo webhook dos leads)
 ├── api/leads-config.php  # Configuração compartilhada (leads, health e visitas)
 ├── api/visitas.php       # Repasse das visitas ao Admin (funções)
 ├── api/v.php             # Beacon das visitas (pageview e leave)
@@ -92,6 +98,7 @@ Preços não são exibidos em nenhuma página.
 ├── api/health.php        # Diagnóstico do ambiente (protegido por token)
 ├── api/config.example.php# Modelo de configuração (copie para config.php)
 ├── api/storage/          # Leads em JSONL + rate limit (bloqueado por .htaccess)
+├── assets/videos/        # Vídeos da demonstração da home (ver "Demonstração em vídeo")
 ├── tests/                # node --test 'tests/*.test.mjs' (fora do deploy)
 └── images/               # Imagens (.webp servidas, .png como originais)
 ```
@@ -397,6 +404,54 @@ O Admin não conhece as tabelas do quiz: recebe os textos prontos de
 
 Respostas: `201` criado, `200` completado, `401` token, `422` dados inválidos
 (com `errors`). O resultado fica em `api/storage/integrations/` como `crm`.
+
+### Formulário de contato (`api/contato.php`)
+
+O formulário de `/contato` (`initContactForm()` em `js/main.js`) valida os
+campos, faz `POST` JSON em `/api/contato.php` e **abre o WhatsApp em qualquer
+desfecho**: com a resposta do PHP, com um erro ou depois de 4 s sem resposta.
+A aba nova é aberta ainda no clique (senão o Safari bloqueia o pop-up) e
+recebe o endereço do `wa.me` quando o envio termina; com pop-up bloqueado, o
+WhatsApp abre na própria aba.
+
+O PHP grava o envio no mesmo `api/storage/leads/AAAA-MM.jsonl` do diagnóstico
+(com `"source": "contact"`), responde `201` e só então chama `crm_request()`:
+
+```json
+{
+  "source": "contact",
+  "site_id": "a1b2c3d4e5f60718",
+  "name": "...", "company": "...", "email": "...", "phone": "11987654321",
+  "need": "whatsapp_ia",
+  "summary": "Contato pelo site: Atendimento com IA no WhatsApp · Contabilidade",
+  "details": "todos os campos preenchidos, um por linha"
+}
+```
+
+E-mail, empresa, volume de mensagens, "contínuo ou pontual" e o caso são
+opcionais. Honeypot preenchido (`website`) ou envio em menos de 2 s respondem
+`200` sem gravar nem enviar nada. Rate limit próprio (`contato-*` em
+`storage/ratelimit/`). O resultado da integração fica em
+`api/storage/integrations/` com `"source": "contact"`.
+
+> **Pendente no Admin:** hoje o `SiteLeadCapture` só aceita `source`
+> `diagnosis` e `ebook` e exige e-mail. Até ele aceitar `contact` (com e-mail
+> opcional e o campo `need`), o envio responde `422` lá — o contato continua
+> gravado no JSONL daqui, o erro vai para `storage/integrations/` e o
+> visitante segue para o WhatsApp normalmente.
+
+As listas de opções existem nos dois lados e **precisam mudar juntas**:
+`CONTACT_LABELS` em `js/main.js` e `CONTACT_SEGMENTS`, `CONTACT_NEEDS`,
+`CONTACT_VOLUMES` e `CONTACT_ENGAGEMENTS` em `api/contato.php`.
+
+### Demonstração em vídeo (`/#demo`)
+
+Quatro vídeos em abas, em `assets/videos/`: `1-duvida-e-lembrete.mp4` (cobre
+duas situações), `2-guia-das-e-paguei.mp4`, `3-transbordo-contratacao.mp4` e
+`4-tentativa-de-vazamento.mp4`. O `<video>` sai com `preload="none"` e o
+endereço em `data-src`; `initDemoVideos()` só põe o `src` quando a seção
+chega perto da tela (IntersectionObserver), e só no vídeo da aba aberta. Se o
+arquivo não existir, o painel mostra "Vídeo em breve." no lugar do player.
 
 > `css/lead-quiz.css` e `js/lead-quiz.js` são servidos com cache `immutable` de
 > 1 ano. Ao editá-los, **incremente o `?v=` nos 9 HTMLs**, senão ninguém verá a
