@@ -59,11 +59,12 @@ Preços não são exibidos em nenhuma página.
 ```
 .
 ├── index.html            # Home
-├── solucoes.html         # Soluções: página central, linka as 4 páginas de serviço
+├── solucoes.html         # Soluções: página central, linka as páginas de serviço
+├── automacao-whatsapp.html            # Oferta de IA: atendimento com IA no WhatsApp
+├── automacao-de-tarefas-com-ia.html   # Oferta de IA: automação de tarefas com IA
+├── servidores-mcp.html                # Oferta de IA: IA conectada aos sistemas (MCP)
 ├── sistemas-web-sob-medida.html       # Serviço (noindex até revisar o texto)
 ├── integracoes-entre-plataformas.html # Serviço (noindex até revisar o texto)
-├── automacao-whatsapp.html            # Serviço (noindex até revisar o texto)
-├── servidores-mcp.html                # Serviço (noindex até revisar o texto)
 ├── tech-partner.html     # Tech Partner + CTO as a Service + IA gerenciada
 ├── para-agencias.html    # Parceria para agências e software houses
 ├── produtos.html         # Produtos próprios (SaaS) + cases
@@ -440,13 +441,26 @@ opcionais. Honeypot preenchido (`website`) ou envio em menos de 2 s respondem
 > gravado no JSONL daqui, o erro vai para `storage/integrations/` e o
 > visitante segue para o WhatsApp normalmente.
 
+As páginas de oferta levam a `/contato?need=<valor>` ("Contar meu caso"), que
+já chega com "O que você precisa" selecionado.
+
 As listas de opções existem nos dois lados e **precisam mudar juntas**:
 `CONTACT_LABELS` em `js/main.js` e `CONTACT_SEGMENTS`, `CONTACT_NEEDS`,
 `CONTACT_VOLUMES` e `CONTACT_ENGAGEMENTS` em `api/contato.php`.
 
+### Páginas de oferta de IA
+
+`/automacao-whatsapp`, `/automacao-de-tarefas-com-ia` e `/servidores-mcp` têm a
+mesma estrutura: primeira dobra, quando faz sentido, o que a IA faz, demonstração
+(as duas primeiras; a de MCP tem "Como funciona" com exemplos de pergunta),
+segurança, implantação, FAQ (também em `FAQPage`), as outras ofertas e a
+chamada final. Os textos usam só o que o site já afirma: sem cases, clientes
+ou números. Indexadas e no sitemap.
+
 ### Demonstração em vídeo (`/#demo`)
 
-Quatro vídeos em abas, em `assets/videos/`: `1-duvida-e-lembrete.mp4` (cobre
+Quatro vídeos em abas, em `assets/videos/` (também usados em
+`/automacao-whatsapp` e, os dois primeiros, em `/automacao-de-tarefas-com-ia`): `1-duvida-e-lembrete.mp4` (cobre
 duas situações), `2-guia-das-e-paguei.mp4`, `3-transbordo-contratacao.mp4` e
 `4-tentativa-de-vazamento.mp4`. O `<video>` sai com `preload="none"` e o
 endereço em `data-src`; `initDemoVideos()` só põe o `src` quando a seção
