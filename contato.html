@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap">
-  <link rel="stylesheet" href="/css/style.css?v=3">
+  <link rel="stylesheet" href="/css/style.css?v=4">
   <link rel="stylesheet" href="/css/lead-quiz.css?v=1">
 
   <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
@@ -260,83 +260,119 @@
               <p class="section-label">Briefing</p>
               <h2>Conte o essencial para iniciar a conversa.</h2>
               <p>
-                O envio abre uma mensagem no WhatsApp já preenchida com os dados, para
-                acelerar o atendimento sem perder contexto.
+                Seus dados chegam direto para a nossa equipe e o WhatsApp abre com a
+                mensagem pronta, para a conversa começar com contexto.
               </p>
             </div>
 
             <form id="contact-form" class="u-form-stack" novalidate>
               <div class="u-grid-2-gap-5 contact-form-grid">
                 <div>
-                  <label for="name" class="form-label">Nome completo</label>
-                  <input type="text" id="name" name="name" required autocomplete="name" placeholder="Seu nome" class="form-input">
+                  <label for="name" class="form-label">Nome</label>
+                  <input type="text" id="name" name="name" required maxlength="120" autocomplete="name" placeholder="Seu nome" class="form-input" aria-describedby="erro-name">
+                  <p class="form-error" id="erro-name" hidden></p>
                 </div>
                 <div>
-                  <label for="company" class="form-label">Empresa</label>
-                  <input type="text" id="company" name="company" autocomplete="organization" placeholder="Nome da empresa" class="form-input">
+                  <label for="phone" class="form-label">WhatsApp</label>
+                  <input type="tel" id="phone" name="phone" required inputmode="tel" maxlength="20" autocomplete="tel-national" placeholder="(11) 99999-9999" class="form-input" aria-describedby="dica-phone erro-phone">
+                  <p class="form-hint" id="dica-phone">DDD + número.</p>
+                  <p class="form-error" id="erro-phone" hidden></p>
                 </div>
               </div>
 
               <div class="u-grid-2-gap-5 contact-form-grid">
                 <div>
-                  <label for="email" class="form-label">E-mail corporativo</label>
-                  <input type="email" id="email" name="email" required autocomplete="email" placeholder="voce@suaempresa.com" class="form-input">
+                  <label for="email" class="form-label">E-mail <span class="form-optional">(opcional)</span></label>
+                  <input type="email" id="email" name="email" maxlength="160" autocomplete="email" placeholder="voce@empresa.com" class="form-input" aria-describedby="erro-email">
+                  <p class="form-error" id="erro-email" hidden></p>
                 </div>
                 <div>
-                  <label for="subject" class="form-label">Necessidade principal</label>
-                  <select id="subject" name="subject" required class="form-select">
+                  <label for="company" class="form-label">Empresa <span class="form-optional">(opcional)</span></label>
+                  <input type="text" id="company" name="company" maxlength="120" autocomplete="organization" placeholder="Nome da empresa" class="form-input">
+                </div>
+              </div>
+
+              <div class="u-grid-2-gap-5 contact-form-grid">
+                <div>
+                  <label for="segment" class="form-label">Segmento</label>
+                  <select id="segment" name="segment" required class="form-select" aria-describedby="erro-segment">
                     <option value="">Selecione uma opção</option>
-                    <option value="tech-partner">Tech Partner (parceria contínua)</option>
-                    <option value="consultoria">Consultoria / CTO as a Service</option>
-                    <option value="software">Desenvolvimento de software sob medida</option>
-                    <option value="automacao">Automação de processos e IA</option>
-                    <option value="integracao">Integrações e APIs</option>
-                    <option value="app">Aplicativo mobile</option>
-                    <option value="site">Site institucional ou landing page</option>
-                    <option value="agencia">Sou agência / software house</option>
-                    <option value="manutencao">Manutenção de sistema existente</option>
+                    <option value="contabilidade">Contabilidade</option>
+                    <option value="saude_estetica">Saúde e estética</option>
+                    <option value="imobiliario">Imobiliário</option>
+                    <option value="servicos">Prestador de serviços</option>
+                    <option value="comercio">Comércio</option>
                     <option value="outro">Outro</option>
                   </select>
+                  <p class="form-error" id="erro-segment" hidden></p>
+                </div>
+                <div>
+                  <label for="need" class="form-label">O que você precisa</label>
+                  <select id="need" name="need" required class="form-select" aria-describedby="erro-need">
+                    <option value="">Selecione uma opção</option>
+                    <option value="whatsapp_ia">Atendimento com IA no WhatsApp</option>
+                    <option value="automacao_ia">Automação de tarefas com IA</option>
+                    <option value="ia_sistemas">IA conectada aos meus sistemas</option>
+                    <option value="sob_medida">Sistema, site ou app sob medida</option>
+                    <option value="manutencao">Manutenção de sistema existente</option>
+                    <option value="agencia">Sou agência ou software house</option>
+                    <option value="nao_sei">Ainda não sei</option>
+                  </select>
+                  <p class="form-error" id="erro-need" hidden></p>
                 </div>
               </div>
 
               <div class="u-grid-2-gap-5 contact-form-grid">
                 <div>
-                  <label for="model" class="form-label">Modelo de trabalho</label>
-                  <select id="model" name="model" class="form-select">
+                  <label for="volume" class="form-label">Mensagens por mês no WhatsApp <span class="form-optional">(opcional)</span></label>
+                  <select id="volume" name="volume" class="form-select">
                     <option value="">Selecione uma opção</option>
-                    <option value="recorrente">Parceria recorrente</option>
-                    <option value="projeto">Projeto pontual</option>
-                    <option value="indefinido">Ainda não definido</option>
+                    <option value="ate_300">Até 300</option>
+                    <option value="300_1000">300 a 1.000</option>
+                    <option value="mais_1000">Mais de 1.000</option>
+                    <option value="nao_sei">Não sei</option>
                   </select>
                 </div>
                 <div>
-                  <label for="timeline" class="form-label">Prazo desejado</label>
-                  <select id="timeline" name="timeline" class="form-select">
+                  <label for="engagement" class="form-label">Busca algo contínuo ou pontual? <span class="form-optional">(opcional)</span></label>
+                  <select id="engagement" name="engagement" class="form-select">
                     <option value="">Selecione uma opção</option>
-                    <option value="urgente">O quanto antes</option>
-                    <option value="30dias">Até 30 dias</option>
-                    <option value="90dias">1 a 3 meses</option>
-                    <option value="planejamento">Em fase de planejamento</option>
+                    <option value="continuo">Contínuo</option>
+                    <option value="pontual">Pontual</option>
+                    <option value="nao_sei">Ainda não sei</option>
                   </select>
                 </div>
               </div>
 
               <div>
-                <label for="message" class="form-label">Contexto</label>
-                <textarea id="message" name="message" required rows="6" class="form-textarea"
-                  placeholder="Descreva o processo, o sistema ou o objetivo. Se possível, diga o que trava hoje e o que a empresa espera ganhar."></textarea>
+                <label for="message" class="form-label">Conte um pouco do seu caso <span class="form-optional">(opcional)</span></label>
+                <textarea id="message" name="message" rows="5" maxlength="2000" class="form-textarea"
+                  placeholder="O que toma tempo da equipe hoje, quantos clientes atendem, quais sistemas usam."></textarea>
               </div>
 
-              <div class="contact-submit-row">
-                <p>Ao enviar, abrimos o WhatsApp com a mensagem preenchida.</p>
+              <div>
+                <label class="form-check" for="consent">
+                  <input type="checkbox" id="consent" name="consent" value="sim" required aria-describedby="erro-consent">
+                  <span>Concordo com a <a href="/politica-de-privacidade" target="_blank" rel="noopener">Política de Privacidade</a> e aceito ser contatado pelo WhatsApp.</span>
+                </label>
+                <p class="form-error" id="erro-consent" hidden></p>
+              </div>
+
+              <!-- Honeypot: invisível para pessoas; robô que preenche recebe 200 e nada é enviado. -->
+              <div class="form-hp" aria-hidden="true">
+                <label for="contato-website">Não preencha este campo</label>
+                <input type="text" id="contato-website" name="website" tabindex="-1" autocomplete="off">
+              </div>
+
+              <div class="contact-submit">
                 <button type="submit" class="btn-wa">
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.47 14.38c-.3-.15-1.75-.86-2.02-.96-.27-.1-.47-.15-.67.15-.2.3-.77.96-.94 1.16-.17.2-.35.22-.64.07-.3-.15-1.25-.46-2.38-1.47-.88-.78-1.48-1.75-1.65-2.05-.17-.3-.02-.46.13-.6.14-.14.3-.35.45-.53.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.6-.92-2.2-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.01-1.04 2.470 0 1.46 1.06 2.87 1.21 3.07.15.2 2.1 3.2 5.08 4.49.71.3 1.26.49 1.69.63.71.22 1.36.19 1.87.12.57-.09 1.75-.72 2-1.41.25-.69.25-1.28.17-1.41-.07-.13-.27-.2-.57-.35z"/><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.9-4.45 9.9-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2m0 1.67c2.2 0 4.27.86 5.83 2.42a8.2 8.2 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.25 8.24a8.23 8.23 0 0 1-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.39c0-4.54 3.7-8.24 8.26-8.24"/></svg>
-                  Enviar briefing
+                  Enviar e falar no WhatsApp
                 </button>
+                <p class="contact-submit-note">Respondemos no mesmo dia útil.</p>
               </div>
 
-              <p id="form-feedback" class="lead-sm" role="status" hidden></p>
+              <p id="form-feedback" class="lead-sm" role="status" aria-live="polite" hidden></p>
             </form>
           </div>
         </div>
@@ -402,13 +438,13 @@
 
         <div>
           <h2 class="footer-heading">Soluções</h2>
+          <a href="/automacao-whatsapp" class="footer-link">Atendimento com IA no WhatsApp</a>
+          <a href="/automacao-de-tarefas-com-ia" class="footer-link">Automação de tarefas com IA</a>
+          <a href="/servidores-mcp" class="footer-link">Servidores MCP para IA</a>
           <a href="/sistemas-web-sob-medida" class="footer-link">Sistemas web sob medida</a>
           <a href="/integracoes-entre-plataformas" class="footer-link">Integrações entre plataformas</a>
-          <a href="/automacao-whatsapp" class="footer-link">Automação no WhatsApp</a>
-          <a href="/servidores-mcp" class="footer-link">Servidores MCP para IA</a>
           <a href="/solucoes#consultoria" class="footer-link">Consultoria de TI</a>
           <a href="/solucoes#software" class="footer-link">Desenvolvimento de Software</a>
-          <a href="/solucoes#automacao-ia" class="footer-link">Automação e IA</a>
           <a href="/solucoes#aplicativos" class="footer-link">Aplicativos</a>
           <a href="/solucoes#sites" class="footer-link">Sites e Landing Pages</a>
         </div>
@@ -449,7 +485,7 @@
     <span>WhatsApp</span>
   </a>
 
-  <script src="/js/main.js?v=2" defer></script>
+  <script src="/js/main.js?v=4" defer></script>
   <script src="/js/lead-quiz.js?v=1" defer></script>
   <script src="/js/visitas.js?v=3" defer></script>
 </body>

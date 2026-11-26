@@ -5615,3 +5615,202 @@ body::before {
 .project-filter.active { background: rgba(34, 211, 238, 0.08); }
 .projects-count { background: transparent; border-color: var(--ed-line); }
 .project-visual { background: var(--ed-surface-2); }
+
+/* ========================================
+   Home: IA para pequenas e médias empresas
+   ======================================== */
+
+/* As 3 ofertas: a pergunta do cliente acima do nome da oferta */
+.service-row .stage-kicker { margin-bottom: 0.625rem; }
+
+.offers-note {
+  margin-top: 1.75rem;
+  color: var(--slate-300);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+}
+
+/* Para quem é: destaque da gestão contínua de IA */
+.stage-highlight { color: var(--white); font-weight: 700; }
+
+/* Como entregamos: a stack fecha a seção */
+.delivery-stack { margin-top: clamp(2.5rem, 2rem + 2vw, 4rem); }
+
+/* ---------- Veja funcionando (vídeos da demonstração) ---------- */
+.demo-tabs {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.25rem;
+  scrollbar-width: thin;
+}
+
+.demo-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  flex-shrink: 0;
+  min-height: 48px;
+  padding: 0.75rem 1.125rem;
+  background: transparent;
+  border: 1px solid var(--ed-line-strong);
+  border-radius: var(--ed-radius);
+  color: var(--slate-300);
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition: border-color 0.25s, color 0.25s, background 0.25s;
+}
+
+.demo-tab span { color: var(--cyan-400); letter-spacing: 0.16em; }
+
+.demo-tab:hover { border-color: rgba(34, 211, 238, 0.35); color: var(--white); }
+
+.demo-tab.active,
+.demo-tab[aria-selected="true"] {
+  border-color: var(--cyan-400);
+  background: rgba(34, 211, 238, 0.08);
+  color: var(--white);
+}
+
+.demo-panel[hidden] { display: none; }
+
+.demo-panel { display: grid; gap: 1.25rem; }
+
+@media (min-width: 900px) {
+  .demo-panel {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+    gap: 2rem;
+    align-items: start;
+  }
+}
+
+.demo-frame {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background: var(--ed-surface);
+  border: 1px solid var(--ed-line);
+  border-radius: var(--ed-radius);
+  overflow: hidden;
+}
+
+.demo-frame video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000;
+}
+
+.demo-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  color: var(--slate-400);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-align: center;
+  text-transform: uppercase;
+  background: var(--ed-surface);
+}
+
+.demo-placeholder[hidden] { display: none; }
+
+.demo-captions {
+  display: grid;
+  gap: 1rem;
+  list-style: none;
+}
+
+.demo-captions li {
+  padding-left: 1rem;
+  border-left: 2px solid var(--cyan-400);
+  color: var(--white);
+  font-size: var(--fs-lead);
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.demo-note {
+  margin-top: 1rem;
+  color: var(--slate-500);
+  font-size: var(--fs-xs);
+}
+
+/* ---------- Contato: campos novos do formulário ---------- */
+.form-optional {
+  color: var(--slate-500);
+  font-weight: 400;
+}
+
+.form-hint {
+  margin-top: 0.375rem;
+  color: var(--slate-500);
+  font-size: var(--fs-xs);
+}
+
+.form-error {
+  margin-top: 0.375rem;
+  color: #fca5a5;
+  font-size: var(--fs-xs);
+}
+
+.form-input[aria-invalid="true"],
+.form-select[aria-invalid="true"],
+.form-textarea[aria-invalid="true"] {
+  border-color: #f87171;
+}
+
+.form-check {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: start;
+  color: var(--slate-300);
+  font-size: var(--fs-sm);
+  line-height: 1.6;
+  cursor: pointer;
+}
+
+.form-check input {
+  width: 1.125rem;
+  height: 1.125rem;
+  margin-top: 0.2rem;
+  accent-color: var(--cyan-400);
+  cursor: pointer;
+}
+
+.form-check a { color: var(--cyan-400); text-decoration: underline; }
+
+.form-check input[aria-invalid="true"] { outline: 2px solid #f87171; outline-offset: 2px; }
+
+/* Honeypot: fora da tela, fora do teclado e do leitor de tela */
+.form-hp {
+  position: absolute;
+  left: -9999px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.contact-submit {
+  display: grid;
+  gap: 0.75rem;
+  justify-items: start;
+}
+
+.contact-submit-note {
+  color: var(--slate-400);
+  font-size: var(--fs-sm);
+}
+
+button[type="submit"][aria-busy="true"] { opacity: 0.7; cursor: progress; }

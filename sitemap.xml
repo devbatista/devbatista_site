@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://www.devbatista.com/</loc>
-    <lastmod>2026-11-10</lastmod>
+    <lastmod>2026-11-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
@@ -44,13 +44,13 @@
   </url>
   <url>
     <loc>https://www.devbatista.com/contato</loc>
-    <lastmod>2026-11-10</lastmod>
+    <lastmod>2026-11-26</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.devbatista.com/faq</loc>
-    <lastmod>2026-11-10</lastmod>
+    <lastmod>2026-11-26</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -92,6 +92,25 @@
     <priority>0.7</priority>
   </url>
 
+  <url>
+    <loc>https://www.devbatista.com/automacao-whatsapp</loc>
+    <lastmod>2026-11-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.devbatista.com/automacao-de-tarefas-com-ia</loc>
+    <lastmod>2026-11-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.devbatista.com/servidores-mcp</loc>
+    <lastmod>2026-11-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
   <!-- TODO: páginas com noindex até a revisão do texto provisório. Ao publicar
        cada uma (robots = index), descomente a <url> e atualize o <lastmod>.
   <url>
@@ -100,14 +119,6 @@
   </url>
   <url>
     <loc>https://www.devbatista.com/integracoes-entre-plataformas</loc>
-    <lastmod>AAAA-MM-DD</lastmod>
-  </url>
-  <url>
-    <loc>https://www.devbatista.com/automacao-whatsapp</loc>
-    <lastmod>AAAA-MM-DD</lastmod>
-  </url>
-  <url>
-    <loc>https://www.devbatista.com/servidores-mcp</loc>
     <lastmod>AAAA-MM-DD</lastmod>
   </url>
   -->
