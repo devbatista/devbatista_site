@@ -344,8 +344,9 @@
 
   // ========================================
   // Home: vídeos da demonstração em abas
-  // O vídeo só ganha o src quando a seção entra na tela. Sem o arquivo
-  // (ainda não publicado), o painel mostra o aviso no lugar do player.
+  // O vídeo só ganha o src e a capa (poster) quando a seção entra na tela:
+  // o navegador baixa o poster assim que o atributo existe, mesmo com
+  // preload="none". Sem o arquivo, o painel mostra o aviso no lugar do player.
   // ========================================
   function initDemoVideos() {
     const root = document.querySelector('[data-demo]');
@@ -366,6 +367,10 @@
         video.hidden = true;
         if (placeholder) placeholder.hidden = false;
       }, { once: true });
+      if (video.dataset.poster) {
+        video.poster = video.dataset.poster;
+        video.removeAttribute('data-poster');
+      }
       video.preload = 'metadata';
       video.src = video.dataset.src;
       video.removeAttribute('data-src');

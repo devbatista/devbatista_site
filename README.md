@@ -424,22 +424,26 @@ O PHP grava o envio no mesmo `api/storage/leads/AAAA-MM.jsonl` do diagnóstico
   "site_id": "a1b2c3d4e5f60718",
   "name": "...", "company": "...", "email": "...", "phone": "11987654321",
   "need": "whatsapp_ia",
+  "consent": true,
   "summary": "Contato pelo site: Atendimento com IA no WhatsApp · Contabilidade",
   "details": "todos os campos preenchidos, um por linha"
 }
 ```
 
 E-mail, empresa, volume de mensagens, "contínuo ou pontual" e o caso são
-opcionais. Honeypot preenchido (`website`) ou envio em menos de 2 s respondem
-`200` sem gravar nem enviar nada. Rate limit próprio (`contato-*` em
-`storage/ratelimit/`). O resultado da integração fica em
-`api/storage/integrations/` com `"source": "contact"`.
+opcionais (`email` vai vazio quando não preenchido). `consent` é sempre `true`,
+porque o envio sem aceite é barrado antes; o Admin o registra nas observações
+do lead ("Consentimento de contato: sim"). Honeypot preenchido (`website`) ou
+envio em menos de 2 s respondem `200` sem gravar nem enviar nada. Rate limit
+próprio (`contato-*` em `storage/ratelimit/`). O resultado da integração fica
+em `api/storage/integrations/` com `"source": "contact"`.
 
-> **Pendente no Admin:** hoje o `SiteLeadCapture` só aceita `source`
-> `diagnosis` e `ebook` e exige e-mail. Até ele aceitar `contact` (com e-mail
-> opcional e o campo `need`), o envio responde `422` lá — o contato continua
-> gravado no JSONL daqui, o erro vai para `storage/integrations/` e o
-> visitante segue para o WhatsApp normalmente.
+No Admin, o `SiteLeadCapture` cria o lead com origem "site", o serviço de
+interesse a partir do `need` (agência e "ainda não sei" ficam sem serviço), o
+próximo passo "Responder o contato do site pelo WhatsApp" e uma notificação.
+Se o Admin estiver fora do ar ou recusar o envio, o contato continua gravado
+no JSONL daqui, o erro vai para `storage/integrations/` e o visitante segue
+para o WhatsApp normalmente.
 
 As páginas de oferta levam a `/contato?need=<valor>` ("Contar meu caso"), que
 já chega com "O que você precisa" selecionado.
@@ -466,6 +470,16 @@ duas situações), `2-guia-das-e-paguei.mp4`, `3-transbordo-contratacao.mp4` e
 endereço em `data-src`; `initDemoVideos()` só põe o `src` quando a seção
 chega perto da tela (IntersectionObserver), e só no vídeo da aba aberta. Se o
 arquivo não existir, o painel mostra "Vídeo em breve." no lugar do player.
+
+Cada vídeo tem uma capa em `assets/videos/posters/` (mesmo nome, `.jpg`,
+1280 px de largura, até 150 KB), um quadro em que a conversa já aparece. Ela
+fica em `data-poster` e vira `poster` junto com o `src`: com o atributo
+`poster` direto no HTML, o navegador baixaria as quatro capas logo ao abrir a
+página, mesmo com `preload="none"`. O player segue a proporção das gravações
+(1514x1074, `aspect-ratio` no `.demo-frame`); ao trocar os vídeos por outros
+de proporção diferente, ajuste o `aspect-ratio` e o `width`/`height` do
+`<video>`. Arquivo novo com o mesmo nome fica preso no cache de 1 ano do
+`.jpg`: troque o nome ou acrescente `?v=N` no `data-poster`.
 
 > `css/lead-quiz.css` e `js/lead-quiz.js` são servidos com cache `immutable` de
 > 1 ano. Ao editá-los, **incremente o `?v=` nos 9 HTMLs**, senão ninguém verá a

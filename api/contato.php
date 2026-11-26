@@ -436,6 +436,9 @@ function contact_send_to_crm(array $lead): array
         'email' => $lead['email'],
         'phone' => $lead['phone'],
         'need' => $lead['need'],
+        // Sempre true aqui (a validação barra o envio sem aceite). O Admin
+        // registra "Consentimento de contato: sim" nas observações do lead.
+        'consent' => $lead['consent'],
         'summary' => contact_crm_summary($lead),
         'details' => contact_crm_details($lead),
     ]);
