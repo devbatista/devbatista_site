@@ -16,7 +16,6 @@ declare(strict_types=1);
  *   GET /api/health.php?token=...
  *   GET /api/health.php   (com header X-Health-Token)
  *   GET /api/health.php?token=...&check=crm       (não cria lead)
- *   GET /api/health.php?token=...&check=ses       (ping read-only)
  */
 
 ini_set('display_errors', '0');
@@ -29,7 +28,6 @@ header('Cache-Control: no-store');
 header('X-Robots-Tag: noindex, nofollow');
 
 require_once __DIR__ . '/leads-config.php';
-require_once __DIR__ . '/mailer.php';
 
 /** Traduz a falha do CRM em algo acionável, sem repetir o corpo cru. */
 function crm_hint(array $ping): string
@@ -42,21 +40,6 @@ function crm_hint(array $ping): string
             return 'token recusado: crm_token diferente do SITE_LEADS_TOKEN do Admin, ou SITE_LEADS_TOKEN não configurado lá';
         case 404:
             return 'webhook não encontrado — confira crm_url e se o deploy do Admin já tem /webhooks/site-leads';
-        default:
-            return $ping['message'] !== '' ? $ping['message'] : ('HTTP ' . $ping['http_code']);
-    }
-}
-
-/** Traduz a falha do SES em algo acionável. */
-function ses_hint(array $ping): string
-{
-    switch ($ping['http_code']) {
-        case 0:
-            return $ping['message'] . ' (credenciais ausentes ou saída HTTPS bloqueada pela hospedagem)';
-        case 403:
-            return 'credencial inválida, relógio do servidor fora de hora, ou o IAM sem ses:SendEmail / ses:GetAccount';
-        case 404:
-            return 'região sem SES habilitado — confira ses_region';
         default:
             return $ping['message'] !== '' ? $ping['message'] : ('HTTP ' . $ping['http_code']);
     }
@@ -125,23 +108,6 @@ try {
             'enabled' => (bool) $config['crm_enabled'],
             'token_set' => $secretSet('crm_token'),
             'url' => (string) $config['crm_url'],
-            'implemented' => true,
-        ],
-        'email' => [
-            'enabled' => (bool) $config['email_enabled'],
-            'to_set' => $secretSet('email_to'),
-            'from_set' => $secretSet('email_from'),
-            'region_set' => $secretSet('ses_region'),
-            'key_set' => $secretSet('ses_key'),
-            'secret_set' => $secretSet('ses_secret'),
-            'tiers' => (array) ($config['email_tiers'] ?? []),
-            'implemented' => true,
-        ],
-        'whatsapp' => [
-            'enabled' => (bool) $config['whatsapp_enabled'],
-            'token_set' => $secretSet('whatsapp_token'),
-            'endpoint_set' => $secretSet('whatsapp_endpoint'),
-            'implemented' => false,
         ],
     ];
 
@@ -162,31 +128,6 @@ try {
         }
     }
 
-    // ?check=ses — GetAccount é read-only: valida a assinatura SigV4 e
-    // revela se a conta ainda está no sandbox, sem enviar e-mail nenhum.
-    if (($_GET['check'] ?? '') === 'ses') {
-        $ping = ses_request('GET', '/v2/email/account');
-
-        if (!$ping['ok']) {
-            $integrations['email']['live_check'] = [
-                'status' => 'failed',
-                'http_code' => $ping['http_code'],
-                'detail' => ses_hint($ping),
-            ];
-        } else {
-            $production = (bool) ($ping['body']['ProductionAccessEnabled'] ?? false);
-            $integrations['email']['live_check'] = [
-                'status' => 'ok',
-                'http_code' => $ping['http_code'],
-                'sending_enabled' => (bool) ($ping['body']['SendingEnabled'] ?? false),
-                'production_access' => $production,
-                'detail' => $production
-                    ? 'credencial válida; conta fora do sandbox'
-                    : 'credencial válida, mas a conta está no SANDBOX: só entrega para e-mails/domínios verificados',
-            ];
-        }
-    }
-
     // ------------------------------------------------------------
     // Avisos: o que está configurado mas não vai funcionar.
     // ------------------------------------------------------------
@@ -198,14 +139,8 @@ try {
     if (!is_readable(__DIR__ . '/config.php')) {
         $warnings[] = 'api/config.php ausente — rodando com os padrões do código.';
     }
-    foreach ($integrations as $name => $state) {
-        if ($state['enabled'] && !$state['implemented']) {
-            $warnings[] = sprintf('%s: configurado, mas a função ainda é um stub (nada é enviado).', $name);
-        }
-    }
-    if ($integrations['email']['enabled']
-        && !($integrations['email']['key_set'] && $integrations['email']['secret_set'] && $integrations['email']['region_set'])) {
-        $warnings[] = 'e-mail ligado sem credencial completa do SES (ses_region/ses_key/ses_secret): nenhum aviso está saindo.';
+    if (!$integrations['crm']['enabled'] || !$integrations['crm']['token_set']) {
+        $warnings[] = 'Admin desligado (crm_enabled/crm_token): os leads ficam só no JSONL, ninguém é avisado e o e-book não é entregue.';
     }
     if (!function_exists('fastcgi_finish_request') && !function_exists('litespeed_finish_request')) {
         $warnings[] = 'sem fastcgi/litespeed_finish_request: o visitante espera as integrações terminarem antes de ver o resultado.';
