@@ -121,8 +121,8 @@ const MAIN_PROBLEMS = [
 ];
 
 /**
- * Rótulos legíveis das respostas — usados nas notificações (CRM,
- * e-mail, WhatsApp). Quem lê o lead precisa de "Grande parte da operação",
+ * Rótulos legíveis das respostas — usados no texto enviado ao Admin
+ * (crm_details()). Quem lê o lead precisa de "Grande parte da operação",
  * não de "maioria". Espelham as opções de js/lead-quiz.js.
  */
 const ANSWER_LABELS = [
