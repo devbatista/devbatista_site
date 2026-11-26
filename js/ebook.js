@@ -18,8 +18,8 @@
     // backend, um proxy ou um serviço externo.
     endpoint: '/api/ebook.php',
 
-    // O PDF não é entregue aqui: o servidor manda o link por e-mail
-    // (ebook_download_url em api/config.php). Assim o endereço informado
+    // O PDF não é entregue aqui: api/ebook.php repassa o pedido ao Admin
+    // DevBatista, que manda o link por e-mail. Assim o endereço informado
     // precisa existir de verdade para o material chegar.
 
     // Identifica a origem do lead no CRM.
