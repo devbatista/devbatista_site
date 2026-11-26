@@ -91,11 +91,11 @@ Preços não são exibidos em nenhuma página.
 ├── js/visitas.js         # Medição de visitas (beacon para api/v.php)
 ├── api/leads.php         # Endpoint de recebimento dos leads
 ├── api/contato.php       # Formulário de /contato → Admin (mesmo webhook dos leads)
-├── api/leads-config.php  # Configuração compartilhada (leads, health e visitas)
+├── api/ebook.php         # Landing page do e-book → Admin (o Admin envia o e-mail)
+├── api/leads-config.php  # Configuração compartilhada (leads, e-book, contato, health e visitas)
 ├── api/visitas.php       # Repasse das visitas ao Admin (funções)
 ├── api/v.php             # Beacon das visitas (pageview e leave)
 ├── api/agente.php        # Páginas para robôs e agentes de IA (conta os acessos)
-├── api/mailer.php        # Envio pela API do Amazon SES (SigV4 assinado à mão)
 ├── api/health.php        # Diagnóstico do ambiente (protegido por token)
 ├── api/config.example.php# Modelo de configuração (copie para config.php)
 ├── api/storage/          # Leads em JSONL + rate limit (bloqueado por .htaccess)
@@ -281,65 +281,50 @@ O campo `warnings` é o que importa. O mais grave:
 Esse caso é invisível de fora — o endpoint de leads continua respondendo `201`
 e o visitante vê o resultado normalmente, mas nada é gravado.
 
-Duas verificações sob demanda, nenhuma cria lead nem envia e-mail:
+Uma verificação sob demanda, que não cria lead nem dispara e-mail:
 
 ```bash
 curl -s ".../api/health.php?token=SEU_TOKEN&check=crm" | jq .data.integrations.crm
-curl -s ".../api/health.php?token=SEU_TOKEN&check=ses" | jq .data.integrations.email
 ```
 
 `check=crm` manda um lead vazio ao Admin: ele confere o token antes dos dados,
 então a resposta `422` prova conexão e token válidos. `401` é token divergente.
 
-`check=ses` valida a assinatura SigV4 e informa `production_access` — se vier
-`false`, a conta ainda está no sandbox do SES.
+### E-mails dos leads (enviados pelo Admin)
 
-### Notificação de lead por e-mail (Amazon SES)
+**O site não envia e-mail nenhum.** Os três formulários só gravam o envio no
+JSONL e repassam ao Admin DevBatista (`crm_request()`); é o Admin quem manda:
 
-Lead qualificado vira e-mail na hora, com **Reply-To do próprio lead**:
-responder o aviso já fala com o contato.
+- o aviso de lead para o Rafael — diagnóstico e contato;
+- o e-book para o visitante.
 
-O envio usa a **API do SES v2 sobre HTTPS**, com SigV4 assinado em
-`api/mailer.php` — sem Composer e sem SMTP (a porta 587 costuma estar
-bloqueada em hospedagem compartilhada). A assinatura é conferível contra os
-vetores oficiais da AWS via `aws_sigv4_headers()`.
-
-Só as faixas em `email_tiers` são notificadas — por padrão `morno` e `quente`.
-Lead frio continua gravado no JSONL e criado no CRM; apenas não interrompe
-ninguém. Lista vazia notifica todos.
-
-Pré-requisitos na AWS:
-
-1. Domínio verificado no SES (DKIM), na mesma região de `ses_region`.
-2. `email_from` numa identidade verificada.
-3. Usuário IAM com a política `ses:SendEmail` (e `ses:GetAccount`, para o
-   `check=ses`). A chave vai nos secrets `AWS_SES_KEY` / `AWS_SES_SECRET`.
-
-No sandbox o SES só entrega para endereços/domínios verificados. Como
-remetente e destinatário estão no mesmo domínio verificado, a notificação
-funciona sem sair do sandbox.
+Por isso não há SES, remetente nem destinatário configurados aqui: tudo isso
+mora no Admin. Sem o Admin ligado (`crm_enabled` + `crm_token`), os leads
+continuam gravados, mas ninguém é avisado e o e-book não é entregue — o
+`/api/health.php` avisa nesse caso.
 
 ### Landing page do e-book (`api/ebook.php`)
 
-O visitante informa o e-mail e **o PDF não é baixado na página** — o servidor
-envia o link por e-mail, pelo mesmo SES. Endereço inventado não recebe nada,
-o que filtra o lead na origem.
+O visitante informa o e-mail e **o PDF não é baixado na página**: o site
+repassa o pedido ao Admin (`"source": "ebook"`), e o Admin manda o link por
+e-mail. Endereço inventado não recebe nada, o que filtra o lead na origem.
 
-Os dois e-mails do site saem de remetentes diferentes, de propósito:
+O repasse **é** a entrega, então é **síncrono**, ao contrário do diagnóstico e
+do contato:
 
-| E-mail | Sai de | Reply-To |
-|---|---|---|
-| Material para o lead | `Rafael Batista <rafael@devbatista.com>` | — (responder já cai nele) |
-| Aviso interno de lead qualificado | `DevBatista Leads <leads@devbatista.com>` | o próprio lead |
+1. grava o pedido em `api/storage/ebook/AAAA-MM.jsonl` (sempre, mesmo que o
+   Admin falhe depois);
+2. faz `POST` no Admin e espera a resposta por até **8 s**
+   (`HTTP_TOTAL_TIMEOUT` em `api/leads-config.php`);
+3. `200` ou `201` do Admin → `201` para o visitante ("enviamos o e-book para o
+   seu e-mail");
+4. qualquer outro código, erro de conexão, Admin desligado ou falta de resposta
+   em 8 s → `502` `delivery_failed`, com a mensagem para ele conferir o e-mail e
+   tentar de novo.
 
-O e-book é assinado pelo Rafael e promete resposta direta; sair de um
-`leads@` desmentiria isso. Ambos os endereços pertencem ao domínio verificado
-no SES, então nenhum precisa de verificação própria.
-
-Por isso o envio é **síncrono**, ao contrário das demais integrações: se o SES
-falhar, o endpoint responde `502` e o visitante vê a mensagem, em vez de ficar
-esperando um e-mail que nunca sairia. O lead já foi gravado antes disso, então
-nada se perde.
+O resultado de cada entrega fica em `api/storage/integrations/AAAA-MM.jsonl`
+com `"source": "ebook"`, e a falha vai também para o log de erro do PHP
+(`[ebook] entrega ... não confirmada pelo Admin`).
 
 No CRM o e-book abre um lead "Novo Lead" com origem **Site** e o próprio
 e-mail como nome provisório. Quem depois preenche o diagnóstico **não ganha um
@@ -366,15 +351,15 @@ segredo não existe em disco nem passa pelo CI. Aceita `int`, `bool` (`true`/`1`
 e listas separadas por vírgula. **Não** use `SetEnv` no `.htaccess` — ele é
 versionado.
 
-As integrações ficam desligadas por padrão, cada uma em sua função:
-`sendToCrm()` e `sendEmailNotification()` (implementadas) e
-`sendWhatsAppNotification()` (ainda um stub). Todas rodam **depois** de o
-visitante já ter recebido a resposta e nenhuma derruba o formulário; o
-resultado de cada uma fica em `api/storage/integrations/AAAA-MM.jsonl`.
+A única integração é o Admin, desligada por padrão. No diagnóstico
+(`sendToCrm()`) e no contato ela roda **depois** de o visitante já ter
+recebido a resposta e nunca derruba o formulário; no e-book ela é a própria
+entrega e roda antes (ver acima). O resultado fica em
+`api/storage/integrations/AAAA-MM.jsonl`.
 
 ### CRM (Admin DevBatista)
 
-O diagnóstico e o e-book viram lead no CRM próprio, servidor a servidor:
+O diagnóstico, o contato e o e-book viram lead no CRM próprio, servidor a servidor:
 `crm_request()` (em `api/leads-config.php`) faz `POST` em
 `https://admin.devbatista.com/webhooks/site-leads` com
 `Authorization: Bearer <crm_token>`. O token é o `SITE_LEADS_TOKEN` do Admin;
@@ -399,8 +384,8 @@ O Admin não conhece as tabelas do quiz: recebe os textos prontos de
   Lead perdido ou convertido não é reaberto: um envio novo abre outro lead;
 - o responsável é o administrador ativo mais antigo;
 - cada envio vira uma interação (nota) na timeline;
-- o diagnóstico avisa o responsável no sino. Esse aviso não manda e-mail,
-  porque o e-mail dos mornos e quentes já sai daqui, pelo SES;
+- o diagnóstico e o contato avisam o responsável, e o e-book é enviado ao
+  visitante — todos os e-mails saem do Admin, nenhum daqui;
 - o WhatsApp informado vincula sozinho a conversa que já existir com o número.
 
 Respostas: `201` criado, `200` completado, `401` token, `422` dados inválidos
@@ -658,10 +643,11 @@ gerado que sobe por FTP.
 
 | Secret | Liga |
 |---|---|
-| `CRM_TOKEN` | CRM próprio (Admin DevBatista) — liga o diagnóstico **e** a landing page do e-book. Mesmo valor do `SITE_LEADS_TOKEN` do Admin |
+| `CRM_TOKEN` | CRM próprio (Admin DevBatista) — liga o diagnóstico, o contato **e** a entrega do e-book. Mesmo valor do `SITE_LEADS_TOKEN` do Admin |
 | `SITE_VISITS_TOKEN` | Visitas do site e acessos de IA (Admin → Marketing → Visitas do site). Mesmo valor do `SITE_VISITS_TOKEN` do Admin, separado do de leads |
-| `LEADS_EMAIL_TO` + `AWS_SES_KEY` | Notificação por e-mail — precisa também de `AWS_SES_SECRET`, `AWS_SES_REGION` e `LEADS_EMAIL_FROM`. Opcional: `LEADS_EMAIL_TIERS` (`morno,quente` por padrão; `todos` inclui os frios) |
-| `WHATSAPP_TOKEN` | Notificação por WhatsApp (`WHATSAPP_ENDPOINT`, `WHATSAPP_TO`) |
+| `HEALTH_TOKEN` | O `/api/health.php` (sem ele, responde 404) |
+
+Os e-mails não têm secret aqui: saem do Admin (ver "E-mails dos leads").
 
 Cada integração liga sozinha quando o secret correspondente existe. Sem nenhum
 secret, o arquivo sai com tudo desligado — igual ao padrão do `leads.php`.
